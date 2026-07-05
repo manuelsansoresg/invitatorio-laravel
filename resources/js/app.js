@@ -6,6 +6,8 @@
  * - Bloqueo de scroll cuando el menú móvil está abierto
  * - IntersectionObserver: aplica animaciones fade-up a medida que entran
  *   en viewport. Evita disparar animación si el usuario pidió reduced motion.
+ * - Acordeón FAQ accesible (button + region, atributos ARIA correctos)
+ * - Header con sombra al hacer scroll (look & feel premium)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -28,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         backdrop.classList.add('opacity-100');
         document.body.classList.add('overflow-hidden');
         toggleBtn.setAttribute('aria-expanded', 'true');
-        // Enfoca el primer link para teclado/accesibilidad
         const firstLink = panel.querySelector('a, button');
         firstLink?.focus({ preventScroll: true });
     };
@@ -53,46 +54,87 @@ document.addEventListener('DOMContentLoaded', () => {
     backdrop?.addEventListener('click', closeMenu);
     navLinks.forEach((link) => link.addEventListener('click', closeMenu));
 
-    // Cerrar con Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeMenu();
     });
 
-    // Autocierre al volver a desktop
     const desktopMq = window.matchMedia('(min-width: 1024px)');
-    const handleMqChange = (e) => { if (e.matches) closeMenu(); };
-    desktopMq.addEventListener('change', handleMqChange);
+    desktopMq.addEventListener('change', (e) => { if (e.matches) closeMenu(); });
 
     /* ──────────────────────────────────────────────────────────────────
-     * Animaciones on-scroll para [data-anim]
+     * Animaciones on-scroll — data-anim (sistema legacy del hero)
      * ────────────────────────────────────────────────────────────────── */
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const animatedEls = document.querySelectorAll('[data-anim]');
 
     if (reducedMotion || !('IntersectionObserver' in window)) {
-        // Sin observer o sin motion permitido: simplemente los hacemos visibles.
         animatedEls.forEach((el) => {
             el.style.opacity = '1';
             el.style.transform = 'none';
         });
     } else {
-        const observer = new IntersectionObserver((entries) => {
+        const animObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     const el = entry.target;
                     const delay = el.dataset.animDelay || '0';
                     el.style.animationDelay = `${delay}ms`;
                     el.classList.add(`anim-${el.dataset.anim}`);
-                    observer.unobserve(el);
+                    animObserver.unobserve(el);
                 }
             });
         }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-        animatedEls.forEach((el) => observer.observe(el));
+        animatedEls.forEach((el) => animObserver.observe(el));
     }
 
     /* ──────────────────────────────────────────────────────────────────
-     * Header: ligera sombra al hacer scroll (look & feel premium)
+     * Reveal genérico — cualquier elemento con clase .reveal
+     * se anima con opacity/transform al entrar en viewport.
+     * ────────────────────────────────────────────────────────────────── */
+    const reveals = document.querySelectorAll('.reveal');
+    if (reducedMotion || !('IntersectionObserver' in window)) {
+        reveals.forEach((el) => el.classList.add('is-visible'));
+    } else {
+        const revealObserver = new IntersectionObserver((entries, obs) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const delay = el.dataset.revealDelay || '0';
+                    if (delay !== '0') {
+                        el.style.transitionDelay = `${delay}ms`;
+                    }
+                    el.classList.add('is-visible');
+                    obs.unobserve(el);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+
+        reveals.forEach((el) => revealObserver.observe(el));
+    }
+
+    /* ──────────────────────────────────────────────────────────────────
+     * FAQ acordeón — accesibilidad completa
+     * ────────────────────────────────────────────────────────────────── */
+    document.querySelectorAll('.faq-item').forEach((item) => {
+        const trigger = item.querySelector('.faq-trigger');
+        const panelEl = item.querySelector('.faq-content');
+        if (!trigger || !panelEl) return;
+
+        const panelId = trigger.getAttribute('aria-controls');
+
+        trigger.addEventListener('click', () => {
+            const open = item.getAttribute('data-open') === 'true';
+            item.setAttribute('data-open', open ? 'false' : 'true');
+            trigger.setAttribute('aria-expanded', open ? 'false' : 'true');
+        });
+
+        // Mantener el ID accesible (ya viene desde Blade, sólo registramos)
+        if (panelId) panelEl.setAttribute('id', panelId);
+    });
+
+    /* ──────────────────────────────────────────────────────────────────
+     * Header: ligera sombra al hacer scroll
      * ────────────────────────────────────────────────────────────────── */
     const header = document.querySelector('[data-header]');
     if (header) {
@@ -103,4 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
     }
+
+    /* ──────────────────────────────────────────────────────────────────
+     * Smooth scroll para links internos (Safari en iOS a veces no respeta)
+     * sólo si el navegador es suficientemente viejo, no necesario hoy.
+     * ────────────────────────────────────────────────────────────────── */
 });
