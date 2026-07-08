@@ -18,6 +18,10 @@
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     --font-display: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
 
+    /* Tipografías para invitaciones (Google Fonts) */
+    --font-cormorant: 'Cormorant Garamond', 'Times New Roman', ui-serif, Georgia, serif;
+    --font-montserrat: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+
     /* Paleta de marca Invitatorio */
     --color-purple-brand: #5A3087;
     --color-purple-dark: #2B143F;
@@ -31,6 +35,15 @@
     --color-gold: #F09719;
     --color-lilac-soft: #F4EFF8;
     --color-border-soft: #EFE7F4;
+
+    /* Paleta XV Valeria (portada elegante) */
+    --color-xv-bg: #f8d8d4;
+    --color-xv-card: #fffaf8;
+    --color-xv-rose: #d99591;
+    --color-xv-rose-dark: #c97f7b;
+    --color-xv-text: #3f4648;
+    --color-xv-muted: #8b8f91;
+    --color-xv-border: rgba(217, 149, 145, 0.45);
 }
 
 /* -------------------------------------------------------------------------
@@ -146,6 +159,24 @@
     50%      { transform: translate3d(0, -14px, 0) rotate(8deg); }
 }
 
+/* Cover XV: la tarjeta entra con fade + translateY */
+@keyframes xvFadeRise {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 28px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* Cover XV: la flechita inferior hace un bounce sutil hacia abajo */
+@keyframes xvArrowDown {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50%      { transform: translate3d(0, 6px, 0); }
+}
+
 /* -------------------------------------------------------------------------
    Reveal on-scroll (clase .reveal aplicada a cualquier contenedor)
    ------------------------------------------------------------------------- */
@@ -180,6 +211,18 @@
     .animate-pulse     { animation: subtlePulse 2.8s ease-in-out infinite; }
     .animate-confet    { animation: confetFloat 5s ease-in-out infinite; }
 
+    /* Cover XV — fade + rise */
+    .animate-xv-fade-rise {
+        opacity: 0;
+        animation: xvFadeRise .9s cubic-bezier(.22, .61, .36, 1) forwards;
+    }
+    .animate-xv-arrow-down {
+        animation: xvArrowDown 1.8s ease-in-out infinite;
+    }
+    .xv-delay-image   { animation-delay: .20s; }
+    .xv-delay-content { animation-delay: .40s; }
+    .xv-delay-arrow   { animation-delay: 1.10s; }
+
     .anim-delay-100 { animation-delay: .10s; }
     .anim-delay-200 { animation-delay: .20s; }
     .anim-delay-300 { animation-delay: .30s; }
@@ -210,6 +253,8 @@
         .animate-float-soft,
         .animate-pulse,
         .animate-confet,
+        .animate-xv-fade-rise,
+        .animate-xv-arrow-down,
         .reveal {
             animation: none !important;
             transition: none !important;
@@ -407,6 +452,139 @@
     .faq-item[data-open="true"] .faq-content {
         grid-template-rows: 1fr;
         opacity: 1;
+    }
+
+    /* ===========================================================
+       COVER — XV Valeria
+       Tarjeta elegante con paleta rosa. Todo en CSS, sin imágenes
+       decorativas. Se compone en tres capas:
+         .xv-intro          → wrapper de la sección (fondo degradado)
+         .xv-intro-card     → tarjeta blanca con borde rosado
+         .xv-intro-image-*  → bloque de la imagen
+         .xv-intro-*        → tipografías y elementos del texto
+       =========================================================== */
+    .xv-intro {
+        min-height: 100vh;
+        min-height: 100svh;
+        background: radial-gradient(circle at top left, #ffe8e5 0%, #f8d8d4 45%, #f4c8c3 100%);
+    }
+
+    .xv-intro-card {
+        background-color: var(--color-xv-card);
+        border: 1px solid var(--color-xv-border);
+        border-radius: 24px;
+        box-shadow:
+            0 30px 60px -30px rgba(201, 127, 123, .35),
+            0 12px 28px -18px rgba(217, 149, 145, .25);
+    }
+
+    .xv-intro-image-wrap {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+    }
+
+    .xv-intro-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+    }
+
+    /* Eyebrow: "TE INVITAMOS" con líneas a los costados */
+    .xv-intro-eyebrow {
+        font-family: var(--font-montserrat);
+        font-weight: 500;
+        font-size: 11px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--color-xv-rose);
+    }
+    .xv-intro-line {
+        display: inline-block;
+        width: 36px;
+        height: 1px;
+        background: var(--color-xv-rose);
+        vertical-align: middle;
+        opacity: .9;
+    }
+
+    /* Título principal "Mis XV Años" */
+    .xv-intro-title {
+        font-family: var(--font-cormorant);
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        line-height: 1.02;
+        color: var(--color-xv-text);
+    }
+
+    /* Divisor fino bajo el título */
+    .xv-intro-divider {
+        height: 1px;
+        background: var(--color-xv-border);
+    }
+
+    /* Nombre "Valeria" — italic elegante */
+    .xv-intro-name {
+        font-family: var(--font-cormorant);
+        font-style: italic;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        line-height: 1;
+        color: var(--color-xv-rose);
+    }
+
+    /* Fecha */
+    .xv-intro-date {
+        font-family: var(--font-montserrat);
+        font-weight: 500;
+        font-size: 12px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--color-xv-text);
+    }
+
+    /* Botón principal */
+    .xv-intro-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #d99591, #c97f7b);
+        color: #ffffff;
+        font-family: var(--font-montserrat);
+        font-weight: 600;
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        border-radius: 14px;
+        padding: 14px 36px;
+        box-shadow: 0 10px 24px -10px rgba(201, 127, 123, .45);
+        transition: transform .3s ease, box-shadow .3s ease, filter .3s ease;
+        cursor: pointer;
+        border: 0;
+    }
+    .xv-intro-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(201, 127, 123, .28);
+        filter: brightness(1.03);
+    }
+    .xv-intro-button:active {
+        transform: translateY(0);
+    }
+
+    /* Hint inferior: flecha + texto "Desliza o toca para continuar" */
+    .xv-intro-arrow {
+        color: var(--color-xv-rose);
+        display: inline-flex;
+    }
+    .xv-intro-cta-hint {
+        font-family: var(--font-montserrat);
+        font-weight: 500;
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--color-xv-muted);
     }
 }
 
