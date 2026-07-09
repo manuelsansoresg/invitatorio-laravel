@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConfirmacionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,4 +9,8 @@ Route::get('/', function () {
 
 // Plantillas de invitación (preview). Más adelante se resuelven
 // por slug desde un controlador + modelo Invitacion.
-Route::view('/invitacion/xv-valeria', 'invitaciones.xv.valeria');
+Route::view('/invitacion/xv-valentina', 'invitaciones.xv.valeria');
+
+// Confirmación de asistencia — formulario del popup en la invitación.
+Route::post('/confirmar-asistencia', [ConfirmacionController::class, 'store'])
+    ->name('confirmacion.store');

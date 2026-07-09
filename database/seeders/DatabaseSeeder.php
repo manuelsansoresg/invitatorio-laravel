@@ -21,5 +21,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Invitación por defecto para la XVañera (Valentina)
+        $this->call(InvitacionSeeder::class);
     }
 }

@@ -1520,6 +1520,283 @@
             margin-top: 28px;
         }
 
+        /* — 7b) Modal de confirmación — */
+        .confirm-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            animation: confirmModalFade .35s ease;
+        }
+        .confirm-modal[hidden] { display: none !important; }
+        @keyframes confirmModalFade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .confirm-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(63, 70, 72, 0.42);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .confirm-modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            max-height: calc(100vh - 32px);
+            max-height: calc(100svh - 32px);
+            overflow-y: auto;
+            background: linear-gradient(180deg, #fffaf8 0%, #fff4f1 100%);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow:
+                0 30px 70px -20px rgba(165, 105, 100, 0.35),
+                0 12px 28px -18px rgba(217, 124, 120, 0.25);
+            padding: clamp(28px, 5vw, 44px) clamp(22px, 4vw, 36px) clamp(24px, 4vw, 36px);
+            animation: confirmModalPop .45s cubic-bezier(.22,.61,.36,1);
+        }
+        @keyframes confirmModalPop {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .confirm-modal-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 250, 248, 0.7);
+            border: 1px solid var(--border);
+            color: var(--rose-dark);
+            font-size: 22px;
+            line-height: 1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background .25s ease, transform .25s ease;
+        }
+        .confirm-modal-close:hover {
+            background: #fff;
+            transform: rotate(90deg);
+        }
+
+        .confirm-modal-header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+        .confirm-modal-kicker {
+            display: inline-block;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.34em;
+            text-transform: uppercase;
+            color: var(--rose);
+        }
+        .confirm-modal-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(38px, 7vw, 48px);
+            line-height: 1;
+            color: var(--rose);
+            margin: 10px 0 0;
+        }
+        .confirm-modal-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 18px auto 16px;
+            max-width: 220px;
+        }
+        .confirm-modal-divider span {
+            flex: 1;
+            height: 1px;
+            background: rgba(217, 124, 120, 0.42);
+        }
+        .confirm-modal-divider i {
+            width: 6px;
+            height: 6px;
+            background: var(--rose);
+            border-radius: 50%;
+            font-style: normal;
+        }
+        .confirm-modal-date {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .confirm-modal-time {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--rose-dark);
+            margin-top: 4px;
+        }
+        .confirm-modal-time .time-label {
+            font-family: 'Montserrat', sans-serif;
+            font-style: normal;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .confirm-modal-intro {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: var(--muted);
+            text-align: center;
+            max-width: 360px;
+            margin: 0 auto 22px;
+        }
+
+        .confirm-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .confirm-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--rose);
+            text-align: center;
+        }
+        .confirm-input {
+            width: 100%;
+            padding: 14px 18px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.7);
+            border: 1.5px solid rgba(217, 124, 120, 0.32);
+            border-radius: 14px;
+            outline: 0;
+            text-align: center;
+            transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+        }
+        .confirm-input::placeholder {
+            color: rgba(139, 143, 145, 0.7);
+            font-style: italic;
+        }
+        .confirm-input:focus {
+            border-color: var(--rose);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(217, 124, 120, 0.12);
+        }
+        .confirm-input.is-invalid {
+            border-color: #c96965;
+            background: rgba(255, 235, 233, 0.7);
+        }
+
+        .confirm-error {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            color: #b04a47;
+            text-align: center;
+            margin: 0;
+        }
+
+        .confirm-submit {
+            position: relative;
+            margin-top: 6px;
+        }
+        .confirm-submit[disabled] {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .confirm-submit-spinner {
+            display: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-top-color: #fff;
+            border-radius: 50%;
+            margin-left: 8px;
+            animation: confirmSpin .7s linear infinite;
+        }
+        .confirm-submit.is-loading .confirm-submit-label { opacity: 0.8; }
+        .confirm-submit.is-loading .confirm-submit-spinner { display: inline-block; }
+        @keyframes confirmSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Estado de éxito */
+        .confirm-success-state {
+            text-align: center;
+            padding: 8px 0;
+        }
+        .confirm-success-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 14px;
+        }
+        .confirm-success-icon svg { width: 100%; height: 100%; }
+        .confirm-check-bg {
+            stroke: var(--rose);
+            stroke-width: 2;
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            animation: confirmCheckCircle .8s cubic-bezier(.22,.61,.36,1) forwards;
+        }
+        .confirm-check-mark {
+            stroke: var(--rose-dark);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: confirmCheckMark .5s 0.5s cubic-bezier(.22,.61,.36,1) forwards;
+        }
+        @keyframes confirmCheckCircle {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes confirmCheckMark {
+            to { stroke-dashoffset: 0; }
+        }
+        .confirm-success-state h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            font-size: clamp(26px, 5vw, 32px);
+            color: var(--text);
+            margin: 0 0 8px;
+        }
+        .confirm-success-state p {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin: 0 auto 22px;
+            max-width: 320px;
+        }
+        .confirm-success-state .btn {
+            max-width: 240px;
+        }
+
+        body.confirm-modal-open {
+            overflow: hidden;
+        }
+
         /* — 8) Enlace — */
         .enlace-text {
             font-family: 'Montserrat', sans-serif;
@@ -1833,11 +2110,6 @@
                             <span class="hero-countdown-lbl">Seg</span>
                         </div>
                     </div>
-
-                    <a href="#confirmacion" class="hero-button">
-                        Confirmar asistencia
-                        <span>→</span>
-                    </a>
                 </div>
 
                 {{-- Foto (mobile: order 1, desktop: order 2) --}}
@@ -2037,7 +2309,7 @@
 
                 <div class="dress-palette" aria-hidden="true">
                     <span class="dress-circle" style="background:#C9A6E0" title="Lila"></span>
-                    <span class="dress-circle" style="background:#F7C9D6" title="Rosa suave"></span>
+                    <span class="dress-circle" style="background:#B5C2A8" title="Verde sage"></span>
                     <span class="dress-circle" style="background:#E8DCC4" title="Beige"></span>
                     <span class="dress-circle" style="background:#A8B8C2" title="Gris azulado"></span>
                 </div>
@@ -2070,7 +2342,7 @@
         </section>
 
 
-        {{-- 9) CONFIRMACIÓN POR WHATSAPP --}}
+        {{-- 9) CONFIRMACIÓN DE ASISTENCIA --}}
         <section id="confirmacion" class="invite-section reveal" aria-label="Confirmar asistencia">
             <div class="section-card confirm-card">
                 <p class="eyebrow">RSVP</p>
@@ -2081,12 +2353,17 @@
                 </p>
 
                 <div class="confirm-cta">
-                    <a href="{{ $waLink }}" target="_blank" rel="noopener" class="btn btn-primary">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.967-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/>
+                    <button
+                        type="button"
+                        id="openConfirmModal"
+                        class="btn btn-primary"
+                        onclick="openConfirmModal()"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20 6L9 17l-5-5"/>
                         </svg>
-                        Confirmar por WhatsApp
-                    </a>
+                        Confirmar
+                    </button>
                 </div>
             </div>
         </section>
@@ -2127,6 +2404,102 @@
         </footer>
 
     </main>
+
+
+    {{-- ============================================================
+         MODAL DE CONFIRMACIÓN
+         Se muestra con openConfirmModal() y se cierra con
+         closeConfirmModal(). El formulario hace POST a
+         /confirmar-asistencia (route name: confirmacion.store).
+         ============================================================ --}}
+    <div
+        id="confirmModal"
+        class="confirm-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirmModalTitle"
+        aria-hidden="true"
+        hidden
+    >
+        <div class="confirm-modal-backdrop" onclick="closeConfirmModal()"></div>
+
+        <div class="confirm-modal-content" role="document">
+
+            <button
+                type="button"
+                class="confirm-modal-close"
+                onclick="closeConfirmModal()"
+                aria-label="Cerrar"
+            >&times;</button>
+
+            {{-- Encabezado con datos de la invitación --}}
+            <div class="confirm-modal-header">
+                <span class="confirm-modal-kicker">Mis XV años</span>
+                <h2 id="confirmModalTitle">{{ $nombre }}</h2>
+                <div class="confirm-modal-divider" aria-hidden="true">
+                    <span></span><i></i><span></span>
+                </div>
+                <p class="confirm-modal-date">{{ $fechaLarga }}</p>
+                <p class="confirm-modal-time">
+                    <span class="time-label">Recepción</span>{{ $horaRecepcion }}
+                </p>
+            </div>
+
+            {{-- Estado: formulario --}}
+            <div id="confirmFormState" class="confirm-form-state">
+                <p class="confirm-modal-intro">
+                    Confirma tu asistencia y nos ayudarás a tener todo listo para este día tan especial.
+                </p>
+
+                <form
+                    action="{{ route('confirmacion.store') }}"
+                    method="POST"
+                    class="confirm-form"
+                    id="confirmForm"
+                    novalidate
+                >
+                    @csrf
+                    <input type="hidden" name="ruta_invitacion" value="xv-valentina">
+
+                    <label for="confirmNombre" class="confirm-label">Tu nombre</label>
+                    <input
+                        type="text"
+                        id="confirmNombre"
+                        name="nombre"
+                        class="confirm-input"
+                        placeholder="Escribe tu nombre completo"
+                        required
+                        minlength="3"
+                        maxlength="120"
+                        autocomplete="name"
+                    >
+
+                    <p id="confirmError" class="confirm-error" hidden></p>
+
+                    <button type="submit" class="btn btn-primary confirm-submit" id="confirmSubmitBtn">
+                        <span class="confirm-submit-label">Confirmar</span>
+                        <span class="confirm-submit-spinner" aria-hidden="true"></span>
+                    </button>
+                </form>
+            </div>
+
+            {{-- Estado: éxito (se muestra tras envío OK) --}}
+            <div id="confirmSuccessState" class="confirm-success-state" hidden>
+                <div class="confirm-success-icon" aria-hidden="true">
+                    <svg viewBox="0 0 52 52">
+                        <circle class="confirm-check-bg" cx="26" cy="26" r="24" fill="none"/>
+                        <path class="confirm-check-mark" fill="none" d="M14 27l8 8 16-18"/>
+                    </svg>
+                </div>
+                <h3>¡Gracias por confirmar!</h3>
+                <p>Te esperamos el <strong>{{ $fechaLarga }}</strong>.</p>
+                <button type="button" class="btn btn-outline" onclick="closeConfirmModal()">
+                    Cerrar
+                </button>
+            </div>
+
+        </div>
+    </div>
 
 
     {{-- ============================================================
@@ -2420,6 +2793,121 @@
                 ta.select();
                 try { document.execCommand('copy'); cb(); } catch (_) {}
                 document.body.removeChild(ta);
+            }
+
+            // ---------------- Modal de confirmación ----------------
+            let lastFocusedElement = null;
+
+            function openConfirmModal() {
+                const modal = document.getElementById('confirmModal');
+                if (!modal) return;
+                lastFocusedElement = document.activeElement;
+                modal.hidden = false;
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('confirm-modal-open');
+
+                // Reset a estado formulario en cada apertura
+                const formState    = document.getElementById('confirmFormState');
+                const successState = document.getElementById('confirmSuccessState');
+                const errorEl      = document.getElementById('confirmError');
+                const input        = document.getElementById('confirmNombre');
+                const submitBtn    = document.getElementById('confirmSubmitBtn');
+                if (formState)    formState.hidden = false;
+                if (successState) successState.hidden = true;
+                if (errorEl)      { errorEl.hidden = true; errorEl.textContent = ''; }
+                if (input)        { input.classList.remove('is-invalid'); input.value = ''; }
+                if (submitBtn)    { submitBtn.classList.remove('is-loading'); submitBtn.disabled = false; }
+
+                // Foco al input después de la animación
+                setTimeout(() => input && input.focus(), 80);
+            }
+
+            function closeConfirmModal() {
+                const modal = document.getElementById('confirmModal');
+                if (!modal) return;
+                modal.hidden = true;
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('confirm-modal-open');
+                if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                    lastFocusedElement.focus();
+                }
+            }
+
+            // Cerrar con Escape
+            document.addEventListener('keydown', (e) => {
+                const modal = document.getElementById('confirmModal');
+                if (e.key === 'Escape' && modal && !modal.hidden) {
+                    closeConfirmModal();
+                }
+            });
+
+            // Exponer funciones al scope global (los onclick="" las necesitan)
+            window.openConfirmModal  = openConfirmModal;
+            window.closeConfirmModal = closeConfirmModal;
+
+            // Envío del formulario vía fetch (sin recargar la página)
+            const confirmForm = document.getElementById('confirmForm');
+            if (confirmForm) {
+                confirmForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const formData = new FormData(confirmForm);
+                    const submitBtn = document.getElementById('confirmSubmitBtn');
+                    const errorEl   = document.getElementById('confirmError');
+                    const input     = document.getElementById('confirmNombre');
+
+                    // Validación cliente
+                    const nombre = (formData.get('nombre') || '').toString().trim();
+                    if (nombre.length < 3) {
+                        if (input)    input.classList.add('is-invalid');
+                        if (errorEl) {
+                            errorEl.textContent = 'Por favor escribe tu nombre (mínimo 3 caracteres).';
+                            errorEl.hidden = false;
+                        }
+                        if (input) input.focus();
+                        return;
+                    }
+                    if (input)    input.classList.remove('is-invalid');
+                    if (errorEl)  { errorEl.hidden = true; errorEl.textContent = ''; }
+
+                    if (submitBtn) {
+                        submitBtn.classList.add('is-loading');
+                        submitBtn.disabled = true;
+                    }
+
+                    try {
+                        const response = await fetch(confirmForm.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            credentials: 'same-origin',
+                        });
+
+                        const data = await response.json().catch(() => ({}));
+
+                        if (response.ok) {
+                            // Éxito
+                            document.getElementById('confirmFormState').hidden    = true;
+                            document.getElementById('confirmSuccessState').hidden = false;
+                        } else if (response.status === 422 && data.errors) {
+                            // Error de validación
+                            const msg = Object.values(data.errors).flat().join(' ');
+                            if (input)    input.classList.add('is-invalid');
+                            if (errorEl)  { errorEl.textContent = msg || 'Verifica los datos e inténtalo de nuevo.'; errorEl.hidden = false; }
+                            if (submitBtn) { submitBtn.classList.remove('is-loading'); submitBtn.disabled = false; }
+                        } else {
+                            // Otro error
+                            if (errorEl)  { errorEl.textContent = 'No pudimos registrar tu confirmación. Inténtalo de nuevo.'; errorEl.hidden = false; }
+                            if (submitBtn) { submitBtn.classList.remove('is-loading'); submitBtn.disabled = false; }
+                        }
+                    } catch (err) {
+                        if (errorEl)  { errorEl.textContent = 'Sin conexión. Verifica tu red e inténtalo de nuevo.'; errorEl.hidden = false; }
+                        if (submitBtn) { submitBtn.classList.remove('is-loading'); submitBtn.disabled = false; }
+                    }
+                });
             }
         });
     </script>
