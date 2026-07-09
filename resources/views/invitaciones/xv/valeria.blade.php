@@ -1348,36 +1348,97 @@
         }
 
         /* — 5) Dress code — */
-        .dress-value {
+        .dress-card {
+            position: relative;
+            overflow: hidden;
+        }
+        .dress-card::before,
+        .dress-card::after {
+            content: "";
+            position: absolute;
+            width: 170px;
+            height: 170px;
+            border: 1px solid rgba(217, 124, 120, 0.14);
+            border-radius: 999px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .dress-card::before {
+            top: -90px;
+            left: -70px;
+        }
+        .dress-card::after {
+            bottom: -95px;
+            right: -70px;
+        }
+        .dress-card > * { position: relative; z-index: 1; }
+
+        .dress-main {
             font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(28px, 4.5vw, 40px);
             font-style: italic;
             font-weight: 500;
+            font-size: clamp(28px, 4.5vw, 40px);
+            line-height: 1.15;
             color: var(--rose);
             text-align: center;
-            margin-top: 12px;
+            margin: 22px auto 0;
         }
-        .dress-text {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 15px;
-            line-height: 1.7;
-            color: var(--muted);
-            max-width: 480px;
-            margin: 16px auto 0;
-            text-align: center;
-        }
-        .dress-palette {
+
+        /* Callout: rosa reservado */
+        .dress-reserved {
             display: flex;
-            justify-content: center;
+            align-items: center;
             gap: 14px;
-            margin-top: 26px;
+            margin: 30px auto 0;
+            max-width: 460px;
+            padding: 14px 18px;
+            background: rgba(255, 250, 248, 0.65);
+            border: 1px solid rgba(217, 124, 120, 0.32);
+            border-radius: 18px;
+            text-align: left;
         }
-        .dress-circle {
-            width: 30px;
-            height: 30px;
+        .dress-reserved-circle-wrap {
+            position: relative;
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+        }
+        .dress-reserved-circle {
+            position: absolute;
+            inset: 0;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.7);
+            background: #F7C9D6;
+            border: 2px solid rgba(255, 255, 255, 0.85);
             box-shadow: 0 4px 10px -4px rgba(165, 105, 100, 0.35);
+        }
+        .dress-reserved-x {
+            position: absolute;
+            inset: -4px;
+            width: calc(100% + 8px);
+            height: calc(100% + 8px);
+            color: var(--rose-dark);
+        }
+        .dress-reserved-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .dress-reserved-text strong {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            font-size: 17px;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        @media (max-width: 480px) {
+            .dress-reserved {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+                padding: 16px 14px;
+            }
+            .dress-reserved-text { align-items: center; }
         }
 
         /* — 6) Mesa de regalos — */
@@ -2300,18 +2361,26 @@
 
         {{-- 7) DRESS CODE --}}
         <section id="dress-code" class="invite-section reveal" aria-label="Dress code">
-            <div class="section-card">
+            <div class="section-card dress-card">
                 <p class="eyebrow">Vestimenta</p>
                 <h2 class="section-title">Dress code</h2>
                 <div class="section-divider" aria-hidden="true"></div>
-                <p class="dress-value">{{ $dressCode }}</p>
-                <p class="dress-text">{{ $dressTexto }}</p>
 
-                <div class="dress-palette" aria-hidden="true">
-                    <span class="dress-circle" style="background:#C9A6E0" title="Lila"></span>
-                    <span class="dress-circle" style="background:#B5C2A8" title="Verde sage"></span>
-                    <span class="dress-circle" style="background:#E8DCC4" title="Beige"></span>
-                    <span class="dress-circle" style="background:#A8B8C2" title="Gris azulado"></span>
+                {{-- Mensaje 1: dress code a tu estilo --}}
+                <p class="dress-main">Dress code a tu estilo</p>
+
+                {{-- Mensaje 2: solo el rosa está reservado para la Xvañera --}}
+                <div class="dress-reserved" role="note">
+                    <div class="dress-reserved-circle-wrap" aria-hidden="true">
+                        <span class="dress-reserved-circle" style="background:#F7C9D6"></span>
+                        <svg class="dress-reserved-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                            <line x1="6" y1="18" x2="18" y2="6"/>
+                        </svg>
+                    </div>
+                    <div class="dress-reserved-text">
+                        <strong>Solo el rosa está reservado para la quinceañera</strong>
+                    </div>
                 </div>
             </div>
         </section>
