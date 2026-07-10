@@ -134,6 +134,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ──────────────────────────────────────────────────────────────────
+     * Pestañas de paquetes — Web / Imagen / Video
+     * ────────────────────────────────────────────────────────────────── */
+    document.querySelectorAll('[data-pricing-tabs]').forEach((tabsRoot) => {
+        const tabs = Array.from(tabsRoot.querySelectorAll('[data-pricing-tab]'));
+        const panels = Array.from(tabsRoot.querySelectorAll('[data-pricing-panel]'));
+        if (!tabs.length || !panels.length) return;
+
+        const activateTab = (selectedTab, shouldFocus = false) => {
+            const selectedKey = selectedTab.dataset.pricingTab;
+
+            tabs.forEach((tab) => {
+                const active = tab === selectedTab;
+                tab.setAttribute('aria-selected', active ? 'true' : 'false');
+                tab.classList.toggle('bg-[#EB7512]', active);
+                tab.classList.toggle('text-white', active);
+                tab.classList.toggle('shadow-md', active);
+                tab.classList.toggle('shadow-orange-500/25', active);
+                tab.classList.toggle('text-[#5F5A66]', !active);
+                tab.classList.toggle('hover:bg-[#FFF1E1]', !active);
+                tab.classList.toggle('hover:text-[#EB7512]', !active);
+            });
+
+            panels.forEach((panel) => {
+                const active = panel.dataset.pricingPanel === selectedKey;
+                panel.classList.toggle('hidden', !active);
+                panel.toggleAttribute('hidden', !active);
+
+                if (active) {
+                    panel.querySelectorAll('.reveal').forEach((el) => {
+                        el.classList.add('is-visible');
+                    });
+                }
+            });
+
+            if (shouldFocus) selectedTab.focus({ preventScroll: true });
+        };
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => activateTab(tab));
+            tab.addEventListener('keydown', (event) => {
+                const lastIndex = tabs.length - 1;
+                let nextIndex = null;
+
+                if (event.key === 'ArrowRight') nextIndex = index === lastIndex ? 0 : index + 1;
+                if (event.key === 'ArrowLeft') nextIndex = index === 0 ? lastIndex : index - 1;
+                if (event.key === 'Home') nextIndex = 0;
+                if (event.key === 'End') nextIndex = lastIndex;
+
+                if (nextIndex !== null) {
+                    event.preventDefault();
+                    activateTab(tabs[nextIndex], true);
+                }
+            });
+        });
+
+        const initiallySelected = tabs.find((tab) => tab.getAttribute('aria-selected') === 'true') || tabs[0];
+        activateTab(initiallySelected);
+    });
+
+    /* ──────────────────────────────────────────────────────────────────
      * Header: ligera sombra al hacer scroll
      * ────────────────────────────────────────────────────────────────── */
     const header = document.querySelector('[data-header]');

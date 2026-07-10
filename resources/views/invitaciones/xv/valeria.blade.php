@@ -55,6 +55,36 @@
 
     // Fecha objetivo del countdown (hora local Mérida, UTC-6 → 19:00 = 7 PM)
     $eventDateIso   = '2026-11-15T19:00:00-06:00';
+    $pageUrl        = url('/invitacion/xv-valentina');
+    $seoTitle       = $evento . ' de ' . $nombre . ' | Invitación digital';
+    $seoDescription = 'Invitación digital para ' . $evento . ' de ' . $nombreCompleto . '. ' . $fechaLarga . ' con ceremonia, recepción, ubicación, música y confirmación de asistencia.';
+    $seoImage       = asset('images/xv/valeria/portada.png');
+    $eventSchema    = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Event',
+        'name' => $evento . ' de ' . $nombre,
+        'description' => $seoDescription,
+        'startDate' => $eventDateIso,
+        'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
+        'eventStatus' => 'https://schema.org/EventScheduled',
+        'image' => [$seoImage],
+        'url' => $pageUrl,
+        'location' => [
+            '@type' => 'Place',
+            'name' => $lugar,
+            'address' => [
+                '@type' => 'PostalAddress',
+                'streetAddress' => $direccion,
+                'addressLocality' => 'Mérida',
+                'addressRegion' => 'Yucatán',
+                'addressCountry' => 'MX',
+            ],
+        ],
+        'organizer' => [
+            '@type' => 'Person',
+            'name' => $familia,
+        ],
+    ];
 @endphp
 
 <!DOCTYPE html>
@@ -63,19 +93,33 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f8d8d4">
-    <meta name="description" content="Invitación digital — {{ $evento }} de {{ $nombre }}. {{ $fechaLarga }} · Recepción {{ $horaRecepcion }} en {{ $lugar }}.">
-    <meta property="og:title" content="{{ $evento }} — {{ $nombre }}">
-    <meta property="og:description" content="{{ $fechaLarga }} · Recepción {{ $horaRecepcion }} en {{ $lugar }} · {{ $iglesiaNombre }}.">
-    <meta property="og:image" content="{{ asset('images/xv/valeria/portada.png') }}">
+    <meta name="description" content="{{ $seoDescription }}">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="{{ $pageUrl }}">
+    <meta property="og:title" content="{{ $seoTitle }}">
+    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:image" content="{{ $seoImage }}">
+    <meta property="og:image:alt" content="Portada de la invitación digital de {{ $nombre }}">
+    <meta property="og:url" content="{{ $pageUrl }}">
+    <meta property="og:site_name" content="Invitatorio">
+    <meta property="og:locale" content="es_MX">
     <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seoTitle }}">
+    <meta name="twitter:description" content="{{ $seoDescription }}">
+    <meta name="twitter:image" content="{{ $seoImage }}">
 
-    <title>{{ $evento }} — {{ $nombre }}</title>
+    <title>{{ $seoTitle }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="preload" as="image" href="{{ asset('images/xv/valeria/portada.png') }}">
+
+    <script type="application/ld+json">
+        @json($eventSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
+    </script>
 
     <style>
         /* ============================================================

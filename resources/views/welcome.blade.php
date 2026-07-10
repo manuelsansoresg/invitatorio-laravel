@@ -1,16 +1,141 @@
+@php
+    $siteName = 'Invitatorio';
+    $siteUrl = rtrim(config('app.url'), '/');
+    $pageUrl = url('/');
+    $seoTitle = 'Invitaciones digitales personalizadas para bodas, XV años y eventos | Invitatorio';
+    $seoDescription = 'Crea invitaciones digitales personalizadas para bodas, XV años, cumpleaños, bautizos y baby shower. Incluye música, cuenta regresiva, Google Maps, RSVP y enlace para WhatsApp.';
+    $seoImage = asset('images/hero-desktop.png');
+    $whatsappNumber  = '529999999999';
+    $whatsappMessage = 'Hola, quiero cotizar una invitación digital para mi evento.';
+    $whatsappUrl     = 'https://wa.me/' . $whatsappNumber . '?text=' . urlencode($whatsappMessage);
+    $faqs = [
+        ['q' => '¿Cuánto tarda la entrega?', 'a' => 'Depende del paquete y la información enviada, pero normalmente una invitación puede estar lista en 24 a 48 horas.'],
+        ['q' => '¿Puedo pedir cambios?', 'a' => 'Sí. Cada paquete puede incluir ajustes básicos. En paquetes más avanzados se pueden incluir más cambios y personalización.'],
+        ['q' => '¿La invitación incluye música?', 'a' => 'Sí. Todas las invitaciones pueden incluir música de fondo para darle un toque más especial al evento.'],
+        ['q' => '¿Puedo confirmar asistencia?', 'a' => 'Sí. La confirmación de asistencia está disponible en los paquetes que incluyen RSVP.'],
+        ['q' => '¿Se puede abrir desde celular?', 'a' => 'Sí. Las invitaciones están diseñadas principalmente para verse bien en celular y compartirse por WhatsApp.'],
+        ['q' => '¿Qué necesito enviar?', 'a' => 'Necesitamos nombres, fecha, hora, ubicación, dress code, música, datos de mesa de regalos, fotos si aplica y cualquier mensaje especial.'],
+        ['q' => '¿Puedo compartirla por WhatsApp?', 'a' => 'Sí. Recibirás un enlace personalizado listo para enviar por WhatsApp, redes sociales o mensaje.'],
+        ['q' => '¿Se paga anticipo?', 'a' => 'Sí, se puede solicitar anticipo para comenzar el diseño y el resto al entregar la invitación final.'],
+    ];
+    $services = [
+        ['name' => 'Invitaciones digitales para bodas', 'description' => 'Diseños elegantes con itinerario, ubicación, mesa de regalos, música y confirmación de asistencia.'],
+        ['name' => 'Invitaciones digitales para XV años', 'description' => 'Invitaciones modernas para quinceañeras con galería, cuenta regresiva, música y datos del evento.'],
+        ['name' => 'Invitaciones digitales para cumpleaños', 'description' => 'Invitaciones prácticas y personalizadas para compartir por WhatsApp.'],
+        ['name' => 'Invitaciones digitales para bautizos y baby shower', 'description' => 'Diseños tiernos y claros con todos los detalles importantes para invitados.'],
+    ];
+    $schema = [
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'Organization',
+                '@id' => $siteUrl . '/#organization',
+                'name' => $siteName,
+                'url' => $siteUrl,
+                'logo' => asset('images/invitatorio_horizontal.png'),
+                'contactPoint' => [
+                    '@type' => 'ContactPoint',
+                    'contactType' => 'customer service',
+                    'telephone' => '+' . $whatsappNumber,
+                    'availableLanguage' => ['es'],
+                ],
+            ],
+            [
+                '@type' => 'WebSite',
+                '@id' => $siteUrl . '/#website',
+                'url' => $siteUrl,
+                'name' => $siteName,
+                'inLanguage' => 'es-MX',
+                'publisher' => ['@id' => $siteUrl . '/#organization'],
+            ],
+            [
+                '@type' => 'WebPage',
+                '@id' => $pageUrl . '#webpage',
+                'url' => $pageUrl,
+                'name' => $seoTitle,
+                'description' => $seoDescription,
+                'inLanguage' => 'es-MX',
+                'isPartOf' => ['@id' => $siteUrl . '/#website'],
+                'primaryImageOfPage' => ['@id' => $pageUrl . '#primaryimage'],
+            ],
+            [
+                '@type' => 'ImageObject',
+                '@id' => $pageUrl . '#primaryimage',
+                'url' => $seoImage,
+                'contentUrl' => $seoImage,
+                'caption' => 'Invitaciones digitales personalizadas de Invitatorio',
+            ],
+            [
+                '@type' => 'Service',
+                '@id' => $pageUrl . '#service',
+                'name' => 'Invitaciones digitales personalizadas',
+                'serviceType' => 'Diseño y creación de invitaciones digitales',
+                'provider' => ['@id' => $siteUrl . '/#organization'],
+                'areaServed' => [
+                    '@type' => 'Country',
+                    'name' => 'México',
+                ],
+                'description' => $seoDescription,
+                'offers' => [
+                    '@type' => 'AggregateOffer',
+                    'priceCurrency' => 'MXN',
+                    'lowPrice' => '150',
+                    'highPrice' => '1300',
+                    'offerCount' => '7',
+                    'availability' => 'https://schema.org/InStock',
+                ],
+                'hasOfferCatalog' => [
+                    '@type' => 'OfferCatalog',
+                    'name' => 'Tipos de invitaciones digitales',
+                    'itemListElement' => array_map(fn ($service) => [
+                        '@type' => 'Offer',
+                        'itemOffered' => [
+                            '@type' => 'Service',
+                            'name' => $service['name'],
+                            'description' => $service['description'],
+                        ],
+                    ], $services),
+                ],
+            ],
+            [
+                '@type' => 'FAQPage',
+                '@id' => $pageUrl . '#faq',
+                'mainEntity' => array_map(fn ($faq) => [
+                    '@type' => 'Question',
+                    'name' => $faq['q'],
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $faq['a'],
+                    ],
+                ], $faqs),
+            ],
+        ],
+    ];
+@endphp
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#FFFDF8">
-    <meta name="description" content="Invitatorio — invitaciones digitales modernas para toda ocasión. Comparte por WhatsApp con música, cuenta regresiva, ubicación y RSVP.">
-    <meta property="og:title" content="Invitatorio — Invitaciones digitales para momentos inolvidables">
-    <meta property="og:description" content="Comparte tu evento por WhatsApp con diseño moderno, música, cuenta regresiva, ubicación y confirmación de asistencia.">
-    <meta property="og:image" content="/images/hero-desktop.png">
+    <meta name="description" content="{{ $seoDescription }}">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="{{ $pageUrl }}">
+    <meta property="og:title" content="{{ $seoTitle }}">
+    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:image" content="{{ $seoImage }}">
+    <meta property="og:image:alt" content="Vista previa de invitación digital personalizada en celular">
+    <meta property="og:url" content="{{ $pageUrl }}">
+    <meta property="og:site_name" content="{{ $siteName }}">
+    <meta property="og:locale" content="es_MX">
     <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seoTitle }}">
+    <meta name="twitter:description" content="{{ $seoDescription }}">
+    <meta name="twitter:image" content="{{ $seoImage }}">
 
-    <title>Invitatorio — Invitaciones digitales para toda ocasión</title>
+    <title>{{ $seoTitle }}</title>
 
     @fonts
 
@@ -20,6 +145,10 @@
     <link rel="preload" as="image" href="/images/celular.png">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script type="application/ld+json">
+        @json($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
+    </script>
 </head>
 <body class="bg-[#FFFDF8] text-[#18111F] antialiased">
 
@@ -66,7 +195,7 @@
                     <a href="#disenos" class="nav-link">Diseños</a>
                     <a href="#paquetes" class="nav-link">Paquetes</a>
                     <a href="#como-funciona" class="nav-link">Cómo funciona</a>
-                    <a href="#faq" class="nav-link">Preguntas frecuentes</a>
+                    <a href="#preguntas" class="nav-link">Preguntas frecuentes</a>
                     <a href="#contacto" class="nav-link">Contacto</a>
                 </nav>
 
@@ -155,7 +284,7 @@
                         <li><a data-menu-link href="#disenos" class="block py-3 px-4 rounded-xl text-[#18111F] hover:bg-[#FFF1E1] hover:text-[#EB7512] transition-colors">Diseños</a></li>
                         <li><a data-menu-link href="#paquetes" class="block py-3 px-4 rounded-xl text-[#18111F] hover:bg-[#FFF1E1] hover:text-[#EB7512] transition-colors">Paquetes</a></li>
                         <li><a data-menu-link href="#como-funciona" class="block py-3 px-4 rounded-xl text-[#18111F] hover:bg-[#FFF1E1] hover:text-[#EB7512] transition-colors">Cómo funciona</a></li>
-                        <li><a data-menu-link href="#faq" class="block py-3 px-4 rounded-xl text-[#18111F] hover:bg-[#FFF1E1] hover:text-[#EB7512] transition-colors">Preguntas frecuentes</a></li>
+                        <li><a data-menu-link href="#preguntas" class="block py-3 px-4 rounded-xl text-[#18111F] hover:bg-[#FFF1E1] hover:text-[#EB7512] transition-colors">Preguntas frecuentes</a></li>
                         <li><a data-menu-link href="#contacto" class="block py-3 px-4 rounded-xl text-[#18111F] hover:bg-[#FFF1E1] hover:text-[#EB7512] transition-colors">Contacto</a></li>
                     </ul>
                 </nav>
@@ -338,15 +467,6 @@
             </div>
         </div>
     </section>
-
-    {{-- ===========================================================
-         CONFIGURACIÓN GLOBAL — variables reusables
-         =========================================================== --}}
-    @php
-        $whatsappNumber  = '529999999999';
-        $whatsappMessage = 'Hola, quiero cotizar una invitación digital para mi evento.';
-        $whatsappUrl     = 'https://wa.me/' . $whatsappNumber . '?text=' . urlencode($whatsappMessage);
-    @endphp
 
     {{-- ===========================================================
          SECCIÓN 1 — ¿QUÉ INCLUYE?
@@ -606,6 +726,37 @@
     </section>
 
     {{-- ===========================================================
+         SECCIÓN SEO — SERVICIOS POR EVENTO
+         =========================================================== --}}
+    <section id="servicios" class="section-padding bg-white">
+        <div class="mx-auto max-w-[1200px] lg:max-w-[1280px] px-5 sm:px-8">
+
+            <header class="max-w-3xl mx-auto text-center mb-12 sm:mb-16 reveal">
+                <p class="inline-flex items-center gap-2 text-[11px] sm:text-[12px] font-semibold tracking-[0.18em] uppercase text-[#EB7512] mb-4">
+                    <span class="w-7 h-px bg-[#EB7512]"></span>
+                    Invitaciones personalizadas
+                    <span class="w-7 h-px bg-[#EB7512]"></span>
+                </p>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold leading-[1.1] tracking-tight text-[#2B143F]">
+                    Invitaciones digitales para <span class="text-[#EB7512]">cada celebración</span>
+                </h2>
+                <p class="mt-4 text-[15px] sm:text-base lg:text-lg text-[#5F5A66]">
+                    Diseñamos invitaciones digitales personalizadas para bodas, XV años, cumpleaños, bautizos, baby shower, graduaciones y eventos especiales. Cada invitación se adapta al estilo del evento y se entrega lista para compartir por WhatsApp.
+                </p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+                @foreach ($services as $i => $service)
+                    <article class="rounded-2xl border border-[#F1E6D9] bg-[#FFFDF8] p-6 sm:p-7 shadow-[0_18px_38px_-28px_rgba(43,20,63,.35)] reveal" data-reveal-delay="{{ $i * 80 }}">
+                        <h3 class="font-display font-extrabold text-xl text-[#2B143F]">{{ $service['name'] }}</h3>
+                        <p class="mt-3 text-[15px] leading-relaxed text-[#5F5A66]">{{ $service['description'] }}</p>
+                    </article>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ===========================================================
          SECCIÓN 3 — CÓMO FUNCIONA
          =========================================================== --}}
     <section id="como-funciona" class="section-padding bg-white relative">
@@ -705,110 +856,200 @@
                     Elige el <span class="text-[#EB7512]">paquete ideal</span> para tu evento
                 </h2>
                 <p class="mt-4 text-[15px] sm:text-base lg:text-lg text-[#5F5A66]">
-                    Todas nuestras invitaciones incluyen diseño adaptable a celular, música, cuenta regresiva, ubicación, dress code, mesa de regalos y enlace para compartir.
+                    Cada formato se cotiza por separado: invitación web interactiva, imagen lista para WhatsApp o video animado para redes y estados.
                 </p>
             </header>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-5 items-stretch">
+            @php
+                $packageFormats = [
+                    'web' => [
+                        'label' => 'Web',
+                        'description' => 'Invitaciones interactivas con enlace propio.',
+                        'packages' => [
+                            [
+                                'name' => 'Web Esencial',
+                                'description' => 'Para eventos sencillos que necesitan un enlace claro y bonito.',
+                                'price' => '$600',
+                                'badge' => 'Básica',
+                                'featured' => false,
+                                'items' => [
+                                    'Invitación web adaptable a celular',
+                                    'Fecha, hora y datos del evento',
+                                    'Música de fondo',
+                                    'Cuenta regresiva',
+                                    'Mesa de regalos',
+                                    'Galería de fotos hasta 3 imágenes',
+                                    'Botón de WhatsApp',
+                                ],
+                            ],
+                            [
+                                'name' => 'Web Plus',
+                                'description' => 'Una invitación web más visual para eventos con más detalles.',
+                                'price' => '$900',
+                                'badge' => 'Más elegida',
+                                'featured' => true,
+                                'items' => [
+                                    'Todo lo de Web Esencial',
+                                    'Ubicación con Google Maps',
+                                    'Galería de fotos hasta 5 imágenes',
+                                    'Itinerario del evento',
+                                    'Botón para agregar al calendario',
+                                    'Diseño con más detalles visuales',
+                                ],
+                            ],
+                            [
+                                'name' => 'Web Premium',
+                                'description' => 'Para bodas, XV años y eventos formales que requieren RSVP.',
+                                'price' => '$1,300',
+                                'badge' => 'Completa',
+                                'featured' => false,
+                                'items' => [
+                                    'Todo lo de Web Plus',
+                                    'Galería de fotos hasta 10 imágenes',
+                                    'Confirmación de asistencia RSVP',
+                                    'Lista básica de invitados confirmados',
+                                    'Sección de padres, padrinos o familia',
+                                    'Recomendaciones para invitados',
+                                    'Diseño más elegante y trabajado',
+                                ],
+                            ],
+                        ],
+                    ],
+                    'imagen' => [
+                        'label' => 'Imagen',
+                        'description' => 'Invitaciones estáticas orientadas a fiestas y celebraciones rápidas.',
+                        'packages' => [
+                            [
+                                'name' => 'Imagen Básica',
+                                'description' => 'Para fiestas, cumpleaños o reuniones que necesitan una invitación visual rápida.',
+                                'price' => '$150',
+                                'badge' => 'Rápida',
+                                'featured' => false,
+                                'items' => [
+                                    'Diseño estático personalizado',
+                                    'Formato vertical para WhatsApp',
+                                    'Nombres, fecha, hora y lugar',
+                                    'Dress code o nota especial',
+                                    'Entrega en PNG/JPG',
+                                ],
+                            ],
+                            [
+                                'name' => 'Imagen Premium',
+                                'description' => 'Para fiestas con temática, baby shower, bautizos o celebraciones que necesitan verse más cuidadas.',
+                                'price' => '$250',
+                                'badge' => 'Más elegida',
+                                'featured' => true,
+                                'items' => [
+                                    'Todo lo de Imagen Básica',
+                                    'Diseño con más detalle visual',
+                                    'Versión para historia o estado',
+                                    'Versión cuadrada para publicación',
+                                    'Un ajuste posterior incluido',
+                                ],
+                            ],
+                        ],
+                    ],
+                    'video' => [
+                        'label' => 'Video',
+                        'description' => 'Invitaciones simples con movimiento para estados e historias.',
+                        'packages' => [
+                            [
+                                'name' => 'Video Básico',
+                                'description' => 'Para presentar tu evento con una versión animada sencilla.',
+                                'price' => '$300',
+                                'badge' => 'Animado',
+                                'featured' => false,
+                                'items' => [
+                                    'Video vertical animado',
+                                    'Música de fondo',
+                                    'Texto con datos principales',
+                                    'Fotos o elementos visuales del evento',
+                                    'Formato MP4 para redes',
+                                ],
+                            ],
+                            [
+                                'name' => 'Video Premium',
+                                'description' => 'Para un video simple con más escenas y mejor ritmo visual.',
+                                'price' => '$450',
+                                'badge' => 'Más elegido',
+                                'featured' => true,
+                                'items' => [
+                                    'Todo lo de Video Básico',
+                                    'Animaciones más elaboradas',
+                                    'Más escenas o momentos',
+                                    'Diseño según temática',
+                                    'Un ajuste posterior incluido',
+                                ],
+                            ],
+                        ],
+                    ],
+                ];
+            @endphp
 
-                {{-- 1. Esencial --}}
-                <article class="pricing-card reveal" data-reveal-delay="0">
-                    <header class="mb-6">
-                        <h3 class="font-display font-bold text-lg text-[#2B143F]">Invitación Esencial</h3>
-                        <p class="mt-2 text-[13px] leading-relaxed text-[#5F5A66]">Perfecta para eventos sencillos que necesitan una invitación bonita, clara y fácil de compartir.</p>
-                    </header>
-                    <div class="mb-5">
-                        <p class="font-display font-extrabold text-4xl text-[#2B143F] leading-none">$600<span class="text-base font-semibold text-[#5F5A66] ml-1">MXN</span></p>
+            <div class="reveal" data-pricing-tabs>
+                <div class="mx-auto mb-10 flex w-full max-w-xl rounded-2xl border border-[#F1E6D9] bg-white p-1.5 shadow-[0_16px_34px_-28px_rgba(43,20,63,.45)]" role="tablist" aria-label="Formatos de invitación">
+                    @foreach ($packageFormats as $formatKey => $format)
+                        <button
+                            type="button"
+                            id="pricing-tab-{{ $formatKey }}"
+                            class="pricing-tab flex-1 rounded-xl px-3 py-3 text-sm font-bold transition-all duration-200 {{ $loop->first ? 'bg-[#EB7512] text-white shadow-md shadow-orange-500/25' : 'text-[#5F5A66] hover:bg-[#FFF1E1] hover:text-[#EB7512]' }}"
+                            role="tab"
+                            aria-selected="{{ $loop->first ? 'true' : 'false' }}"
+                            aria-controls="pricing-panel-{{ $formatKey }}"
+                            data-pricing-tab="{{ $formatKey }}"
+                        >
+                            {{ $format['label'] }}
+                        </button>
+                    @endforeach
+                </div>
+
+                @foreach ($packageFormats as $formatKey => $format)
+                    <div
+                        id="pricing-panel-{{ $formatKey }}"
+                        class="pricing-panel {{ $loop->first ? '' : 'hidden' }}"
+                        role="tabpanel"
+                        aria-labelledby="pricing-tab-{{ $formatKey }}"
+                        data-pricing-panel="{{ $formatKey }}"
+                    >
+                        <p class="mb-7 text-center text-sm sm:text-base text-[#5F5A66]">{{ $format['description'] }}</p>
+
+                        <div class="grid grid-cols-1 {{ count($format['packages']) === 3 ? 'lg:grid-cols-3' : 'md:grid-cols-2 max-w-4xl mx-auto' }} gap-5 lg:gap-6 items-stretch">
+                            @foreach ($format['packages'] as $package)
+                                <article class="{{ $package['featured'] ? 'pricing-card-featured' : 'pricing-card' }} reveal {{ $package['featured'] ? 'anim-pulse' : '' }}" data-reveal-delay="{{ $loop->index * 120 }}">
+                                    @if ($package['featured'])
+                                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#EB7512] text-white text-[11px] font-bold uppercase tracking-wider px-3.5 py-1.5 shadow-lg shadow-orange-500/40">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                <path d="M12 2l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 9l6-1z"/>
+                                            </svg>
+                                            {{ $package['badge'] }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex self-start rounded-full bg-[#FFF1E1] px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#EB7512] mb-5">{{ $package['badge'] }}</span>
+                                    @endif
+
+                                    <header class="mb-6 {{ $package['featured'] ? 'mt-2' : '' }}">
+                                        <h3 class="font-display font-bold text-lg text-[#2B143F]">{{ $package['name'] }}</h3>
+                                        <p class="mt-2 text-[13px] leading-relaxed text-[#5F5A66]">{{ $package['description'] }}</p>
+                                    </header>
+                                    <div class="mb-5">
+                                        <p class="font-display font-extrabold text-4xl text-[#2B143F] leading-none">{{ $package['price'] }}<span class="text-base font-semibold text-[#5F5A66] ml-1">MXN</span></p>
+                                    </div>
+                                    <ul class="space-y-2.5 text-sm text-[#18111F] mb-7 flex-1">
+                                        @foreach ($package['items'] as $item)
+                                            <li class="flex gap-2">
+                                                <span class="text-[#EB7512] mt-0.5">✓</span>
+                                                <span class="{{ str_starts_with($item, 'Todo lo') ? 'font-semibold' : '' }}">{{ $item }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener" class="inline-flex w-full items-center justify-center gap-2 rounded-full {{ $package['featured'] ? 'bg-[#EB7512] hover:bg-[#F45A00] text-white shadow-lg shadow-orange-500/30 hover:-translate-y-0.5' : 'border-2 border-[#EB7512] text-[#EB7512] hover:bg-[#EB7512] hover:text-white' }} font-semibold py-3 transition-all">
+                                        Solicitar paquete
+                                    </a>
+                                </article>
+                            @endforeach
+                        </div>
                     </div>
-                    <ul class="space-y-2.5 text-sm text-[#18111F] mb-7 flex-1">
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Diseño digital adaptable a celular</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Fecha, hora y datos del evento</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Música de fondo</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Cuenta regresiva</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Ubicación con Google Maps</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Dress code</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Mesa de regalos</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Botón de WhatsApp</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Enlace personalizado</span></li>
-                    </ul>
-                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener" class="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-[#EB7512] text-[#EB7512] font-semibold py-3 transition-all hover:bg-[#EB7512] hover:text-white">
-                        Solicitar paquete
-                    </a>
-                </article>
-
-                {{-- 2. Plus (DESTACADO) --}}
-                <article class="pricing-card-featured anim-pulse reveal" data-reveal-delay="120">
-                    <span class="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#EB7512] text-white text-[11px] font-bold uppercase tracking-wider px-3.5 py-1.5 shadow-lg shadow-orange-500/40">
-                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M12 2l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 9l6-1z"/>
-                        </svg>
-                        Más elegido
-                    </span>
-                    <header class="mb-6 mt-2">
-                        <h3 class="font-display font-bold text-lg text-[#2B143F]">Invitación Plus</h3>
-                        <p class="mt-2 text-[13px] leading-relaxed text-[#5F5A66]">Ideal para quienes quieren una invitación más visual y completa.</p>
-                    </header>
-                    <div class="mb-5">
-                        <p class="font-display font-extrabold text-4xl text-[#2B143F] leading-none">$900<span class="text-base font-semibold text-[#5F5A66] ml-1">MXN</span></p>
-                    </div>
-                    <ul class="space-y-2.5 text-sm text-[#18111F] mb-7 flex-1">
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span class="font-semibold">Todo lo del paquete Esencial</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Galería de fotos</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Itinerario del evento</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Botón para agregar al calendario</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Secciones adicionales</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Diseño con más detalles visuales</span></li>
-                    </ul>
-                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener" class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#EB7512] hover:bg-[#F45A00] text-white font-semibold py-3 shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-0.5">
-                        Solicitar paquete
-                    </a>
-                </article>
-
-                {{-- 3. Premium --}}
-                <article class="pricing-card reveal" data-reveal-delay="240">
-                    <header class="mb-6">
-                        <h3 class="font-display font-bold text-lg text-[#2B143F]">Invitación Premium</h3>
-                        <p class="mt-2 text-[13px] leading-relaxed text-[#5F5A66]">Pensada para bodas, XV años y eventos más formales.</p>
-                    </header>
-                    <div class="mb-5">
-                        <p class="font-display font-extrabold text-4xl text-[#2B143F] leading-none">$1,300<span class="text-base font-semibold text-[#5F5A66] ml-1">MXN</span></p>
-                    </div>
-                    <ul class="space-y-2.5 text-sm text-[#18111F] mb-7 flex-1">
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span class="font-semibold">Todo lo del paquete Plus</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Confirmación de asistencia RSVP</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Lista básica de invitados confirmados</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Sección de padres, padrinos o familia</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Recomendaciones para invitados</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Diseño más elegante y trabajado</span></li>
-                    </ul>
-                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener" class="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-[#EB7512] text-[#EB7512] font-semibold py-3 transition-all hover:bg-[#EB7512] hover:text-white">
-                        Solicitar paquete
-                    </a>
-                </article>
-
-                {{-- 4. VIP --}}
-                <article class="pricing-card reveal" data-reveal-delay="360">
-                    <header class="mb-6">
-                        <h3 class="font-display font-bold text-lg text-[#2B143F]">VIP Personalizada</h3>
-                        <p class="mt-2 text-[13px] leading-relaxed text-[#5F5A66]">Para quienes buscan una invitación única, más elaborada y personalizada.</p>
-                    </header>
-                    <div class="mb-5">
-                        <p class="font-display font-extrabold text-4xl text-[#2B143F] leading-none"><span class="text-base align-top text-[#5F5A66]">Desde </span>$1,800<span class="text-base font-semibold text-[#5F5A66] ml-1">MXN</span></p>
-                    </div>
-                    <ul class="space-y-2.5 text-sm text-[#18111F] mb-7 flex-1">
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span class="font-semibold">Todo lo del paquete Premium</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Diseño personalizado según temática</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Animaciones especiales</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Galería extendida</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Secciones especiales</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Cambios adicionales</span></li>
-                        <li class="flex gap-2"><span class="text-[#EB7512] mt-0.5">✓</span><span>Acompañamiento más directo</span></li>
-                    </ul>
-                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener" class="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-[#EB7512] text-[#EB7512] font-semibold py-3 transition-all hover:bg-[#EB7512] hover:text-white">
-                        Solicitar paquete
-                    </a>
-                </article>
-
+                @endforeach
             </div>
         </div>
     </section>
@@ -958,19 +1199,6 @@
             </header>
 
             <div class="space-y-3">
-
-                @php
-                    $faqs = [
-                        ['q' => '¿Cuánto tarda la entrega?', 'a' => 'Depende del paquete y la información enviada, pero normalmente una invitación puede estar lista en 24 a 48 horas.'],
-                        ['q' => '¿Puedo pedir cambios?', 'a' => 'Sí. Cada paquete puede incluir ajustes básicos. En paquetes más avanzados se pueden incluir más cambios y personalización.'],
-                        ['q' => '¿La invitación incluye música?', 'a' => 'Sí. Todas las invitaciones pueden incluir música de fondo para darle un toque más especial al evento.'],
-                        ['q' => '¿Puedo confirmar asistencia?', 'a' => 'Sí. La confirmación de asistencia está disponible en los paquetes que incluyen RSVP.'],
-                        ['q' => '¿Se puede abrir desde celular?', 'a' => 'Sí. Las invitaciones están diseñadas principalmente para verse bien en celular y compartirse por WhatsApp.'],
-                        ['q' => '¿Qué necesito enviar?', 'a' => 'Necesitamos nombres, fecha, hora, ubicación, dress code, música, datos de mesa de regalos, fotos si aplica y cualquier mensaje especial.'],
-                        ['q' => '¿Puedo compartirla por WhatsApp?', 'a' => 'Sí. Recibirás un enlace personalizado listo para enviar por WhatsApp, redes sociales o mensaje.'],
-                        ['q' => '¿Se paga anticipo?', 'a' => 'Sí, se puede solicitar anticipo para comenzar el diseño y el resto al entregar la invitación final.'],
-                    ];
-                @endphp
 
                 @foreach ($faqs as $i => $faq)
                     <div class="faq-item reveal" data-reveal-delay="{{ $i * 60 }}" data-open="false">
