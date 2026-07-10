@@ -67,7 +67,7 @@
 
     h1, h2, h3, h4 {
         font-family: var(--font-display);
-        letter-spacing: -0.02em;
+        letter-spacing: 0;
     }
 
     /* Previene scroll horizontal accidental */
@@ -269,7 +269,7 @@
    ------------------------------------------------------------------------- */
 @layer components {
     .btn-primary {
-        @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-white shadow-lg shadow-orange-500/25 transition-all duration-300;
+        @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg font-semibold text-white shadow-lg shadow-orange-500/25 transition-all duration-300;
         background-color: var(--color-orange-brand);
 
         &:hover {
@@ -282,7 +282,7 @@
     }
 
     .btn-secondary {
-        @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold border-2 transition-all duration-300 bg-white;
+        @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg font-semibold border transition-all duration-300 bg-white;
         color: var(--color-orange-brand);
         border-color: var(--color-orange-brand);
 
@@ -294,7 +294,7 @@
     }
 
     .btn-circle {
-        @apply inline-flex items-center justify-center w-11 h-11 rounded-full bg-white transition-all duration-300;
+        @apply inline-flex items-center justify-center w-11 h-11 rounded-lg bg-white transition-all duration-300;
         color: #25D366;
         box-shadow: 0 6px 16px -4px rgba(37, 211, 102, .35);
 
@@ -305,7 +305,7 @@
     }
 
     .btn-ghost-light {
-        @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold border-2 transition-all duration-300;
+        @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg font-semibold border transition-all duration-300;
         background-color: transparent;
         color: #fff;
         border-color: rgba(255,255,255,0.55);
@@ -341,7 +341,8 @@
     }
 
     .float-card {
-        @apply absolute rounded-2xl bg-white shadow-[0_18px_40px_-16px_rgba(43,20,63,.25)] px-4 py-3 flex items-center gap-3;
+        @apply absolute rounded-lg bg-white shadow-[0_14px_34px_-20px_rgba(43,20,63,.28)] px-4 py-3 flex items-center gap-3;
+        border: 1px solid rgba(239, 231, 244, .82);
     }
 
     .float-card::after {
@@ -353,7 +354,7 @@
         height: 2px;
         border-radius: 9999px;
         background: linear-gradient(90deg, transparent, var(--color-purple-brand), transparent);
-        opacity: .55;
+        opacity: .28;
     }
 
     /* Espaciado vertical consistente por sección */
@@ -363,7 +364,7 @@
 
     /* Card de feature (sección Incluye) */
     .card-feature {
-        @apply relative rounded-2xl bg-white border transition-all duration-300 px-5 py-6 sm:px-6 sm:py-7;
+        @apply relative rounded-lg bg-white border transition-all duration-300 px-5 py-6 sm:px-6 sm:py-7;
         border-color: var(--color-border-soft);
         box-shadow: 0 8px 24px -16px rgba(43, 20, 63, .12);
 
@@ -376,7 +377,7 @@
 
     /* Card de categoría (sección Diseños) */
     .card-category {
-        @apply relative rounded-2xl bg-white border transition-all duration-300 px-6 py-7 sm:py-8 overflow-hidden;
+        @apply relative rounded-lg bg-white border transition-all duration-300 px-6 py-7 sm:py-8 overflow-hidden;
         border-color: var(--color-border-soft);
         box-shadow: 0 8px 24px -16px rgba(43, 20, 63, .12);
 
@@ -388,7 +389,7 @@
 
     /* Card de pricing */
     .pricing-card {
-        @apply relative rounded-2xl bg-white border transition-all duration-300 px-6 py-8 flex flex-col;
+        @apply relative rounded-lg bg-white border transition-all duration-300 px-6 py-8 flex flex-col;
         border-color: var(--color-border-soft);
         box-shadow: 0 10px 28px -18px rgba(43, 20, 63, .18);
 
@@ -399,7 +400,7 @@
     }
 
     .pricing-card-featured {
-        @apply relative rounded-2xl bg-white border-2 transition-all duration-300 px-6 py-9 flex flex-col;
+        @apply relative rounded-lg bg-white border-2 transition-all duration-300 px-6 py-9 flex flex-col;
         border-color: var(--color-orange-brand);
         box-shadow: 0 28px 50px -22px rgba(235, 117, 18, .40);
 
@@ -411,7 +412,7 @@
 
     /* Acordeón FAQ */
     .faq-item {
-        @apply rounded-2xl bg-white border overflow-hidden transition-shadow duration-200;
+        @apply rounded-lg bg-white border overflow-hidden transition-shadow duration-200;
         border-color: var(--color-border-soft);
         box-shadow: 0 8px 22px -16px rgba(43, 20, 63, .10);
     }
@@ -591,6 +592,31 @@
 /* -------------------------------------------------------------------------
    Decoración sutil: confeti & sobres via CSS (sin imágenes)
    ------------------------------------------------------------------------- */
+.hero-clean-bg {
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.88) 0%, rgba(255,253,248,.96) 46%, rgba(255,248,240,1) 100%),
+        radial-gradient(circle at 78% 22%, rgba(235,117,18,.10) 0 18%, transparent 42%),
+        radial-gradient(circle at 12% 86%, rgba(90,48,135,.08) 0 16%, transparent 34%);
+}
+
+.hero-clean-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(43,20,63,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(43,20,63,.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), transparent 72%);
+}
+
+.hero-soft-curve {
+    background:
+        radial-gradient(80% 90% at 74% 100%, rgba(235,117,18,.10), transparent 62%),
+        linear-gradient(180deg, transparent, rgba(255,241,225,.56));
+    clip-path: ellipse(82% 52% at 72% 100%);
+}
+
 .bg-confetti {
     background-image:
         radial-gradient(circle at 8% 12%, rgba(235,117,18,.16) 0 6px, transparent 7px),

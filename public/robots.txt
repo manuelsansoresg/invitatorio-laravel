@@ -1,4 +1,13 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /confirmar-asistencia
+Disallow: /invitacion/
 
+# Rutas internas que no deberían indexarse
+Disallow: /*?*
+
+# Host canónico
+Host: https://invitatorio.com
+
+# Sitemap
 Sitemap: https://invitatorio.com/sitemap.xml

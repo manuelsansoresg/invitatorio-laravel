@@ -13,19 +13,25 @@ Route::get('/', function () {
 });
 
 Route::get('/sitemap.xml', function () {
-    $lastModified = Carbon::now()->toAtomString();
+    $lastModified = Carbon::createFromTimestamp(max(
+        filemtime(resource_path('views/welcome.blade.php')),
+        filemtime(resource_path('views/politicas-de-privacidad.blade.php')),
+        filemtime(public_path('images/hero-desktop.png'))
+    ))->toAtomString();
+
     $urls = [
         [
             'loc' => url('/'),
             'lastmod' => $lastModified,
             'changefreq' => 'weekly',
             'priority' => '1.0',
+            'image' => asset('images/hero-desktop.png'),
         ],
         [
-            'loc' => url('/invitacion/xv-valentina'),
+            'loc' => url('/politicas-de-privacidad'),
             'lastmod' => $lastModified,
-            'changefreq' => 'monthly',
-            'priority' => '0.6',
+            'changefreq' => 'yearly',
+            'priority' => '0.3',
         ],
     ];
 
@@ -38,6 +44,11 @@ Route::get('/sitemap.xml', function () {
     StartSession::class,
     ShareErrorsFromSession::class,
 ])->name('sitemap');
+
+// Página legal mínima: privacidad. Es una página estática y ayuda al SEO
+// porque la mayoría de los formularios (RSVP, WhatsApp) mencionan datos personales.
+Route::view('/politicas-de-privacidad', 'politicas-de-privacidad')
+    ->name('politicas');
 
 // Plantillas de invitación (preview). Más adelante se resuelven
 // por slug desde un controlador + modelo Invitacion.
