@@ -660,14 +660,14 @@
         ];
     @endphp
     <section class="relative bg-white border-y border-[#F1E6D9]" aria-label="Datos clave del servicio">
-        <div class="mx-auto max-w-[1200px] lg:max-w-[1280px] px-5 sm:px-8 py-8 sm:py-10">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-6 gap-x-4 text-center lg:text-left lg:divide-x lg:divide-[#F1E6D9]">
+        <div class="mx-auto max-w-[1200px] lg:max-w-[1280px] px-5 sm:px-8 py-10 sm:py-14">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-4 text-center lg:text-left lg:divide-x lg:divide-[#F1E6D9]">
                 @foreach ($proofStats as $stat)
                     <div class="px-2 lg:px-6 {{ $loop->first ? '' : '' }}">
-                        <p class="font-display font-extrabold text-2xl sm:text-3xl text-[#EB7512] leading-none">
+                        <p class="font-display font-extrabold text-2xl sm:text-3xl text-[#EB7512] leading-tight">
                             {{ $stat['value'] }}
                         </p>
-                        <p class="mt-1.5 text-[12px] sm:text-[13px] text-[#5F5A66] font-medium">
+                        <p class="mt-2.5 text-[12px] sm:text-[13px] text-[#5F5A66] font-medium leading-snug">
                             {{ $stat['label'] }}
                         </p>
                     </div>
