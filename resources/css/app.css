@@ -193,6 +193,15 @@
         transform: translate3d(0, 0, 0);
     }
 
+    /* Gallery cards: alternativa a .reveal que NO depende del IntersectionObserver
+       (las cards de la galería con <a>+col-span+row-span no disparaban el observer
+       consistentemente y quedaban en opacity:0). Estas cards están siempre visibles. */
+    .card-gallery {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        will-change: transform;
+    }
+
     /* Animaciones listas (nombres legacy del hero) */
     .anim-fade-up   { opacity: 0; animation: fadeUp .9s cubic-bezier(.22,.61,.36,1) forwards; }
     .anim-fade-down { opacity: 0; animation: fadeDown .9s cubic-bezier(.22,.61,.36,1) forwards; }
