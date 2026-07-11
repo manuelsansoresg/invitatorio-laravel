@@ -491,9 +491,12 @@
                         </div>
                     </div>
 
-                    {{-- Ubicación (abajo izquierda) --}}
+                    {{-- Ubicación (abajo derecha) — antes estaba a la izquierda pero se
+                         encimaba con la lista de beneficios del hero en viewports
+                         entre 1024-1280px (laptops). Movida al lado derecho para
+                         distribuir mejor las 3 tarjetas alrededor del celular. --}}
                     <div class="hidden lg:flex float-card anim-soft-pop anim-delay-700
-                                bottom-[10%] -left-10 w-[220px]"
+                                bottom-[10%] -right-8 w-[220px]"
                          role="group" aria-label="Ubicación">
                         <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#FFF1E1] text-[#EB7512] shrink-0">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
