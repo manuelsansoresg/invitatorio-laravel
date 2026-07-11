@@ -700,13 +700,19 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-7">
 
-                {{-- Card 1: XV años (valeria) — destacada --}}
+                {{-- Card 1: XV años (valeria) — destacada.
+                     NOTA: usamos class="card-gallery" en lugar de "reveal block" porque
+                     la clase .reveal pone opacity:0 hasta que el IntersectionObserver
+                     dispare, y en este grid específico (cards <a> con col-span/row-span)
+                     el observer no se disparaba consistentemente. .card-gallery tiene
+                     estilos equivalentes sin el bug de visibilidad. --}}
                 <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
-                   class="group relative md:col-span-2 lg:col-span-2 row-span-2 reveal block
+                   class="card-gallery block group relative md:col-span-2 lg:col-span-2 row-span-2
                           rounded-2xl overflow-hidden bg-white
                           shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
                           hover:shadow-[0_28px_50px_-22px_rgba(43,20,63,.45)]
-                          transition-shadow duration-300">
+                          hover:-translate-y-1
+                          transition-all duration-300">
                     <div class="relative aspect-[4/5] sm:aspect-[16/12] lg:aspect-[16/11] overflow-hidden">
                         <picture>
                             <source srcset="{{ asset('images/gallery/valeria-portada-medium.webp') }}" type="image/webp">
@@ -752,10 +758,11 @@
 
                 {{-- Card 2: Hero / intro --}}
                 <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
-                   class="group relative reveal block rounded-2xl overflow-hidden bg-white
+                   class="card-gallery block group relative rounded-2xl overflow-hidden bg-white
                           shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
                           hover:shadow-[0_28px_50px_-22px_rgba(43,20,63,.45)]
-                          transition-shadow duration-300">
+                          hover:-translate-y-1
+                          transition-all duration-300">
                     <div class="relative aspect-[3/4] overflow-hidden">
                         <picture>
                             <source srcset="{{ asset('images/gallery/valeria-hero-medium.webp') }}" type="image/webp">
@@ -787,10 +794,11 @@
 
                 {{-- Card 3: Slider / galería interna --}}
                 <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
-                   class="group relative reveal block rounded-2xl overflow-hidden bg-white
+                   class="card-gallery block group relative rounded-2xl overflow-hidden bg-white
                           shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
                           hover:shadow-[0_28px_50px_-22px_rgba(43,20,63,.45)]
-                          transition-shadow duration-300">
+                          hover:-translate-y-1
+                          transition-all duration-300">
                     <div class="relative aspect-[3/4] overflow-hidden">
                         <picture>
                             <source srcset="{{ asset('images/gallery/valeria-slider-1-medium.webp') }}" type="image/webp">
@@ -1309,17 +1317,6 @@
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.967-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/>
                     </svg>
                     Cotizar por WhatsApp
-                </a>
-                <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
-                   class="inline-flex items-center justify-center gap-2 rounded-lg
-                          bg-white/10 hover:bg-white/15 backdrop-blur-sm
-                          border border-white/30 hover:border-white/50
-                          text-white font-semibold px-6 py-3 text-base
-                          transition-all duration-300">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    Ver invitación de ejemplo
                 </a>
                 <a href="#paquetes" class="btn-ghost-light text-base">Ver paquetes</a>
             </div>
