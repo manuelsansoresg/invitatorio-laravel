@@ -714,9 +714,9 @@
                           transition-all duration-300">
                     <div class="relative aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/9] overflow-hidden">
                         <picture>
-                            <source srcset="{{ asset('images/gallery/valeria-portada-medium.webp') }}" type="image/webp">
-                            <img src="{{ asset('images/gallery/valeria-portada-medium.jpg') }}"
-                                 alt="Invitación digital de XV años — vista de portada"
+                            <source srcset="{{ asset('images/gallery/valeria-hero-medium.webp') }}" type="image/webp">
+                            <img src="{{ asset('images/gallery/valeria-hero-medium.jpg') }}"
+                                 alt="Invitación digital de XV años — Valeria"
                                  class="absolute inset-0 w-full h-full object-cover
                                         transition-transform duration-700 group-hover:scale-[1.03]"
                                  loading="lazy" decoding="async" width="800" height="1200">
