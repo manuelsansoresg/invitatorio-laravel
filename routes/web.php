@@ -54,6 +54,10 @@ Route::view('/politicas-de-privacidad', 'politicas-de-privacidad')
 // por slug desde un controlador + modelo Invitacion.
 Route::view('/invitacion/xv-valentina', 'invitaciones.xv.valeria');
 
+// /invitacion/xv-mariana → demo de portafolio con datos ficticios.
+// Reemplazar con datos reales cuando se entregue a una clienta real.
+Route::view('/invitacion/xv-mariana', 'invitaciones.xv.mariana');
+
 // Confirmación de asistencia — formulario del popup en la invitación.
 Route::post('/confirmar-asistencia', [ConfirmacionController::class, 'store'])
     ->name('confirmacion.store');

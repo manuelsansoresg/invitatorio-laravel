@@ -704,8 +704,8 @@
                  restaura el header a "Mira cómo se ven las invitaciones que entregamos". --}}
             <div class="grid grid-cols-1 gap-5 lg:gap-7">
 
-                {{-- Card único: XV años Valeria — caso real destacado --}}
-                <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
+                {{-- Card único: XV años Mariana — caso real destacado --}}
+                <a href="/invitacion/xv-mariana" target="_blank" rel="noopener"
                    class="card-gallery block group relative
                           rounded-2xl overflow-hidden bg-white
                           shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
@@ -716,8 +716,8 @@
                         <picture>
                             <source srcset="{{ asset('images/gallery/valeria-hero-medium.webp') }}" type="image/webp">
                             <img src="{{ asset('images/gallery/valeria-hero-medium.jpg') }}"
-                                 alt="Invitación digital de XV años — Valeria"
-                                 class="absolute inset-0 w-full h-full object-cover
+                                 alt="Invitación digital de XV años — Mariana"
+                                 class="absolute inset-0 w-full h-full object-cover object-top
                                         transition-transform duration-700 group-hover:scale-[1.03]"
                                  loading="lazy" decoding="async" width="800" height="1200">
                         </picture>
@@ -748,7 +748,7 @@
                                 Proyecto entregado
                             </p>
                             <h3 class="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl leading-tight">
-                                XV años Valeria
+                                XV años Mariana
                             </h3>
                             <p class="mt-2 text-sm sm:text-base lg:text-lg text-white/85 max-w-xl">
                                 Música, galería de fotos, mapa, dress code y confirmación de asistencia en un solo enlace.
