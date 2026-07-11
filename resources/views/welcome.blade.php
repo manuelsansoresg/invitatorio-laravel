@@ -173,8 +173,10 @@
     <link rel="canonical" href="{{ $pageUrl }}">
     <link rel="alternate" hreflang="es-mx" href="{{ $pageUrl }}">
     <link rel="alternate" hreflang="x-default" href="{{ $pageUrl }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
 
     {{-- Open Graph --}}
