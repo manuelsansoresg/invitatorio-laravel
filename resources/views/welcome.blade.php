@@ -687,33 +687,32 @@
             <header class="max-w-3xl mx-auto text-center mb-12 sm:mb-16 reveal">
                 <p class="inline-flex items-center gap-2 text-[11px] sm:text-[12px] font-semibold tracking-[0.18em] uppercase text-[#EB7512] mb-4">
                     <span class="w-7 h-px bg-[#EB7512]"></span>
-                    Ejemplos reales
+                    Ejemplo real
                     <span class="w-7 h-px bg-[#EB7512]"></span>
                 </p>
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold leading-[1.1] text-[#2B143F]">
-                    Mira cómo <span class="text-[#EB7512]">se ven las invitaciones</span> que entregamos
+                    Mira cómo <span class="text-[#EB7512]">se ve la invitación</span> que entregamos
                 </h2>
                 <p class="mt-4 text-[15px] sm:text-base lg:text-lg text-[#5F5A66]">
-                    Estos son proyectos reales que ya están en manos de nuestros clientes. Toca cualquiera para abrir la invitación en vivo.
+                    Este es un proyecto real que ya está en manos de nuestra clienta. Toca la imagen para abrir la invitación en vivo.
                 </p>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-7">
+            {{-- ⚠️ Galería temporal: solo 1 demo mientras se entregan más invitaciones
+                 en la semana. Cuando tengas 2-3 más, vuelve a esta sección, reemplaza
+                 el grid de abajo con 2-3 cards (mismo patrón que card-gallery) y
+                 restaura el header a "Mira cómo se ven las invitaciones que entregamos". --}}
+            <div class="grid grid-cols-1 gap-5 lg:gap-7">
 
-                {{-- Card 1: XV años (valeria) — destacada.
-                     NOTA: usamos class="card-gallery" en lugar de "reveal block" porque
-                     la clase .reveal pone opacity:0 hasta que el IntersectionObserver
-                     dispare, y en este grid específico (cards <a> con col-span/row-span)
-                     el observer no se disparaba consistentemente. .card-gallery tiene
-                     estilos equivalentes sin el bug de visibilidad. --}}
+                {{-- Card único: XV años Valeria — caso real destacado --}}
                 <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
-                   class="card-gallery block group relative md:col-span-2 lg:col-span-2 row-span-2
+                   class="card-gallery block group relative
                           rounded-2xl overflow-hidden bg-white
                           shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
                           hover:shadow-[0_28px_50px_-22px_rgba(43,20,63,.45)]
                           hover:-translate-y-1
                           transition-all duration-300">
-                    <div class="relative aspect-[4/5] sm:aspect-[16/12] lg:aspect-[16/11] overflow-hidden">
+                    <div class="relative aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/9] overflow-hidden">
                         <picture>
                             <source srcset="{{ asset('images/gallery/valeria-portada-medium.webp') }}" type="image/webp">
                             <img src="{{ asset('images/gallery/valeria-portada-medium.jpg') }}"
@@ -725,105 +724,43 @@
                         {{-- Overlay gradient --}}
                         <div class="absolute inset-0 bg-gradient-to-t from-[#2B143F]/85 via-[#2B143F]/20 to-transparent"
                              aria-hidden="true"></div>
-                        {{-- Tag --}}
-                        <span class="absolute top-4 left-4 inline-flex items-center gap-1.5
+                        {{-- Tag superior izquierda --}}
+                        <span class="absolute top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-1.5
                                      rounded-full bg-white/95 backdrop-blur-sm
-                                     text-[11px] font-bold uppercase tracking-wider text-[#5A3087]
+                                     text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#5A3087]
                                      px-3 py-1.5">
                             <span class="w-1.5 h-1.5 rounded-full bg-[#5A3087]"></span>
                             XV años · Web Premium
                         </span>
+                        {{-- Badge "Caso real" arriba derecha --}}
+                        <span class="hidden sm:inline-flex absolute top-4 right-4 sm:top-6 sm:right-6 items-center gap-1.5
+                                     rounded-full bg-[#EB7512] backdrop-blur-sm
+                                     text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white
+                                     px-3 py-1.5">
+                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M12 2l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 9l6-1z"/>
+                            </svg>
+                            Caso real
+                        </span>
                         {{-- Texto inferior --}}
-                        <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-7 text-white">
+                        <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-8 lg:p-10 text-white">
                             <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-[#F09719] mb-2">
-                                Caso real
+                                Proyecto entregado
                             </p>
-                            <h3 class="font-display font-extrabold text-xl sm:text-2xl lg:text-3xl leading-tight">
+                            <h3 class="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl leading-tight">
                                 XV años Valeria
                             </h3>
-                            <p class="mt-1.5 text-sm sm:text-[15px] text-white/85 max-w-md">
-                                Música, galería, mapa, dress code y RSVP en un solo enlace.
+                            <p class="mt-2 text-sm sm:text-base lg:text-lg text-white/85 max-w-xl">
+                                Música, galería de fotos, mapa, dress code y confirmación de asistencia en un solo enlace.
                             </p>
-                            <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold
+                            <span class="mt-5 inline-flex items-center gap-1.5 text-sm sm:text-base font-semibold
                                          text-white border-b border-white/40 pb-0.5
                                          group-hover:border-white transition-colors">
                                 Ver invitación en vivo
-                                <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M7 17L17 7M7 7h10v10"/>
                                 </svg>
                             </span>
-                        </div>
-                    </div>
-                </a>
-
-                {{-- Card 2: Hero / intro --}}
-                <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
-                   class="card-gallery block group relative rounded-2xl overflow-hidden bg-white
-                          shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
-                          hover:shadow-[0_28px_50px_-22px_rgba(43,20,63,.45)]
-                          hover:-translate-y-1
-                          transition-all duration-300">
-                    <div class="relative aspect-[3/4] overflow-hidden">
-                        <picture>
-                            <source srcset="{{ asset('images/gallery/valeria-hero-medium.webp') }}" type="image/webp">
-                            <img src="{{ asset('images/gallery/valeria-hero-medium.jpg') }}"
-                                 alt="Pantalla de inicio con cuenta regresiva"
-                                 class="absolute inset-0 w-full h-full object-cover
-                                        transition-transform duration-700 group-hover:scale-[1.03]"
-                                 loading="lazy" decoding="async" width="800" height="1200">
-                        </picture>
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#2B143F]/80 via-transparent to-transparent"
-                             aria-hidden="true"></div>
-                        <span class="absolute top-4 left-4 inline-flex items-center gap-1.5
-                                     rounded-full bg-white/95 backdrop-blur-sm
-                                     text-[11px] font-bold uppercase tracking-wider text-[#EB7512]
-                                     px-3 py-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#EB7512]"></span>
-                            Cuenta regresiva
-                        </span>
-                        <div class="absolute bottom-0 left-0 right-0 p-5 text-white">
-                            <h3 class="font-display font-extrabold text-lg leading-tight">
-                                Pantalla de inicio
-                            </h3>
-                            <p class="mt-1 text-[13px] text-white/85">
-                                El invitado toca y entra directo.
-                            </p>
-                        </div>
-                    </div>
-                </a>
-
-                {{-- Card 3: Slider / galería interna --}}
-                <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
-                   class="card-gallery block group relative rounded-2xl overflow-hidden bg-white
-                          shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
-                          hover:shadow-[0_28px_50px_-22px_rgba(43,20,63,.45)]
-                          hover:-translate-y-1
-                          transition-all duration-300">
-                    <div class="relative aspect-[3/4] overflow-hidden">
-                        <picture>
-                            <source srcset="{{ asset('images/gallery/valeria-slider-1-medium.webp') }}" type="image/webp">
-                            <img src="{{ asset('images/gallery/valeria-slider-1-medium.jpg') }}"
-                                 alt="Galería de fotos de la invitación"
-                                 class="absolute inset-0 w-full h-full object-cover
-                                        transition-transform duration-700 group-hover:scale-[1.03]"
-                                 loading="lazy" decoding="async" width="800" height="999">
-                        </picture>
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#2B143F]/80 via-transparent to-transparent"
-                             aria-hidden="true"></div>
-                        <span class="absolute top-4 left-4 inline-flex items-center gap-1.5
-                                     rounded-full bg-white/95 backdrop-blur-sm
-                                     text-[11px] font-bold uppercase tracking-wider text-[#5A3087]
-                                     px-3 py-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#5A3087]"></span>
-                            Galería
-                        </span>
-                        <div class="absolute bottom-0 left-0 right-0 p-5 text-white">
-                            <h3 class="font-display font-extrabold text-lg leading-tight">
-                                Fotos del evento
-                            </h3>
-                            <p class="mt-1 text-[13px] text-white/85">
-                                Tus recuerdos sin saturar.
-                            </p>
                         </div>
                     </div>
                 </a>
