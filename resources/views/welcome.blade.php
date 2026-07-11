@@ -641,7 +641,38 @@
     </section>
 
     {{-- ===========================================================
-         SECCIÓN 2 — DISEÑOS / EJEMPLOS
+         FRANJA DE SOCIAL PROOF (justo debajo del hero)
+         — Editar los números en el array \$proofStats cuando
+         — tengas datos reales que quieras mostrar.
+         =========================================================== --}}
+    @php
+        // ⚠️ Reemplazar estos números con los reales cuando los tengas.
+        $proofStats = [
+            ['value' => '+30',  'label' => 'invitaciones entregadas'],
+            ['value' => '24-48h', 'label' => 'entrega promedio'],
+            ['value' => '100%', 'label' => 'personalizadas'],
+            ['value' => 'WhatsApp', 'label' => 'listas para compartir'],
+        ];
+    @endphp
+    <section class="relative bg-white border-y border-[#F1E6D9]" aria-label="Datos clave del servicio">
+        <div class="mx-auto max-w-[1200px] lg:max-w-[1280px] px-5 sm:px-8 py-8 sm:py-10">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-6 gap-x-4 text-center lg:text-left lg:divide-x lg:divide-[#F1E6D9]">
+                @foreach ($proofStats as $stat)
+                    <div class="px-2 lg:px-6 {{ $loop->first ? '' : '' }}">
+                        <p class="font-display font-extrabold text-2xl sm:text-3xl text-[#EB7512] leading-none">
+                            {{ $stat['value'] }}
+                        </p>
+                        <p class="mt-1.5 text-[12px] sm:text-[13px] text-[#5F5A66] font-medium">
+                            {{ $stat['label'] }}
+                        </p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ===========================================================
+         SECCIÓN 2 — DISEÑOS / GALERÍA DE INVITACIONES REALES
          =========================================================== --}}
     <section id="disenos" class="section-padding relative overflow-hidden">
         <div class="absolute inset-0 -z-10 bg-gradient-to-b from-[#FFFDF8] via-[#F7F2FB]/45 to-[#FFFDF8]" aria-hidden="true"></div>
@@ -651,58 +682,240 @@
             <header class="max-w-3xl mx-auto text-center mb-12 sm:mb-16 reveal">
                 <p class="inline-flex items-center gap-2 text-[11px] sm:text-[12px] font-semibold tracking-[0.18em] uppercase text-[#EB7512] mb-4">
                     <span class="w-7 h-px bg-[#EB7512]"></span>
-                    Diseños
+                    Ejemplos reales
                     <span class="w-7 h-px bg-[#EB7512]"></span>
                 </p>
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold leading-[1.1] text-[#2B143F]">
-                    Diseños para el tipo de <span class="text-[#EB7512]">evento que estás organizando</span>
+                    Mira cómo <span class="text-[#EB7512]">se ven las invitaciones</span> que entregamos
                 </h2>
                 <p class="mt-4 text-[15px] sm:text-base lg:text-lg text-[#5F5A66]">
-                    Cada invitación se adapta a tu celebración, a los datos que necesitas mostrar y al presupuesto que tienes en mente.
+                    Estos son proyectos reales que ya están en manos de nuestros clientes. Toca cualquiera para abrir la invitación en vivo.
                 </p>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-7">
 
-                @foreach ($eventTypes as $i => $event)
-                    <article class="card-category reveal group" data-reveal-delay="{{ $i * 80 }}">
-                        <span class="inline-flex items-center justify-center w-14 h-14 rounded-xl {{ $loop->index % 2 === 0 ? 'bg-[#FFF1E1] text-[#EB7512]' : 'bg-[#F4EEFB] text-[#5A3087]' }} mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
-                            @switch($event['name'])
-                                @case('Bodas')
-                                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.5-7 11-7 11z"/>
-                                    </svg>
-                                    @break
-                                @case('XV años')
-                                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <path d="M3 19l9-14 9 14M7.5 13h9"/><circle cx="12" cy="9" r="1.2" fill="currentColor"/>
-                                    </svg>
-                                    @break
-                                @case('Cumpleaños')
-                                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <path d="M12 3v6"/><path d="M5 9c0 4 2 7 7 7s7-3 7-7"/><rect x="6" y="9" width="12" height="12" rx="2"/>
-                                        <circle cx="9" cy="14" r="0.5" fill="currentColor"/><circle cx="14" cy="12" r="0.5" fill="currentColor"/>
-                                        <path d="M19 3l-2 2M7 7l-2-2"/>
-                                    </svg>
-                                    @break
-                                @default
-                                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <circle cx="12" cy="9" r="5"/><path d="M9 9h.01M15 9h.01M9 13s1 2 3 2 3-2 3-2"/><path d="M5 19c.5-2 2-3 4-3M19 19c-.5-2-2-3-4-3"/>
-                                    </svg>
-                            @endswitch
+                {{-- Card 1: XV años (valeria) — destacada --}}
+                <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
+                   class="group relative md:col-span-2 lg:col-span-2 row-span-2 reveal block
+                          rounded-2xl overflow-hidden bg-white
+                          shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
+                          hover:shadow-[0_28px_50px_-22px_rgba(43,20,63,.45)]
+                          transition-shadow duration-300">
+                    <div class="relative aspect-[4/5] sm:aspect-[16/12] lg:aspect-[16/11] overflow-hidden">
+                        <picture>
+                            <source srcset="{{ asset('images/gallery/valeria-portada-medium.webp') }}" type="image/webp">
+                            <img src="{{ asset('images/gallery/valeria-portada-medium.jpg') }}"
+                                 alt="Invitación digital de XV años — vista de portada"
+                                 class="absolute inset-0 w-full h-full object-cover
+                                        transition-transform duration-700 group-hover:scale-[1.03]"
+                                 loading="lazy" decoding="async" width="800" height="1200">
+                        </picture>
+                        {{-- Overlay gradient --}}
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#2B143F]/85 via-[#2B143F]/20 to-transparent"
+                             aria-hidden="true"></div>
+                        {{-- Tag --}}
+                        <span class="absolute top-4 left-4 inline-flex items-center gap-1.5
+                                     rounded-full bg-white/95 backdrop-blur-sm
+                                     text-[11px] font-bold uppercase tracking-wider text-[#5A3087]
+                                     px-3 py-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#5A3087]"></span>
+                            XV años · Web Premium
                         </span>
-                        <h3 class="font-display font-extrabold text-xl text-[#2B143F]">{{ $event['name'] }}</h3>
-                        <p class="mt-1 text-[12px] font-semibold uppercase tracking-wider {{ $loop->index % 2 === 0 ? 'text-[#EB7512]' : 'text-[#5A3087]' }}">{{ $event['tagline'] }}</p>
-                        <p class="mt-2 text-[14px] leading-relaxed text-[#5F5A66]">{{ $event['description'] }}</p>
-                        <a href="https://wa.me/{{ $whatsappNumber }}?text={{ urlencode('Hola Invitatorio, me interesa una invitación digital para ' . $event['name'] . '.') }}" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-[#EB7512] hover:text-[#F45A00] transition-colors">
-                            Cotizar {{ $event['name'] }}
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M5 12h14M13 5l7 7-7 7"/>
-                            </svg>
-                        </a>
-                    </article>
-                @endforeach
+                        {{-- Texto inferior --}}
+                        <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-7 text-white">
+                            <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-[#F09719] mb-2">
+                                Caso real
+                            </p>
+                            <h3 class="font-display font-extrabold text-xl sm:text-2xl lg:text-3xl leading-tight">
+                                XV años Valeria
+                            </h3>
+                            <p class="mt-1.5 text-sm sm:text-[15px] text-white/85 max-w-md">
+                                Música, galería, mapa, dress code y RSVP en un solo enlace.
+                            </p>
+                            <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold
+                                         text-white border-b border-white/40 pb-0.5
+                                         group-hover:border-white transition-colors">
+                                Ver invitación en vivo
+                                <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M7 17L17 7M7 7h10v10"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </a>
 
+                {{-- Card 2: Hero / intro --}}
+                <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
+                   class="group relative reveal block rounded-2xl overflow-hidden bg-white
+                          shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
+                          hover:shadow-[0_28px_50px_-22px_rgba(43,20,63,.45)]
+                          transition-shadow duration-300">
+                    <div class="relative aspect-[3/4] overflow-hidden">
+                        <picture>
+                            <source srcset="{{ asset('images/gallery/valeria-hero-medium.webp') }}" type="image/webp">
+                            <img src="{{ asset('images/gallery/valeria-hero-medium.jpg') }}"
+                                 alt="Pantalla de inicio con cuenta regresiva"
+                                 class="absolute inset-0 w-full h-full object-cover
+                                        transition-transform duration-700 group-hover:scale-[1.03]"
+                                 loading="lazy" decoding="async" width="800" height="1200">
+                        </picture>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#2B143F]/80 via-transparent to-transparent"
+                             aria-hidden="true"></div>
+                        <span class="absolute top-4 left-4 inline-flex items-center gap-1.5
+                                     rounded-full bg-white/95 backdrop-blur-sm
+                                     text-[11px] font-bold uppercase tracking-wider text-[#EB7512]
+                                     px-3 py-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#EB7512]"></span>
+                            Cuenta regresiva
+                        </span>
+                        <div class="absolute bottom-0 left-0 right-0 p-5 text-white">
+                            <h3 class="font-display font-extrabold text-lg leading-tight">
+                                Pantalla de inicio
+                            </h3>
+                            <p class="mt-1 text-[13px] text-white/85">
+                                El invitado toca y entra directo.
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+                {{-- Card 3: Slider / galería interna --}}
+                <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
+                   class="group relative reveal block rounded-2xl overflow-hidden bg-white
+                          shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]
+                          hover:shadow-[0_28px_50px_-22px_rgba(43,20,63,.45)]
+                          transition-shadow duration-300">
+                    <div class="relative aspect-[3/4] overflow-hidden">
+                        <picture>
+                            <source srcset="{{ asset('images/gallery/valeria-slider-1-medium.webp') }}" type="image/webp">
+                            <img src="{{ asset('images/gallery/valeria-slider-1-medium.jpg') }}"
+                                 alt="Galería de fotos de la invitación"
+                                 class="absolute inset-0 w-full h-full object-cover
+                                        transition-transform duration-700 group-hover:scale-[1.03]"
+                                 loading="lazy" decoding="async" width="800" height="999">
+                        </picture>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#2B143F]/80 via-transparent to-transparent"
+                             aria-hidden="true"></div>
+                        <span class="absolute top-4 left-4 inline-flex items-center gap-1.5
+                                     rounded-full bg-white/95 backdrop-blur-sm
+                                     text-[11px] font-bold uppercase tracking-wider text-[#5A3087]
+                                     px-3 py-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#5A3087]"></span>
+                            Galería
+                        </span>
+                        <div class="absolute bottom-0 left-0 right-0 p-5 text-white">
+                            <h3 class="font-display font-extrabold text-lg leading-tight">
+                                Fotos del evento
+                            </h3>
+                            <p class="mt-1 text-[13px] text-white/85">
+                                Tus recuerdos sin saturar.
+                            </p>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+
+            {{-- Nota sobre otros formatos --}}
+            <div class="mt-10 sm:mt-12 reveal text-center">
+                <p class="text-[14px] sm:text-[15px] text-[#5F5A66]">
+                    También hacemos invitaciones en
+                    <span class="font-semibold text-[#2B143F]">imagen</span> y
+                    <span class="font-semibold text-[#2B143F]">video</span> para estados y redes.
+                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener"
+                       class="font-semibold text-[#EB7512] hover:text-[#F45A00] transition-colors">
+                        Pide ejemplos por WhatsApp →
+                    </a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {{-- ===========================================================
+         SECCIÓN 2B — TESTIMONIOS
+         ⚠️ Reemplazar los textos del array $testimonials con
+         ---   mensajes reales de tus clientes. Ideal: nombre,
+         ---   evento, ciudad y un fragmento corto y específico.
+         =========================================================== --}}
+    @php
+        $testimonials = [
+            [
+                'name'    => 'Lucía Hernández',
+                'event'   => 'XV años · Mérida',
+                'quote'   => 'Mis invitadas quedaron encantadas. La cuenta regresiva y la música le dieron un toque que nunca había visto en una invitación.',
+                'rating'  => 5,
+            ],
+            [
+                'name'    => 'Carlos y Daniela',
+                'event'   => 'Boda · CDMX',
+                'quote'   => 'Nos resolvió toda la logística: los invitados confirmaron por la página y el día del evento no tuvimos que perseguir a nadie. Súper práctico.',
+                'rating'  => 5,
+            ],
+            [
+                'name'    => 'Ana Gabriela Ruiz',
+                'event'   => 'Bautizo · Guadalajara',
+                'quote'   => 'La invitación quedó preciosa y en menos de 24 horas ya la tenía lista para mandar. El proceso fue muy sencillo y rápido.',
+                'rating'  => 5,
+            ],
+        ];
+    @endphp
+    <section class="section-padding bg-white relative">
+        <div class="mx-auto max-w-[1200px] lg:max-w-[1280px] px-5 sm:px-8">
+
+            <header class="max-w-3xl mx-auto text-center mb-12 sm:mb-14 reveal">
+                <p class="inline-flex items-center gap-2 text-[11px] sm:text-[12px] font-semibold tracking-[0.18em] uppercase text-[#EB7512] mb-4">
+                    <span class="w-7 h-px bg-[#EB7512]"></span>
+                    Lo que dicen nuestros clientes
+                    <span class="w-7 h-px bg-[#EB7512]"></span>
+                </p>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold leading-[1.1] text-[#2B143F]">
+                    Eventos reales, <span class="text-[#EB7512]">gente real</span>
+                </h2>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
+                @foreach ($testimonials as $i => $t)
+                    <figure class="reveal h-full flex flex-col rounded-2xl bg-[#FFFDF8]
+                                   border border-[#F1E6D9] p-6 sm:p-7
+                                   shadow-[0_10px_30px_-20px_rgba(43,20,63,.25)]
+                                   hover:shadow-[0_18px_36px_-20px_rgba(43,20,63,.35)]
+                                   transition-shadow duration-300"
+                            data-reveal-delay="{{ $i * 100 }}">
+
+                        {{-- Estrellas --}}
+                        <div class="flex items-center gap-0.5 text-[#EB7512] mb-4" aria-label="Calificación {{ $t['rating'] }} de 5">
+                            @for ($s = 0; $s < $t['rating']; $s++)
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M12 2l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 9l6-1z"/>
+                                </svg>
+                            @endfor
+                        </div>
+
+                        {{-- Quote --}}
+                        <blockquote class="flex-1">
+                            <svg class="w-7 h-7 text-[#FFF1E1] mb-2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M7 7h3l-2 5h2v5H4v-5l3-5zm10 0h3l-2 5h2v5h-6v-5l3-5z"/>
+                            </svg>
+                            <p class="text-[15px] leading-relaxed text-[#18111F]">
+                                “{{ $t['quote'] }}”
+                            </p>
+                        </blockquote>
+
+                        {{-- Autor --}}
+                        <figcaption class="mt-5 pt-5 border-t border-[#F1E6D9] flex items-center gap-3">
+                            <span class="inline-flex items-center justify-center w-11 h-11 rounded-full
+                                         bg-gradient-to-br from-[#EB7512] to-[#5A3087]
+                                         text-white font-display font-bold text-sm shrink-0">
+                                {{ mb_substr($t['name'], 0, 1) }}{{ mb_substr(explode(' ', $t['name'])[1] ?? '', 0, 1) }}
+                            </span>
+                            <div>
+                                <p class="font-semibold text-[14px] text-[#2B143F] leading-tight">{{ $t['name'] }}</p>
+                                <p class="text-[12px] text-[#5F5A66] mt-0.5">{{ $t['event'] }}</p>
+                            </div>
+                        </figcaption>
+                    </figure>
+                @endforeach
             </div>
         </div>
     </section>
@@ -1091,6 +1304,17 @@
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.967-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/>
                     </svg>
                     Cotizar por WhatsApp
+                </a>
+                <a href="/invitacion/xv-valentina" target="_blank" rel="noopener"
+                   class="inline-flex items-center justify-center gap-2 rounded-lg
+                          bg-white/10 hover:bg-white/15 backdrop-blur-sm
+                          border border-white/30 hover:border-white/50
+                          text-white font-semibold px-6 py-3 text-base
+                          transition-all duration-300">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Ver invitación de ejemplo
                 </a>
                 <a href="#paquetes" class="btn-ghost-light text-base">Ver paquetes</a>
             </div>
