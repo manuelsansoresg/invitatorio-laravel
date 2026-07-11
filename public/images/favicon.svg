@@ -6,11 +6,32 @@
     </linearGradient>
   </defs>
   <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#g)"/>
-  <g>
-    <rect x="14" y="22" width="36" height="22" rx="3" fill="#FFFDF8"/>
-    <path d="M14 24 L32 36 L50 24" stroke="#EB7512" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Envelope body -->
+  <rect x="10" y="26" width="44" height="26" rx="3" fill="#FFFDF8"/>
+  <rect x="10" y="26" width="44" height="26" rx="3" fill="none" stroke="#5A3087" stroke-width="1.5"/>
+
+  <!-- V-flap signature: dotted line from top corners to center -->
+  <g fill="#5A3087">
+    <circle cx="12" cy="28" r="1.2"/><circle cx="16" cy="30" r="1.2"/><circle cx="20" cy="32" r="1.2"/>
+    <circle cx="24" cy="34" r="1.2"/><circle cx="28" cy="36" r="1.2"/><circle cx="32" cy="37" r="1.2"/>
+    <circle cx="36" cy="36" r="1.2"/><circle cx="40" cy="34" r="1.2"/><circle cx="44" cy="32" r="1.2"/>
+    <circle cx="48" cy="30" r="1.2"/><circle cx="52" cy="28" r="1.2"/>
   </g>
-  <circle cx="49" cy="17" r="7" fill="#FFFDF8"/>
-  <circle cx="49" cy="14.5" r="1.6" fill="#EB7512"/>
-  <rect x="47.6" y="17" width="2.8" height="5" rx="1.4" fill="#EB7512"/>
+
+  <!-- Heart peeking from top-left of envelope -->
+  <g fill="#EB7512">
+    <circle cx="16" cy="20" r="3.5"/>
+    <circle cx="21" cy="20" r="3.5"/>
+    <polygon points="12,21 25,21 18.5,30"/>
+  </g>
+
+  <!-- Star peeking from top-right of envelope -->
+  <polygon fill="#EB7512" points="48,14 49.5,18 53.5,18 50.5,20.5 51.5,24 48,22 44.5,24 45.5,20.5 42.5,18 46.5,18"/>
+
+  <!-- Small balloon peeking from center top -->
+  <g fill="none" stroke="#EB7512" stroke-width="1.4">
+    <ellipse cx="32" cy="18" rx="3" ry="4"/>
+    <path d="M32 22 L31 25 M32 22 L33 25"/>
+  </g>
 </svg>
