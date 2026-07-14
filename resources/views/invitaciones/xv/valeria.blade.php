@@ -16,15 +16,15 @@
     $horaRecepcion   = '10:00 PM';
     $horaCeremonia   = '8:30 PM';
     $lugar           = 'Fiesta El Pedregal';
-    $direccion       = 'Calle 5 #211 x 26A y 28  #120, Col. San Juan, Mérida, Yucatán';
-    $mapsUrl         = 'https://www.google.com/maps?q=Calle+25+%23120+Jardines+Merida';
-    $mapsEmbed       = 'https://www.google.com/maps?q=Calle+25+%23120+Jardines+Merida&output=embed';
+    $direccion       = 'Fiesta El Pedregal, Hunucmá, Yucatán';
+    $mapsUrl         = 'https://www.google.com/maps?q=21.035107,-89.869308';
+    $mapsEmbed       = 'https://maps.google.com/maps?hl=es&q=21.035107,-89.869308&z=17&output=embed';
 
     // Datos de la iglesia (ceremonia religiosa) — ajusta con los reales
-    $iglesiaNombre      = 'Capilla de Guadalupe';
-    $iglesiaDireccion   = 'Calle 60 #123, Col. Centro, Mérida, Yucatán';
-    $iglesiaMapsUrl     = 'https://www.google.com/maps?q=Parroquia+San+Sebastian+Centro+Merida';
-    $iglesiaMapsEmbed   = 'https://www.google.com/maps?q=Parroquia+San+Sebastian+Centro+Merida&output=embed';
+    $iglesiaNombre      = 'Capilla de Nuestra Señora de Guadalupe';
+    $iglesiaDireccion   = 'Capilla de Nuestra Señora de Guadalupe, Mérida, Yucatán';
+    $iglesiaMapsUrl     = 'https://www.google.com/maps/place/Capilla+de+Nuestra+Se%C3%B1ora+de+Guadalupe/@21.0050406,-89.8819956,19z/data=!4m6!3m5!1s0x8f5607f86cf6c17b:0xc640e10929ff792e!8m2!3d21.0052171!4d-89.8807725!16s%2Fg%2F11n6t3b2yj?entry=tts&g_ep=EgoyMDI2MDcxMi4wIPu8ASoASAFQAw%3D%3D&skid=c0c1509c-b6ac-4c25-9dd5-1d1b48d0ef80';
+    $iglesiaMapsEmbed   = 'https://www.google.com/maps?q=21.0052171,-89.8807725&output=embed';
     $whatsappNumber  = '529991234567';
     $whatsappText    = 'Hola%2C%20confirmo%20mi%20asistencia%20a%20los%20XV%20de%20' . urlencode($nombre);
     $waLink          = 'https://wa.me/' . $whatsappNumber . '?text=' . $whatsappText;
@@ -53,12 +53,12 @@
     $galeriaTitulo    = 'Galería de recuerdos';
     $galeriaSubtitulo = 'Pequeños momentos que forman parte de esta historia tan especial.';
 
-    // Fecha objetivo del countdown (hora local Mérida, UTC-6 → 19:00 = 7 PM)
-    $eventDateIso   = '2026-11-15T19:00:00-06:00';
+    // Fecha objetivo del countdown (hora local Mérida, UTC-6 → 20:30 = 8:30 PM)
+    $eventDateIso   = '2026-08-02T20:30:00-06:00';
     $pageUrl        = url('/invitacion/xv-valentina');
     $seoTitle       = $evento . ' de ' . $nombre . ' | Invitación digital';
     $seoDescription = 'Invitación digital para ' . $evento . ' de ' . $nombreCompleto . '. ' . $fechaLarga . ' con ceremonia, recepción, ubicación, música y confirmación de asistencia.';
-    $seoImage       = asset('images/xv/valeria/portada.png');
+    $seoImage       = asset('images/xv/valeria/foto-intro.jpeg');
     $eventSchema    = [
         '@context' => 'https://schema.org',
         '@type' => 'Event',
@@ -115,7 +115,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="preload" as="image" href="{{ asset('images/xv/valeria/portada.png') }}">
+    <link rel="preload" as="image" href="{{ asset('images/xv/valeria/foto-intro.jpeg') }}">
 
     <script type="application/ld+json">
         @json($eventSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
@@ -209,20 +209,29 @@
             grid-template-columns: 1fr;
         }
         @media (min-width: 1024px) {
-            .intro-card { grid-template-columns: 0.95fr 1.05fr; }
+            .intro-card { grid-template-columns: 315px 1fr; }
         }
         .intro-image-wrap {
             width: 100%;
             height: 380px;
             overflow: hidden;
+            background: #fffaf8;
+            position: relative;
         }
         @media (min-width: 640px)  { .intro-image-wrap { height: 440px; } }
-        @media (min-width: 1024px) { .intro-image-wrap { height: 560px; } }
+        @media (min-width: 1024px) {
+            .intro-image-wrap {
+                height: 560px;
+                width: 315px;
+            }
+        }
         .intro-image {
+            position: relative;
+            z-index: 1;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            object-position: center top;
+            object-fit: contain;
+            object-position: center center;
         }
         .intro-content {
             display: flex;
@@ -2101,7 +2110,7 @@
             {{-- Imagen --}}
             <div class="intro-image-wrap">
                 <img
-                    src="{{ asset('images/xv/valeria/portada.png') }}"
+                    src="{{ asset('images/xv/valeria/foto-intro.jpeg') }}"
                     alt="{{ $nombre }} — {{ $evento }}"
                     width="1024"
                     height="1536"
@@ -2118,7 +2127,7 @@
                 <h1 class="intro-title">{{ $evento }}</h1>
                 <div class="intro-divider" aria-hidden="true"></div>
                 <h2 class="intro-name">{{ $nombre }}</h2>
-                <p class="intro-date">15 de Noviembre 2026</p>
+                <p class="intro-date">{{ $fechaCorta }}</p>
 
                 <button type="button" class="intro-button" onclick="openInvitation()">
                     Abrir invitación
