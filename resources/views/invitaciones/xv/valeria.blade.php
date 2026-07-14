@@ -44,11 +44,14 @@
 
     // Galería / carrusel — coloca aquí las imágenes que quieras mostrar
     $galeriaImagenes = [
-        'images/xv/valeria/slider/68f8f877-311e-4e5e-b407-e43c15874188.png',
-        'images/xv/valeria/slider/98fe81e9-1845-4b78-8ebb-2813ddbc774c.png',
-        'images/xv/valeria/slider/436cc7e3-ab91-4dd2-a8dc-60681264e06f.png',
-        'images/xv/valeria/slider/3153dade-0702-45f7-8ec8-7bc4633bdac4.png',
-        'images/xv/valeria/slider/e202e9a9-8af2-4a0f-9749-668503cc3665.png',
+        'images/xv/valeria/slider/valeria-recuerdo-01.jpeg',
+        'images/xv/valeria/slider/valeria-recuerdo-02.jpeg',
+        'images/xv/valeria/slider/valeria-recuerdo-03.jpeg',
+        'images/xv/valeria/slider/valeria-recuerdo-04.jpeg',
+        'images/xv/valeria/slider/valeria-recuerdo-05.jpeg',
+        'images/xv/valeria/slider/valeria-recuerdo-06.jpeg',
+        'images/xv/valeria/slider/valeria-recuerdo-07.jpeg',
+        'images/xv/valeria/slider/valeria-recuerdo-08.jpeg',
     ];
     $galeriaTitulo    = 'Galería de recuerdos';
     $galeriaSubtitulo = 'Pequeños momentos que forman parte de esta historia tan especial.';
@@ -542,6 +545,33 @@
             .hero-photo-img { height: 620px; }
         }
 
+        /* — Imagen parallax — */
+        .xv-parallax-section {
+            width: min(100% - 32px, 1180px);
+            margin: 0 auto;
+            min-height: min(120vh, 980px);
+            padding: 0 0 80px;
+        }
+        .xv-parallax-frame {
+            position: sticky;
+            top: clamp(18px, 8vh, 72px);
+            overflow: visible;
+            border-radius: 0;
+            background: transparent;
+        }
+        .xv-parallax-img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        @media (max-width: 768px) {
+            .xv-parallax-section {
+                width: calc(100% - 28px);
+                min-height: 82vh;
+                padding-bottom: 44px;
+            }
+        }
+
         /* — Contenido textual — */
         .hero-content {
             text-align: center;
@@ -979,17 +1009,18 @@
         .gallery-frame {
             width: 100%;
             overflow: hidden;
-            border-radius: 28px;
-            border: 1px solid rgba(217, 124, 120, 0.28);
-            background: #fff4f1;
-            box-shadow: 0 18px 46px rgba(165, 105, 100, 0.14);
+            border-radius: 0;
+            border: 0;
+            background: #fffaf8;
+            box-shadow: none;
         }
         .gallery-frame img {
             display: block;
             width: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            object-position: center top;
+            height: min(68vh, 720px);
+            min-height: 460px;
+            object-fit: contain;
+            object-position: center center;
             transition: opacity 0.35s ease, transform 0.35s ease;
         }
         .gallery-frame img.is-changing {
@@ -1095,7 +1126,10 @@
             }
             .gallery-heading { margin-bottom: 22px; }
             .gallery-frame { border-radius: 24px; }
-            .gallery-frame img { aspect-ratio: 4 / 5; }
+            .gallery-frame img {
+                height: min(64vh, 560px);
+                min-height: 360px;
+            }
             .gallery-btn {
                 width: 38px;
                 height: 38px;
@@ -2230,7 +2264,7 @@
                 <div class="hero-photo">
                     <div class="hero-photo-frame">
                         <img
-                            src="{{ asset('images/xv/valeria/valeria-hero.png') }}"
+                            src="{{ asset('images/xv/valeria/valeria-hero.jpeg') }}"
                             alt="{{ $nombre }} — {{ $evento }}"
                             width="1024"
                             height="1536"
@@ -2242,6 +2276,22 @@
                     </div>
                 </div>
 
+            </div>
+        </section>
+
+        {{-- 1.1) IMAGEN PARALLAX --}}
+        <section class="xv-parallax-section reveal" aria-label="Foto especial de {{ $nombre }}">
+            <div class="xv-parallax-frame" data-parallax-frame>
+                <img
+                    src="{{ asset('images/xv/valeria/parallax.jpeg') }}"
+                    alt="{{ $nombre }} — foto especial"
+                    width="1600"
+                    height="1066"
+                    class="xv-parallax-img"
+                    loading="lazy"
+                    decoding="async"
+                    data-parallax-img
+                >
             </div>
         </section>
 
