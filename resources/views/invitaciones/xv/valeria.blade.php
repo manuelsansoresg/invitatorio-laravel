@@ -564,6 +564,17 @@
             width: 100%;
             height: auto;
         }
+        .image-zoom-trigger {
+            display: block;
+            width: 100%;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: zoom-in;
+        }
+        .image-zoom-trigger img {
+            pointer-events: none;
+        }
         @media (max-width: 768px) {
             .xv-parallax-section {
                 width: calc(100% - 28px);
@@ -1138,6 +1149,59 @@
             .gallery-btn-prev { left: 10px; }
             .gallery-btn-next { right: 10px; }
             .gallery-thumbs { display: none; }
+        }
+
+        /* ============================================================
+           LIGHTBOX DE IMÁGENES
+           ============================================================ */
+        .image-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(16px, 4vw, 40px);
+            background: rgba(25, 22, 22, 0.82);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .image-lightbox.is-open {
+            display: flex;
+        }
+        .image-lightbox-img {
+            display: block;
+            max-width: 100%;
+            max-height: 92vh;
+            object-fit: contain;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+        }
+        .image-lightbox-close {
+            position: fixed;
+            top: max(16px, env(safe-area-inset-top));
+            right: max(16px, env(safe-area-inset-right));
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.38);
+            border-radius: 999px;
+            background: rgba(255, 250, 248, 0.94);
+            color: var(--rose-dark);
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+        body.lightbox-open {
+            overflow: hidden;
+        }
+        @media (max-width: 768px) {
+            .image-lightbox {
+                padding: 12px;
+            }
+            .image-lightbox-img {
+                max-height: 88vh;
+            }
         }
 
         /* — 4) Padrinos — */
@@ -2282,16 +2346,24 @@
         {{-- 1.1) IMAGEN PARALLAX --}}
         <section class="xv-parallax-section reveal" aria-label="Foto especial de {{ $nombre }}">
             <div class="xv-parallax-frame" data-parallax-frame>
-                <img
-                    src="{{ asset('images/xv/valeria/parallax.jpeg') }}"
-                    alt="{{ $nombre }} — foto especial"
-                    width="1600"
-                    height="1066"
-                    class="xv-parallax-img"
-                    loading="lazy"
-                    decoding="async"
-                    data-parallax-img
+                <button
+                    type="button"
+                    class="image-zoom-trigger"
+                    data-lightbox-src="{{ asset('images/xv/valeria/parallax.jpeg') }}"
+                    data-lightbox-alt="{{ $nombre }} — foto especial"
+                    aria-label="Ver foto especial en grande"
                 >
+                    <img
+                        src="{{ asset('images/xv/valeria/parallax.jpeg') }}"
+                        alt="{{ $nombre }} — foto especial"
+                        width="1600"
+                        height="1066"
+                        class="xv-parallax-img"
+                        loading="lazy"
+                        decoding="async"
+                        data-parallax-img
+                    >
+                </button>
             </div>
         </section>
 
@@ -2336,11 +2408,20 @@
                     <button class="gallery-btn gallery-btn-prev" type="button" aria-label="Foto anterior">‹</button>
 
                     <div class="gallery-frame">
-                        <img
-                            id="galleryImage"
-                            src="{{ asset($galeriaImagenes[0]) }}"
-                            alt="Galería de {{ $nombre }}"
+                        <button
+                            type="button"
+                            class="image-zoom-trigger"
+                            id="galleryLightboxTrigger"
+                            data-lightbox-src="{{ asset($galeriaImagenes[0]) }}"
+                            data-lightbox-alt="Galería de {{ $nombre }}"
+                            aria-label="Ver foto de galería en grande"
                         >
+                            <img
+                                id="galleryImage"
+                                src="{{ asset($galeriaImagenes[0]) }}"
+                                alt="Galería de {{ $nombre }}"
+                            >
+                        </button>
                     </div>
 
                     <button class="gallery-btn gallery-btn-next" type="button" aria-label="Foto siguiente">›</button>
@@ -2675,6 +2756,23 @@
 
 
     {{-- ============================================================
+         LIGHTBOX DE IMÁGENES
+         ============================================================ --}}
+    <div
+        id="imageLightbox"
+        class="image-lightbox"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Imagen ampliada"
+        aria-hidden="true"
+        hidden
+    >
+        <button type="button" class="image-lightbox-close" data-lightbox-close aria-label="Cerrar imagen">&times;</button>
+        <img id="imageLightboxImg" class="image-lightbox-img" src="" alt="">
+    </div>
+
+
+    {{-- ============================================================
          FAB DE MÚSICA (bottom-right)
          Aparece solo después de abrir la invitación
          ============================================================ --}}
@@ -2790,6 +2888,7 @@
             const GALLERY_AUTOPLAY_MS = 5000;
 
             const imageEl  = document.getElementById('galleryImage');
+            const galleryLightboxTrigger = document.getElementById('galleryLightboxTrigger');
             const dotsEl   = document.getElementById('galleryDots');
             const thumbsEl = document.getElementById('galleryThumbs');
 
@@ -2826,6 +2925,10 @@
                 imageEl.classList.add('is-changing');
                 setTimeout(() => {
                     imageEl.src = galleryImages[currentGalleryIndex];
+                    if (galleryLightboxTrigger) {
+                        galleryLightboxTrigger.dataset.lightboxSrc = galleryImages[currentGalleryIndex];
+                        galleryLightboxTrigger.dataset.lightboxAlt = 'Galería de Valentina - foto ' + (currentGalleryIndex + 1);
+                    }
                     imageEl.classList.remove('is-changing');
                     renderGalleryControls();
                 }, 220);
@@ -2933,6 +3036,46 @@
                 revealEls.forEach((el) => el.classList.add('is-visible'));
             }
 
+            // ---------------- Lightbox de imágenes ----------------
+            const lightbox = document.getElementById('imageLightbox');
+            const lightboxImg = document.getElementById('imageLightboxImg');
+            const lightboxClose = document.querySelector('[data-lightbox-close]');
+
+            window.openImageLightbox = function (src, alt) {
+                if (!lightbox || !lightboxImg || !src) return;
+                lightboxImg.src = src;
+                lightboxImg.alt = alt || 'Imagen ampliada';
+                lightbox.hidden = false;
+                lightbox.classList.add('is-open');
+                lightbox.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('lightbox-open');
+            };
+
+            window.closeImageLightbox = function () {
+                if (!lightbox || !lightboxImg) return;
+                lightbox.classList.remove('is-open');
+                lightbox.setAttribute('aria-hidden', 'true');
+                lightbox.hidden = true;
+                lightboxImg.src = '';
+                lightboxImg.alt = '';
+                document.body.classList.remove('lightbox-open');
+            };
+
+            document.querySelectorAll('[data-lightbox-src]').forEach((trigger) => {
+                trigger.addEventListener('click', () => {
+                    window.openImageLightbox(trigger.dataset.lightboxSrc, trigger.dataset.lightboxAlt);
+                });
+            });
+
+            if (lightbox) {
+                lightbox.addEventListener('click', (event) => {
+                    if (event.target === lightbox) window.closeImageLightbox();
+                });
+            }
+            if (lightboxClose) {
+                lightboxClose.addEventListener('click', window.closeImageLightbox);
+            }
+
             // ---------------- Copiar enlace ----------------
             window.copyInvitationLink = function () {
                 const url = window.location.href;
@@ -3010,6 +3153,9 @@
                 const modal = document.getElementById('confirmModal');
                 if (e.key === 'Escape' && modal && !modal.hidden) {
                     closeConfirmModal();
+                }
+                if (e.key === 'Escape' && window.closeImageLightbox) {
+                    window.closeImageLightbox();
                 }
             });
 
