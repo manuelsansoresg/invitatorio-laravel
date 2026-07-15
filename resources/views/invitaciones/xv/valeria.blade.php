@@ -15,7 +15,7 @@
     $fechaLarga      = 'Domingo 01 de agosto de 2026';
     $horaRecepcion   = '10:00 PM';
     $horaCeremonia   = '8:30 PM';
-    $lugar           = 'Fiesta El Pedregal';
+    $lugar           = '';
     $direccion       = 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán';
     $mapsUrl         = 'https://www.google.com/maps?q=21.035107,-89.869308';
     $mapsEmbed       = 'https://maps.google.com/maps?hl=es&q=21.035107,-89.869308&z=17&output=embed';
@@ -2515,7 +2515,7 @@
         <section id="salon" class="invite-section reveal" aria-label="Salón de fiestas">
             <div class="section-card">
                 <p class="eyebrow">Recepción</p>
-                <h2 class="section-title">Salón de fiestas</h2>
+                <h2 class="section-title">El Pedregal</h2>
                 <div class="section-divider" aria-hidden="true"></div>
 
                 <h3 class="ubicacion-name">{{ $lugar }}</h3>
