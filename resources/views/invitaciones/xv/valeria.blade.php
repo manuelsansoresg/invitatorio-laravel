@@ -23,6 +23,8 @@
     // Datos de la iglesia (ceremonia religiosa) — ajusta con los reales
     $iglesiaNombre      = 'Capilla de Guadalupe de Hunucmá';
     $iglesiaDireccion   = 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán';
+    $iglesiaHora        = '8:30 p.m.';
+    $iglesiaCelebrante  = 'Pbro. Raymundo Abelardo Pérez Bojórquez';
     $iglesiaMapsUrl     = 'https://www.google.com/maps/place/Capilla+de+Nuestra+Se%C3%B1ora+de+Guadalupe/@21.0050406,-89.8819956,19z/data=!4m6!3m5!1s0x8f5607f86cf6c17b:0xc640e10929ff792e!8m2!3d21.0052171!4d-89.8807725!16s%2Fg%2F11n6t3b2yj?entry=tts&g_ep=EgoyMDI2MDcxMi4wIPu8ASoASAFQAw%3D%3D&skid=c0c1509c-b6ac-4c25-9dd5-1d1b48d0ef80';
     $iglesiaMapsEmbed   = 'https://www.google.com/maps?q=21.0052171,-89.8807725&output=embed';
     $whatsappNumber  = '529991234567';
@@ -2443,7 +2445,8 @@
                 <div class="section-divider" aria-hidden="true"></div>
 
                 <h3 class="ubicacion-name">{{ $iglesiaNombre }}</h3>
-               
+                <p class="ubicacion-addr">Hora de la misa: {{ $iglesiaHora }}</p>
+                <p class="ubicacion-addr">Oficia: {{ $iglesiaCelebrante }}</p>
 
                 <div class="ubicacion-cta">
                     <a href="{{ $iglesiaMapsUrl }}" target="_blank" rel="noopener" class="btn btn-primary">
@@ -2622,31 +2625,7 @@
         </section>
 
 
-        {{-- 10) ENLACE PERSONALIZADO --}}
-        <section id="enlace" class="invite-section reveal" aria-label="Compartir invitación">
-            <div class="section-card">
-                <p class="eyebrow">Comparte</p>
-                <h2 class="section-title">Invitación digital</h2>
-                <div class="section-divider" aria-hidden="true"></div>
-                <p class="enlace-text">
-                    Comparte esta invitación con el siguiente enlace:
-                </p>
-
-                
-
-                <div class="enlace-cta">
-                    <button type="button" class="btn btn-primary" onclick="copyInvitationLink()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                        Copiar enlace
-                    </button>
-                </div>
-
-                <p id="copyMessage" class="copy-message">Enlace copiado</p>
-            </div>
-        </section>
+       
 
 
         {{-- 11) FOOTER --}}
