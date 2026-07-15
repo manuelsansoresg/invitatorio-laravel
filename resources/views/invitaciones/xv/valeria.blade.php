@@ -11,18 +11,18 @@
     $nombre          = 'Valentina';
     $nombreCompleto  = 'Valentina Franco García';
     $evento          = 'Mis XV Años';
-    $fechaCorta      = '02 · Agosto · 2026';
-    $fechaLarga      = 'Domingo 02 de agosto de 2026';
+    $fechaCorta      = '01 · Agosto · 2026';
+    $fechaLarga      = 'Domingo 01 de agosto de 2026';
     $horaRecepcion   = '10:00 PM';
     $horaCeremonia   = '8:30 PM';
     $lugar           = 'Fiesta El Pedregal';
-    $direccion       = 'Fiesta El Pedregal, Hunucmá, Yucatán';
+    $direccion       = 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán';
     $mapsUrl         = 'https://www.google.com/maps?q=21.035107,-89.869308';
     $mapsEmbed       = 'https://maps.google.com/maps?hl=es&q=21.035107,-89.869308&z=17&output=embed';
 
     // Datos de la iglesia (ceremonia religiosa) — ajusta con los reales
-    $iglesiaNombre      = 'Capilla de Nuestra Señora de Guadalupe';
-    $iglesiaDireccion   = 'Capilla de Nuestra Señora de Guadalupe, Mérida, Yucatán';
+    $iglesiaNombre      = 'Capilla de Guadalupe de Hunucmá';
+    $iglesiaDireccion   = 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán';
     $iglesiaMapsUrl     = 'https://www.google.com/maps/place/Capilla+de+Nuestra+Se%C3%B1ora+de+Guadalupe/@21.0050406,-89.8819956,19z/data=!4m6!3m5!1s0x8f5607f86cf6c17b:0xc640e10929ff792e!8m2!3d21.0052171!4d-89.8807725!16s%2Fg%2F11n6t3b2yj?entry=tts&g_ep=EgoyMDI2MDcxMi4wIPu8ASoASAFQAw%3D%3D&skid=c0c1509c-b6ac-4c25-9dd5-1d1b48d0ef80';
     $iglesiaMapsEmbed   = 'https://www.google.com/maps?q=21.0052171,-89.8807725&output=embed';
     $whatsappNumber  = '529991234567';
@@ -57,7 +57,7 @@
     $galeriaSubtitulo = 'Pequeños momentos que forman parte de esta historia tan especial.';
 
     // Fecha objetivo del countdown (hora local Mérida, UTC-6 → 20:30 = 8:30 PM)
-    $eventDateIso   = '2026-08-02T20:30:00-06:00';
+    $eventDateIso   = '2026-08-01T20:30:00-06:00';
     $pageUrl        = url('/invitacion/xv-valentina');
     $seoTitle       = $evento . ' de ' . $nombre . ' | Invitación digital';
     $seoDescription = 'Invitación digital para ' . $evento . ' de ' . $nombreCompleto . '. ' . $fechaLarga . ' con ceremonia, recepción, ubicación, música y confirmación de asistencia.';
@@ -2439,11 +2439,11 @@
         <section id="iglesia" class="invite-section reveal" aria-label="Iglesia">
             <div class="section-card">
                 <p class="eyebrow">Dónde</p>
-                <h2 class="section-title">Iglesia</h2>
+                <h2 class="section-title">Misa de acción de gracias</h2>
                 <div class="section-divider" aria-hidden="true"></div>
 
                 <h3 class="ubicacion-name">{{ $iglesiaNombre }}</h3>
-                <p class="ubicacion-addr">{{ $iglesiaDireccion }}</p>
+               
 
                 <div class="ubicacion-cta">
                     <a href="{{ $iglesiaMapsUrl }}" target="_blank" rel="noopener" class="btn btn-primary">
