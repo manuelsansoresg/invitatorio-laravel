@@ -12,7 +12,7 @@
     $nombreCompleto  = 'Valentina Franco García';
     $evento          = 'Mis XV Años';
     $fechaCorta      = '01 · Agosto · 2026';
-    $fechaLarga      = 'Domingo 01 de agosto de 2026';
+    $fechaLarga      = 'Sàbado 01 de agosto de 2026';
     $horaRecepcion   = '10:00 PM';
     $horaCeremonia   = '8:30 PM';
     $lugar           = '';
