@@ -13,13 +13,28 @@ class InvitacionSeeder extends Seeder
      */
     public function run(): void
     {
-        Invitacion::updateOrCreate(
-            ['ruta' => 'xv-valentina'],
+        $invitaciones = [
             [
-                'nombre'            => 'Valentina',
-                'apellido_paterno'  => 'Franco',
-                'apellido_materno'  => 'García',
-            ]
-        );
+                'ruta' => 'xv-valentina',
+                'nombre' => 'Valentina',
+                'apellido_paterno' => 'Franco',
+                'apellido_materno' => 'García',
+                'cliente_email' => null,
+            ],
+            [
+                'ruta' => 'xv-mariana',
+                'nombre' => 'Mariana',
+                'apellido_paterno' => 'Demo',
+                'apellido_materno' => null,
+                'cliente_email' => null,
+            ],
+        ];
+
+        foreach ($invitaciones as $invitacion) {
+            Invitacion::updateOrCreate(
+                ['ruta' => $invitacion['ruta']],
+                $invitacion,
+            );
+        }
     }
 }

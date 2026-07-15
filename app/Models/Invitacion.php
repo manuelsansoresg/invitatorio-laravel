@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['nombre', 'apellido_paterno', 'apellido_materno', 'ruta'])]
+#[Fillable(['nombre', 'apellido_paterno', 'apellido_materno', 'ruta', 'cliente_email'])]
 class Invitacion extends Model
 {
     use HasFactory;
