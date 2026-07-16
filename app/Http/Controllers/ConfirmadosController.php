@@ -78,7 +78,7 @@ class ConfirmadosController extends Controller
         $pdf = ConfirmadosPdf::make(
             confirmaciones: $confirmaciones,
             titulo: $user->isAdmin() ? 'Lista general de confirmados' : 'Lista de confirmados',
-            subtitulo: $user->isAdmin() ? 'Todas las invitaciones' : 'Invitaciones asignadas a '.$user->email,
+            subtitulo: $user->isAdmin() ? 'Todas las invitaciones' : 'Invitaciones asignadas a tu usuario',
         );
 
         return response($pdf, 200, [
@@ -106,6 +106,6 @@ class ConfirmadosController extends Controller
             return $query;
         }
 
-        return $query->where('cliente_email', $user->email);
+        return $query->where('user_id', $user->id);
     }
 }

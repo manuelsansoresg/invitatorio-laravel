@@ -14,6 +14,7 @@ class AdminController extends Controller
     public function dashboard(): View
     {
         $invitaciones = Invitacion::query()
+            ->with('cliente')
             ->withCount('confirmaciones')
             ->latest()
             ->get();
@@ -22,7 +23,13 @@ class AdminController extends Controller
             ->latest()
             ->get();
 
+        $clientes = User::query()
+            ->where('role', User::ROLE_CLIENT)
+            ->orderBy('name')
+            ->get();
+
         return view('admin.dashboard', [
+            'clientes' => $clientes,
             'invitaciones' => $invitaciones,
             'roles' => User::roles(),
             'users' => $users,
@@ -48,11 +55,14 @@ class AdminController extends Controller
     public function updateInvitationClient(Request $request, Invitacion $invitacion): RedirectResponse
     {
         $validated = $request->validate([
-            'cliente_email' => ['nullable', 'email', 'max:255'],
+            'user_id' => [
+                'nullable',
+                Rule::exists('users', 'id')->where('role', User::ROLE_CLIENT),
+            ],
         ]);
 
         $invitacion->update([
-            'cliente_email' => $validated['cliente_email'] ?? null,
+            'user_id' => $validated['user_id'] ?? null,
         ]);
 
         return redirect()

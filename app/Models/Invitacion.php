@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['nombre', 'apellido_paterno', 'apellido_materno', 'ruta', 'cliente_email'])]
+#[Fillable(['nombre', 'apellido_paterno', 'apellido_materno', 'ruta', 'user_id', 'cliente_email'])]
 class Invitacion extends Model
 {
     use HasFactory;
@@ -19,12 +20,24 @@ class Invitacion extends Model
      */
     protected $table = 'invitaciones';
 
+    public function setClienteEmailAttribute(?string $value): void
+    {
+        $this->attributes['cliente_email'] = filled($value)
+            ? mb_strtolower(trim($value))
+            : null;
+    }
+
     /**
      * Una invitación tiene muchas confirmaciones de asistencia.
      */
     public function confirmaciones(): HasMany
     {
         return $this->hasMany(Confirmacion::class);
+    }
+
+    public function cliente(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

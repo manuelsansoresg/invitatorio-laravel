@@ -12,7 +12,7 @@
     <div class="min-h-screen">
         <header class="border-b border-border-soft bg-white/90">
             <div class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
+                <a href="{{ auth()->user()?->isAdmin() ? route('admin.dashboard') : route('panel.confirmados.index') }}" class="flex items-center gap-3">
                     <img src="{{ asset('images/invitatorio.png') }}" alt="Invitatorio" class="h-10 w-10 rounded-full">
                     <span class="font-display text-lg font-extrabold">Panel Invitatorio</span>
                 </a>

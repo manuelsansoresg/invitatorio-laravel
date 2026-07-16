@@ -47,17 +47,24 @@
                                     <form method="POST" action="{{ route('admin.invitaciones.cliente.update', $invitacion) }}" class="flex min-w-60 gap-2">
                                         @csrf
                                         @method('PATCH')
-                                        <input
-                                            name="cliente_email"
-                                            type="email"
-                                            value="{{ old('cliente_email', $invitacion->cliente_email) }}"
-                                            placeholder="correo del cliente"
+                                        <select
+                                            name="user_id"
                                             class="w-full rounded-md border border-border-soft px-3 py-2 text-xs outline-none focus:border-orange-brand focus:ring-2 focus:ring-orange-soft"
                                         >
+                                            <option value="">Sin cliente</option>
+                                            @foreach ($clientes as $cliente)
+                                                <option value="{{ $cliente->id }}" @selected((string) old('user_id', $invitacion->user_id) === (string) $cliente->id)>
+                                                    {{ $cliente->name }} · {{ $cliente->email }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                         <button type="submit" class="rounded-md bg-purple-brand px-3 py-2 text-xs font-bold text-white transition hover:bg-purple-dark">
                                             Guardar
                                         </button>
                                     </form>
+                                    @if ($invitacion->cliente)
+                                        <p class="mt-2 text-xs text-text-gray">Asignada a {{ $invitacion->cliente->name }}</p>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-text-gray">{{ $invitacion->created_at?->format('d/m/Y') }}</td>
                                 <td class="px-4 py-3">
