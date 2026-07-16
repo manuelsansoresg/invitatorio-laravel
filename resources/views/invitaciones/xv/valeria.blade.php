@@ -34,7 +34,7 @@
     $dressCode       = 'Formal · Elegante';
     $dressTexto      = 'Te sugerimos vestir en tonos neutros o elegantes para acompañar la armonía del evento.';
     $mesaTexto       = 'Tu presencia es nuestro mejor regalo, pero si deseas tener un detalle, puedes hacerlo aquí.';
-    $lluviaCuerpo    = 'Tu presencia es el mejor regalo. Si deseas hacerme un obsequio, agradecería que fuera en efectivo';
+    $lluviaCuerpo    = 'Tu presencia es el mejor regalo. Si deseas obsequiarme un detalle, habrán sobres para regalos en efectivo.';
     $lluviaCierre    = 'Con cariño, gracias por acompañarme.';
     $bienvenidaTxt   = 'Con mucha alegría queremos compartir contigo este día tan especial.';
     $familia         = 'Con cariño, familia de ' . $nombre;
