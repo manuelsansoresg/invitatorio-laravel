@@ -4,6 +4,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfirmacionController;
 use App\Http\Controllers\ConfirmadosController;
+use App\Http\Controllers\InvitacionController;
+use App\Livewire\InvitationEditor;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Session\Middleware\StartSession;
@@ -27,7 +29,10 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::post('/usuarios', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::get('/invitaciones/{invitacion}/editar', InvitationEditor::class)->name('invitaciones.edit');
+    Route::post('/invitaciones/{invitacion}/clonar', [AdminController::class, 'cloneInvitation'])->name('invitaciones.clone');
     Route::patch('/invitaciones/{invitacion}/cliente', [AdminController::class, 'updateInvitationClient'])->name('invitaciones.cliente.update');
+    Route::delete('/invitaciones/{invitacion}', [AdminController::class, 'destroyInvitation'])->name('invitaciones.destroy');
 });
 
 Route::middleware('auth')->prefix('panel')->name('panel.')->group(function () {
@@ -75,13 +80,9 @@ Route::get('/sitemap.xml', function () {
 Route::view('/politicas-de-privacidad', 'politicas-de-privacidad')
     ->name('politicas');
 
-// Plantillas de invitación (preview). Más adelante se resuelven
-// por slug desde un controlador + modelo Invitacion.
-Route::view('/invitacion/xv-valentina', 'invitaciones.xv.valeria');
-
-// /invitacion/xv-mariana → demo de portafolio con datos ficticios.
-// Reemplazar con datos reales cuando se entregue a una clienta real.
-Route::view('/invitacion/xv-mariana', 'invitaciones.xv.mariana');
+// Invitaciones digitales resueltas por slug desde la tabla invitaciones.
+Route::get('/invitacion/{invitacion}', [InvitacionController::class, 'show'])
+    ->name('invitaciones.show');
 
 // Confirmación de asistencia — formulario del popup en la invitación.
 Route::post('/confirmar-asistencia', [ConfirmacionController::class, 'store'])

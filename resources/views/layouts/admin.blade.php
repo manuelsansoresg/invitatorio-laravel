@@ -7,6 +7,7 @@
     <title>{{ $title ?? 'Panel admin' }} | Invitatorio</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     @vite(['resources/css/app.css'])
+    @livewireStyles
 </head>
 <body class="min-h-screen bg-cream-bg text-text-dark antialiased">
     <div class="min-h-screen">
@@ -36,9 +37,14 @@
             </div>
         </header>
 
-        <main class="mx-auto w-full max-w-6xl px-5 py-8">
-            @yield('content')
+        <main class="mx-auto w-full {{ ($wide ?? false) ? 'max-w-[1920px]' : 'max-w-6xl' }} px-5 py-8">
+            @hasSection('content')
+                @yield('content')
+            @else
+                {{ $slot ?? '' }}
+            @endif
         </main>
     </div>
+    @livewireScripts
 </body>
 </html>

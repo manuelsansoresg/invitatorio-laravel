@@ -29,6 +29,10 @@ class ConfirmacionController extends Controller
             $data = $request->validate([
                 'ruta_invitacion' => ['required', 'string', 'max:120'],
                 'nombre'          => ['required', 'string', 'min:3', 'max:120'],
+                'telefono'        => ['nullable', 'string', 'max:40'],
+                'mensaje'         => ['nullable', 'string', 'max:1000'],
+                'numero_invitados' => ['nullable', 'integer', 'min:1', 'max:20'],
+                'asistira'        => ['nullable', 'boolean'],
             ]);
         } catch (ValidationException $e) {
             if ($request->wantsJson() || $request->ajax()) {
@@ -59,6 +63,10 @@ class ConfirmacionController extends Controller
         $confirmacion = Confirmacion::create([
             'invitacion_id' => $invitacion->id,
             'nombre'        => trim($data['nombre']),
+            'telefono'      => filled($data['telefono'] ?? null) ? trim($data['telefono']) : null,
+            'mensaje'       => filled($data['mensaje'] ?? null) ? trim($data['mensaje']) : null,
+            'numero_invitados' => $data['numero_invitados'] ?? null,
+            'asistira'      => $data['asistira'] ?? true,
             'ip'            => $request->ip(),
             'user_agent'    => substr((string) $request->userAgent(), 0, 1000),
         ]);

@@ -10,58 +10,80 @@
 --}}
 
 @php
+    $invitacion = $invitacion ?? null;
+    $isEditorPreview = request()->has('editor_preview');
+    $blocksRelation = $isEditorPreview ? 'blocks' : 'activeBlocks';
+    $blocks = $invitacion?->relationLoaded($blocksRelation)
+        ? $invitacion->{$blocksRelation}->keyBy('tipo')
+        : collect();
+    $block = fn (string $tipo) => $blocks->get($tipo);
+    $config = fn (string $tipo, string $key, mixed $default = null) => data_get($block($tipo)?->config_json ?? [], $key, $default);
+    $mapsEmbedFromUrl = fn (?string $url) => filled($url) ? 'https://maps.google.com/maps?hl=es&q='.urlencode($url).'&output=embed' : null;
+    $heroConfig = $block('hero')?->config_json ?? [];
+    $introImage = array_key_exists('imagen_intro', $heroConfig)
+        ? $heroConfig['imagen_intro']
+        : $invitacion?->imagen_portada_path;
+    $heroImage = array_key_exists('imagen_hero', $heroConfig)
+        ? $heroConfig['imagen_hero']
+        : null;
+    $introImage = $introImage === '__deleted' ? null : $introImage;
+    $heroImage = $heroImage === '__deleted' ? null : $heroImage;
+
     // —— Datos editables ————————————————————————————————————————
-    $nombre          = 'Mariana';
-    $nombreCompleto  = 'Mariana Solís Mendoza';
-    $evento          = 'Mis XV Años';
-    $fechaCorta      = '15 · Noviembre · 2026';
-    $fechaLarga      = 'Sábado 15 de noviembre de 2026';
-    $horaRecepcion   = '8:00 PM';
-    $horaCeremonia   = '7:00 PM';
-    $lugar           = 'Hacienda San Antonio';
-    $direccion       = 'Av. 7 #345, Col. Centro, Puebla, Puebla';
-    $mapsUrl         = 'https://www.google.com/maps?q=Hacienda+San+Antonio+Puebla+Centro';
-    $mapsEmbed       = 'https://www.google.com/maps?q=Hacienda+San+Antonio+Puebla+Centro&output=embed';
+    $nombre          = $invitacion?->nombre ?: 'Mariana';
+    $nombreCompleto  = $invitacion?->nombre_completo ?: 'Mariana Solís Mendoza';
+    $evento          = $invitacion?->titulo ?: 'Mis XV Años';
+    $fechaCorta      = $config('hero', 'fecha_corta', $invitacion?->fecha_evento?->translatedFormat('d · F · Y') ?: '15 · Noviembre · 2026');
+    $fechaLarga      = $config('hero', 'fecha_larga', $invitacion?->fecha_evento?->translatedFormat('l d \\d\\e F \\d\\e Y') ?: 'Sábado 15 de noviembre de 2026');
+    $horaRecepcion   = $config('hero', 'hora_recepcion', $invitacion?->hora_evento?->format('g:i A') ?: '8:00 PM');
+    $horaCeremonia   = $config('ubicacion', 'hora', '7:00 PM');
+    $lugar           = $invitacion?->lugar_nombre ?: 'Hacienda San Antonio';
+    $direccion       = $invitacion?->lugar_direccion ?: 'Av. 7 #345, Col. Centro, Puebla, Puebla';
+    $mapsUrl         = $invitacion?->maps_url ?: 'https://www.google.com/maps?q=Hacienda+San+Antonio+Puebla+Centro';
+    $mapsEmbed       = $config('informacion_evento', 'maps_embed', $mapsEmbedFromUrl($mapsUrl));
 
     // Datos de la iglesia (ceremonia religiosa) — ajusta con los reales
-    $iglesiaNombre      = 'Parroquia de San José';
-    $iglesiaDireccion   = 'Calle 3 Norte #456, Col. Centro, Puebla, Puebla';
-    $iglesiaMapsUrl     = 'https://www.google.com/maps?q=Parroquia+San+Jose+Centro+Puebla';
-    $iglesiaMapsEmbed   = 'https://www.google.com/maps?q=Parroquia+San+Jose+Centro+Puebla&output=embed';
-    $whatsappNumber  = '522221234567';
-    $whatsappText    = 'Hola%2C%20confirmo%20mi%20asistencia%20a%20los%20XV%20de%20' . urlencode($nombre);
+    $iglesiaNombre      = $config('ubicacion', 'nombre', 'Parroquia de San José');
+    $iglesiaDireccion   = $config('ubicacion', 'direccion', 'Calle 3 Norte #456, Col. Centro, Puebla, Puebla');
+    $iglesiaMapsUrl     = $config('ubicacion', 'maps_url', 'https://www.google.com/maps?q=Parroquia+San+Jose+Centro+Puebla');
+    $iglesiaMapsEmbed   = $config('ubicacion', 'maps_embed', $mapsEmbedFromUrl($iglesiaMapsUrl));
+    $whatsappNumber  = $invitacion?->whatsapp_numero ?: '522221234567';
+    $whatsappText    = urlencode($invitacion?->whatsapp_mensaje ?: 'Hola, confirmo mi asistencia a los XV de '.$nombre);
     $waLink          = 'https://wa.me/' . $whatsappNumber . '?text=' . $whatsappText;
     
-    $dressCode       = 'Formal · Elegante';
-    $dressTexto      = 'Te sugerimos vestir en tonos neutros o elegantes para acompañar la armonía del evento.';
-    $mesaTexto       = 'Tu presencia es nuestro mejor regalo, pero si deseas tener un detalle, puedes hacerlo aquí.';
-    $lluviaCuerpo    = 'Tu presencia es el regalo más importante, pero si deseas tener un detalle conmigo, puedes hacerlo en un sobre el día del evento.';
-    $lluviaCierre    = 'Con cariño, gracias por acompañarme.';
-    $bienvenidaTxt   = 'Con mucha alegría queremos compartir contigo este día tan especial.';
-    $familia         = 'Con cariño, familia de ' . $nombre;
+    $dressCode       = $invitacion?->dress_code ?: $config('dress_code', 'principal', 'Formal · Elegante');
+    $dressTexto      = $invitacion?->dress_code_descripcion ?: ($block('dress_code')?->contenido ?: 'Te sugerimos vestir en tonos neutros o elegantes para acompañar la armonía del evento.');
+    $mesaTexto       = $block('mesa_regalos')?->contenido ?: 'Tu presencia es nuestro mejor regalo, pero si deseas tener un detalle, puedes hacerlo aquí.';
+    $lluviaCuerpo    = $block('mesa_regalos')?->contenido ?: 'Tu presencia es el regalo más importante, pero si deseas tener un detalle conmigo, puedes hacerlo en un sobre el día del evento.';
+    $lluviaCierre    = $config('mesa_regalos', 'cierre', 'Con cariño, gracias por acompañarme.');
+    $bienvenidaTxt   = $block('hero')?->contenido ?: ($invitacion?->mensaje_principal ?: 'Con mucha alegría queremos compartir contigo este día tan especial.');
+    $familia         = $invitacion?->mensaje_footer ?: 'Con cariño, familia de ' . $nombre;
 
     // Mensaje emocional entre el hero y la sección de evento
-    $mensajeKicker   = 'Un sueño especial';
-    $mensajeTitulo   = 'Hay momentos que se sueñan desde niña y hoy comienzan a hacerse realidad.';
-    $mensajeCuerpo   = 'Con mucha ilusión, ' . $nombreCompleto . ' quiere compartir contigo una noche llena de alegría, recuerdos y momentos inolvidables.';
+    $mensajeKicker   = $config('mensaje', 'kicker', 'Un sueño especial');
+    $mensajeTitulo   = $block('mensaje')?->titulo ?: 'Hay momentos que se sueñan desde niña y hoy comienzan a hacerse realidad.';
+    $mensajeCuerpo   = $block('mensaje')?->contenido ?: 'Con mucha ilusión, ' . $nombreCompleto . ' quiere compartir contigo una noche llena de alegría, recuerdos y momentos inolvidables.';
 
     // Galería / carrusel — coloca aquí las imágenes que quieras mostrar
-    $galeriaImagenes = [
-        'images/xv/valeria/slider/68f8f877-311e-4e5e-b407-e43c15874188.png',
-        'images/xv/valeria/slider/98fe81e9-1845-4b78-8ebb-2813ddbc774c.png',
-        'images/xv/valeria/slider/436cc7e3-ab91-4dd2-a8dc-60681264e06f.png',
-        'images/xv/valeria/slider/3153dade-0702-45f7-8ec8-7bc4633bdac4.png',
-        'images/xv/valeria/slider/e202e9a9-8af2-4a0f-9749-668503cc3665.png',
-    ];
-    $galeriaTitulo    = 'Galería de recuerdos';
-    $galeriaSubtitulo = 'Pequeños momentos que forman parte de esta historia tan especial.';
+    $galeriaImagenes = $invitacion?->relationLoaded('gallery')
+        ? $invitacion->gallery->where('activo', true)->sortBy('orden')->pluck('imagen_path')->values()->all()
+        : [];
+    $galeriaTitulo    = $block('galeria')?->titulo ?: 'Galería de recuerdos';
+    $galeriaSubtitulo = $block('galeria')?->contenido ?: 'Pequeños momentos que forman parte de esta historia tan especial.';
 
     // Fecha objetivo del countdown (hora local Mérida, UTC-6 → 19:00 = 7 PM)
-    $eventDateIso   = '2026-11-15T19:00:00-06:00';
-    $pageUrl        = url('/invitacion/xv-mariana');
+    $defaultEventDateIso = $invitacion?->fecha_evento
+        ? $invitacion->fecha_evento->toDateString().'T'.($invitacion?->hora_evento?->format('H:i:s') ?: '20:00:00').'-06:00'
+        : '2026-11-15T19:00:00-06:00';
+    $eventDateIso   = $config('cuenta_regresiva', 'event_date_iso', $defaultEventDateIso);
+    $musicPath      = $config('musica', 'path', $invitacion?->musica_path ?: 'music/music.mp3');
+    $colorPrimario  = $invitacion?->color_primario ?: '#d77c78';
+    $colorSecundario = $invitacion?->color_secundario ?: '#f8d8d4';
+    $colorAcento    = $invitacion?->color_acento ?: '#e8aaa6';
+    $pageUrl        = $invitacion ? route('invitaciones.show', $invitacion) : url('/invitacion/xv-mariana');
     $seoTitle       = $evento . ' de ' . $nombre . ' | Invitación digital';
     $seoDescription = 'Invitación digital para ' . $evento . ' de ' . $nombreCompleto . '. ' . $fechaLarga . ' con ceremonia, recepción, ubicación, música y confirmación de asistencia.';
-    $seoImage       = asset('images/xv/valeria/portada.png');
+    $seoImage       = filled($introImage) ? asset($introImage) : asset('images/invitatorio.png');
     $eventSchema    = [
         '@context' => 'https://schema.org',
         '@type' => 'Event',
@@ -95,7 +117,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#f8d8d4">
+    <meta name="theme-color" content="{{ $colorSecundario }}">
     <meta name="description" content="{{ $seoDescription }}">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="{{ $pageUrl }}">
@@ -118,7 +140,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="preload" as="image" href="{{ asset('images/xv/valeria/portada.png') }}">
+    @if (filled($introImage))
+        <link rel="preload" as="image" href="{{ asset($introImage) }}">
+    @endif
 
     <script type="application/ld+json">
         @json($eventSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
@@ -129,12 +153,12 @@
            PALETA + TOKENS
            ============================================================ */
         :root {
-            --bg: #f8d8d4;
+            --bg: {{ $colorSecundario }};
             --bg-soft: #fff4f1;
             --card: #fffaf8;
-            --rose: #d77c78;
-            --rose-soft: #e8aaa6;
-            --rose-dark: #c96965;
+            --rose: {{ $colorPrimario }};
+            --rose-soft: {{ $colorAcento }};
+            --rose-dark: {{ $colorPrimario }};
             --text: #3f4648;
             --muted: #8b8f91;
             --border: rgba(217, 124, 120, 0.35);
@@ -226,6 +250,11 @@
             height: 100%;
             object-fit: cover;
             object-position: center top;
+        }
+        .intro-image-placeholder {
+            background:
+                radial-gradient(circle at 25% 20%, rgba(255, 255, 255, .9), transparent 32%),
+                linear-gradient(145deg, #fff8f6 0%, #f8d8d4 100%);
         }
         .intro-content {
             display: flex;
@@ -2102,9 +2131,10 @@
         <div class="intro-card">
 
             {{-- Imagen --}}
+            @if (filled($introImage))
             <div class="intro-image-wrap">
                 <img
-                    src="{{ asset('images/xv/valeria/portada.png') }}"
+                    src="{{ asset($introImage) }}"
                     alt="{{ $nombre }} — {{ $evento }}"
                     width="1024"
                     height="1536"
@@ -2114,6 +2144,9 @@
                     fetchpriority="high"
                 >
             </div>
+            @else
+                <div class="intro-image-wrap intro-image-placeholder" aria-label="Sin imagen de portada adjunta"></div>
+            @endif
 
             {{-- Contenido --}}
             <div class="intro-content">
@@ -2221,10 +2254,11 @@
                 </div>
 
                 {{-- Foto (mobile: order 1, desktop: order 2) --}}
+                @if (filled($heroImage))
                 <div class="hero-photo">
                     <div class="hero-photo-frame">
                         <img
-                            src="{{ asset('images/xv/valeria/valeria-hero.png') }}"
+                            src="{{ asset($heroImage) }}"
                             alt="{{ $nombre }} — {{ $evento }}"
                             width="1024"
                             height="1536"
@@ -2235,6 +2269,7 @@
                         >
                     </div>
                 </div>
+                @endif
 
             </div>
         </section>
@@ -2267,6 +2302,7 @@
 
 
         {{-- 3) GALERÍA / CARRUSEL --}}
+        @if (count($galeriaImagenes) > 0)
         <section id="galeria" class="xv-gallery-section reveal" aria-label="Galería de recuerdos">
             <div class="xv-gallery-card">
 
@@ -2296,6 +2332,7 @@
 
             </div>
         </section>
+        @endif
 
 
         {{-- 4) IGLESIA + GOOGLE MAPS --}}
@@ -2651,7 +2688,7 @@
          y, con certeza, al abrir la invitación.
          ============================================================ --}}
     <audio id="bgMusic" loop preload="auto">
-        <source src="{{ asset('music/music.mp3') }}" type="audio/mpeg">
+        <source src="{{ asset($musicPath) }}" type="audio/mpeg">
     </audio>
 
 

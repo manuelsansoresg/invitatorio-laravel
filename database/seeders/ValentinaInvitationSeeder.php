@@ -6,69 +6,55 @@ use App\Models\Invitacion;
 use App\Models\InvitationBlock;
 use App\Models\InvitationGallery;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
-class InvitacionSeeder extends Seeder
+class ValentinaInvitationSeeder extends Seeder
 {
-    /**
-     * Seed de la invitación de Valentina para que el formulario
-     * de confirmación pueda registrar invitados desde el primer momento.
-     */
     public function run(): void
     {
-        $invitaciones = [
-            [
-                'ruta' => 'xv-valentina',
-                'nombre' => 'Valentina',
-                'apellido_paterno' => 'Franco',
-                'apellido_materno' => 'García',
-                'tipo_evento' => 'xv',
-                'titulo' => 'Mis XV Años',
-                'subtitulo' => 'Te invitamos',
-                'fecha_evento' => '2026-08-01',
-                'hora_evento' => '22:00:00',
-                'lugar_nombre' => 'El Pedregal',
-                'lugar_direccion' => 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán',
-                'maps_url' => 'https://www.google.com/maps?q=21.035107,-89.869308',
-                'dress_code' => 'Dress code a tu estilo',
-                'dress_code_descripcion' => 'Solo el rosa está reservado para la quinceañera',
-                'mensaje_principal' => 'Con mucha alegría queremos compartir contigo este día tan especial.',
-                'mensaje_footer' => 'Con cariño, familia de Valentina',
-                'whatsapp_numero' => '529991234567',
-                'whatsapp_mensaje' => 'Hola, confirmo mi asistencia a los XV de Valentina',
-                'musica_path' => 'music/music.mp3',
-                'musica_titulo' => 'Música de fondo',
-                'imagen_portada_path' => 'images/xv/valeria/foto-intro.jpeg',
-                'template_key' => 'xv-valeria',
-                'estado' => 'publicada',
-                'publicada_at' => now(),
-            ],
-            [
-                'ruta' => 'xv-mariana',
-                'nombre' => 'Mariana',
-                'apellido_paterno' => 'Demo',
-                'apellido_materno' => null,
-                'tipo_evento' => 'xv',
-                'titulo' => 'Mis XV Años',
-                'template_key' => 'xv-mariana',
-                'estado' => 'publicada',
-                'publicada_at' => now(),
-            ],
-        ];
+        $this->ensurePublicAssetsExist();
 
-        foreach ($invitaciones as $invitacion) {
-            $modelo = Invitacion::updateOrCreate(
-                ['ruta' => $invitacion['ruta']],
-                collect($invitacion)->except('ruta')->all(),
+        DB::transaction(function (): void {
+            $invitation = Invitacion::query()->updateOrCreate(
+                ['ruta' => 'xv-valentina'],
+                [
+                    'nombre' => 'Valentina',
+                    'apellido_paterno' => 'Franco',
+                    'apellido_materno' => 'García',
+                    'tipo_evento' => 'xv',
+                    'titulo' => 'Mis XV Años',
+                    'subtitulo' => 'Te invitamos',
+                    'fecha_evento' => '2026-08-01',
+                    'hora_evento' => '22:00:00',
+                    'lugar_nombre' => 'El Pedregal',
+                    'lugar_direccion' => 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán',
+                    'maps_url' => 'https://www.google.com/maps?q=21.035107,-89.869308',
+                    'dress_code' => 'Dress code a tu estilo',
+                    'dress_code_descripcion' => 'Solo el rosa está reservado para la quinceañera',
+                    'mensaje_principal' => 'Con mucha alegría queremos compartir contigo este día tan especial.',
+                    'mensaje_footer' => 'Con cariño, familia de Valentina',
+                    'whatsapp_numero' => '529991234567',
+                    'whatsapp_mensaje' => 'Hola, confirmo mi asistencia a los XV de Valentina',
+                    'musica_path' => 'music/music.mp3',
+                    'musica_titulo' => 'Música de fondo',
+                    'imagen_portada_path' => 'images/xv/valeria/foto-intro.jpeg',
+                    'archivo_final_path' => null,
+                    'color_primario' => '#D77C78',
+                    'color_secundario' => '#F8D8D4',
+                    'color_acento' => '#E8AAA6',
+                    'template_key' => 'xv-valeria',
+                    'estado' => 'publicada',
+                    'publicada_at' => now(),
+                ],
             );
 
-            if ($modelo->ruta === 'xv-valentina') {
-                $this->seedValentinaBlocks($modelo);
-                $this->seedValentinaGallery($modelo);
-            }
-        }
+            $this->restoreBlocks($invitation);
+            $this->restoreGallery($invitation);
+        });
     }
 
-    private function seedValentinaBlocks(Invitacion $invitacion): void
+    private function restoreBlocks(Invitacion $invitation): void
     {
         $blocks = [
             [
@@ -88,9 +74,10 @@ class InvitacionSeeder extends Seeder
             [
                 'tipo' => 'cuenta_regresiva',
                 'titulo' => 'Cuenta regresiva',
+                'contenido' => 'Falta muy poco para este gran día.',
                 'orden' => 20,
                 'config_json' => [
-                    'event_date_iso' => '2026-08-01T20:30:00-06:00',
+                    'event_date_iso' => '2026-08-01T22:00:00-06:00',
                 ],
             ],
             [
@@ -107,10 +94,12 @@ class InvitacionSeeder extends Seeder
                 'titulo' => 'Galería de recuerdos',
                 'contenido' => 'Pequeños momentos que forman parte de esta historia tan especial.',
                 'orden' => 40,
+                'config_json' => [],
             ],
             [
                 'tipo' => 'ubicacion',
                 'titulo' => 'Misa de acción de gracias',
+                'contenido' => 'Acompáñanos a dar gracias por este momento tan especial.',
                 'orden' => 50,
                 'config_json' => [
                     'variante' => 'iglesia',
@@ -119,7 +108,7 @@ class InvitacionSeeder extends Seeder
                     'direccion' => 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán',
                     'hora' => '8:30 p.m.',
                     'celebrante' => 'Pbro. Raymundo Abelardo Pérez Bojórquez',
-                    'maps_url' => 'https://www.google.com/maps/place/Capilla+de+Nuestra+Se%C3%B1ora+de+Guadalupe/@21.0050406,-89.8819956,19z/data=!4m6!3m5!1s0x8f5607f86cf6c17b:0xc640e10929ff792e!8m2!3d21.0052171!4d-89.8807725!16s%2Fg%2F11n6t3b2yj?entry=tts&g_ep=EgoyMDI2MDcxMi4wIPu8ASoASAFQAw%3D%3D&skid=c0c1509c-b6ac-4c25-9dd5-1d1b48d0ef80',
+                    'maps_url' => 'https://www.google.com/maps/place/Capilla+de+Nuestra+Se%C3%B1ora+de+Guadalupe/@21.0050406,-89.8819956,19z/data=!4m6!3m5!1s0x8f5607f86cf6c17b:0xc640e10929ff792e!8m2!3d21.0052171!4d-89.8807725!16s%2Fg%2F11n6t3b2yj',
                     'maps_embed' => 'https://www.google.com/maps?q=21.0052171,-89.8807725&output=embed',
                 ],
             ],
@@ -140,6 +129,7 @@ class InvitacionSeeder extends Seeder
             [
                 'tipo' => 'informacion_evento',
                 'titulo' => 'El Pedregal',
+                'contenido' => 'Recepción para celebrar juntos.',
                 'orden' => 70,
                 'config_json' => [
                     'kicker' => 'Recepción',
@@ -179,6 +169,7 @@ class InvitacionSeeder extends Seeder
             [
                 'tipo' => 'musica',
                 'titulo' => 'Música de fondo',
+                'contenido' => null,
                 'orden' => 110,
                 'config_json' => [
                     'path' => 'music/music.mp3',
@@ -186,27 +177,67 @@ class InvitacionSeeder extends Seeder
             ],
         ];
 
+        $types = collect($blocks)->pluck('tipo');
+
+        InvitationBlock::query()
+            ->where('invitacion_id', $invitation->id)
+            ->whereNotIn('tipo', $types)
+            ->delete();
+
         foreach ($blocks as $block) {
-            InvitationBlock::updateOrCreate(
-                ['invitacion_id' => $invitacion->id, 'tipo' => $block['tipo'], 'orden' => $block['orden']],
+            InvitationBlock::query()->updateOrCreate(
+                [
+                    'invitacion_id' => $invitation->id,
+                    'tipo' => $block['tipo'],
+                ],
                 $block + ['activo' => true],
             );
         }
     }
 
-    private function seedValentinaGallery(Invitacion $invitacion): void
+    private function restoreGallery(Invitacion $invitation): void
     {
+        InvitationGallery::query()
+            ->where('invitacion_id', $invitation->id)
+            ->whereNotBetween('orden', [1, 8])
+            ->delete();
+
         foreach (range(1, 8) as $index) {
-            InvitationGallery::updateOrCreate(
+            InvitationGallery::query()->updateOrCreate(
                 [
-                    'invitacion_id' => $invitacion->id,
+                    'invitacion_id' => $invitation->id,
                     'orden' => $index,
                 ],
                 [
                     'imagen_path' => sprintf('images/xv/valeria/slider/valeria-recuerdo-%02d.jpeg', $index),
-                    'titulo' => 'Recuerdo ' . $index,
+                    'titulo' => 'Recuerdo '.$index,
+                    'descripcion' => null,
                     'activo' => true,
                 ],
+            );
+        }
+    }
+
+    private function ensurePublicAssetsExist(): void
+    {
+        $assets = [
+            'images/xv/valeria/foto-intro.jpeg',
+            'images/xv/valeria/valeria-hero.jpeg',
+            'images/xv/valeria/parallax.jpeg',
+            'music/music.mp3',
+        ];
+
+        foreach (range(1, 8) as $index) {
+            $assets[] = sprintf('images/xv/valeria/slider/valeria-recuerdo-%02d.jpeg', $index);
+        }
+
+        $missing = collect($assets)
+            ->reject(fn (string $path) => is_file(public_path($path)))
+            ->values();
+
+        if ($missing->isNotEmpty()) {
+            throw new RuntimeException(
+                'No se puede restaurar la invitación de Valentina. Faltan archivos públicos: '.$missing->implode(', '),
             );
         }
     }

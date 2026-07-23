@@ -6,37 +6,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Confirmacion extends Model
+class InvitationGallery extends Model
 {
     use HasFactory;
 
-    /**
-     * Nombre real de la tabla (plural en español).
-     */
-    protected $table = 'confirmaciones';
+    protected $table = 'invitacion_galeria';
 
     protected $fillable = [
         'invitacion_id',
-        'nombre',
-        'telefono',
-        'mensaje',
-        'numero_invitados',
-        'asistira',
-        'ip',
-        'user_agent',
+        'imagen_path',
+        'titulo',
+        'descripcion',
+        'orden',
+        'activo',
     ];
 
     protected function casts(): array
     {
         return [
-            'numero_invitados' => 'integer',
-            'asistira' => 'boolean',
+            'activo' => 'boolean',
         ];
     }
 
-    /**
-     * Una confirmación pertenece a una invitación.
-     */
     public function invitacion(): BelongsTo
     {
         return $this->belongsTo(Invitacion::class);
