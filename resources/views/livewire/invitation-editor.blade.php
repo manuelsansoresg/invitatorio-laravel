@@ -23,6 +23,10 @@
     $coverUrl = $coverPath ? asset($coverPath) : null;
     $heroPath = $imagePath($blockConfig('hero', 'imagen_hero'));
     $heroUrl = $heroPath ? asset($heroPath) : null;
+    $featurePath = $imagePath($blockConfig('hero', 'imagen_parallax'));
+    $featureUrl = $featurePath ? asset($featurePath) : null;
+    $galleryIndex = $blockIndex('galeria');
+    $galleryCount = count($galleryItems);
     $musicPath = filled($form['musica_path'] ?? null) ? $form['musica_path'] : null;
     $musicUrl = $musicPath ? asset($musicPath) : null;
     $previewUrl = route('invitaciones.show', $invitacion);
@@ -319,6 +323,121 @@
                         <input value="{{ $heroPath ?? '' }}" readonly class="editor-input mt-2 bg-slate-50" placeholder="Sin imagen principal adjunta">
                     </label>
                 </div>
+
+                <div class="editor-field-card mt-4" wire:key="feature-image-card-{{ $imageActionNonce }}">
+                    <p class="text-sm font-extrabold text-slate-900">Imagen destacada debajo del contador</p>
+                    <p class="mt-1 text-sm font-medium text-slate-500">Solo puede existir una imagen en esta sección.</p>
+
+                    @if ($featureUrl)
+                        <div class="mt-4 h-64 w-full overflow-hidden rounded-xl border border-border-soft bg-purple-soft">
+                            <img src="{{ $featureUrl }}" alt="Imagen destacada" class="h-full w-full object-cover">
+                        </div>
+                    @endif
+
+                    <input
+                        id="featureImageInput"
+                        type="file"
+                        wire:model="featureImage"
+                        accept="image/png,image/jpeg,image/webp"
+                        style="display: none;"
+                    >
+                    <label for="featureImageInput" class="mt-4 grid min-h-36 w-full cursor-pointer place-items-center rounded-xl border-2 border-dashed border-purple-brand/25 bg-white text-center text-purple-brand transition hover:border-purple-brand hover:bg-purple-soft/40">
+                        <span>
+                            <svg viewBox="0 0 24 24" class="mx-auto h-9 w-9" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg>
+                            <span class="mt-2 block font-extrabold" wire:loading.remove wire:target="featureImage">{{ $featurePath ? 'Reemplazar imagen destacada' : 'Adjuntar imagen destacada' }}</span>
+                            <span class="mt-2 block font-extrabold" wire:loading wire:target="featureImage">Subiendo...</span>
+                            <span class="mt-1 block text-xs font-semibold text-slate-500">PNG, JPG o WEBP<br>Máx. 8MB</span>
+                        </span>
+                    </label>
+                    @error('featureImage')
+                        <p class="mt-2 text-sm font-semibold text-red-600">{{ $message }}</p>
+                    @enderror
+
+                    @if ($featurePath)
+                        <button
+                            type="button"
+                            wire:click="deleteFeatureImage"
+                            wire:loading.attr="disabled"
+                            wire:target="deleteFeatureImage"
+                            class="mt-4 w-full cursor-pointer rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-extrabold text-red-700 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed"
+                        >
+                            <span wire:loading.remove wire:target="deleteFeatureImage">Eliminar imagen destacada</span>
+                            <span wire:loading wire:target="deleteFeatureImage">Eliminando...</span>
+                        </button>
+                    @endif
+                </div>
+            </div>
+
+            <div id="section-gallery" class="editor-card p-5 md:p-7" wire:key="gallery-card-{{ $imageActionNonce }}">
+                <span class="editor-section-pill">Editando galería</span>
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="font-display text-xl font-extrabold text-slate-900">Galería</h2>
+                        <p class="mt-1 text-sm font-medium text-slate-500">Adjunta, reemplaza o elimina hasta 6 imágenes.</p>
+                    </div>
+                    <span class="shrink-0 rounded-full bg-purple-soft px-3 py-1 text-xs font-extrabold text-purple-brand">{{ $galleryCount }}/6</span>
+                </div>
+
+                @if (! is_null($galleryIndex))
+                    <div class="mt-5 grid gap-3">
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Título
+                            <input wire:model.live.debounce.400ms="blocks.{{ $galleryIndex }}.titulo" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Descripción
+                            <textarea wire:model.live.debounce.400ms="blocks.{{ $galleryIndex }}.contenido" rows="2" class="editor-input mt-2"></textarea>
+                        </label>
+                    </div>
+                @endif
+
+                @if ($galleryCount > 0)
+                    <div class="mt-5 grid grid-cols-2 gap-3">
+                        @foreach ($galleryItems as $galleryItem)
+                            <article class="overflow-hidden rounded-xl border border-border-soft bg-white" wire:key="gallery-item-{{ $galleryItem['id'] }}">
+                                <img src="{{ asset($galleryItem['imagen_path']) }}" alt="{{ $galleryItem['titulo'] ?: 'Imagen de galería' }}" class="aspect-square w-full object-cover">
+                                <button
+                                    type="button"
+                                    wire:click="deleteGalleryImage({{ $galleryItem['id'] }})"
+                                    wire:loading.attr="disabled"
+                                    wire:target="deleteGalleryImage({{ $galleryItem['id'] }})"
+                                    class="w-full cursor-pointer border-t border-red-100 bg-red-50 px-3 py-2 text-xs font-extrabold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed"
+                                >
+                                    Eliminar
+                                </button>
+                            </article>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="mt-5 rounded-xl border border-dashed border-border-soft bg-slate-50 px-4 py-8 text-center text-sm font-semibold text-slate-500">
+                        Todavía no hay imágenes en la galería.
+                    </div>
+                @endif
+
+                @if ($galleryCount < 6)
+                    <input
+                        id="galleryImagesInput"
+                        type="file"
+                        wire:model="galleryImages"
+                        accept="image/png,image/jpeg,image/webp"
+                        multiple
+                        style="display: none;"
+                    >
+                    <label for="galleryImagesInput" class="mt-5 grid min-h-36 w-full cursor-pointer place-items-center rounded-xl border-2 border-dashed border-purple-brand/25 bg-white text-center text-purple-brand transition hover:border-purple-brand hover:bg-purple-soft/40">
+                        <span>
+                            <svg viewBox="0 0 24 24" class="mx-auto h-9 w-9" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg>
+                            <span class="mt-2 block font-extrabold" wire:loading.remove wire:target="galleryImages">Adjuntar imágenes</span>
+                            <span class="mt-2 block font-extrabold" wire:loading wire:target="galleryImages">Subiendo...</span>
+                            <span class="mt-1 block text-xs font-semibold text-slate-500">Puedes seleccionar {{ 6 - $galleryCount }} más<br>Máx. 8MB por imagen</span>
+                        </span>
+                    </label>
+                @endif
+                @error('galleryImages')
+                    <p class="mt-2 text-sm font-semibold text-red-600">{{ $message }}</p>
+                @enderror
+                @error('galleryImages.*')
+                    <p class="mt-2 text-sm font-semibold text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <div id="section-event" class="editor-card p-5 md:p-7">

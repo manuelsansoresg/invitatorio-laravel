@@ -28,6 +28,8 @@
         : null;
     $introImage = $introImage === '__deleted' ? null : $introImage;
     $heroImage = $heroImage === '__deleted' ? null : $heroImage;
+    $parallaxImage = $config('hero', 'imagen_parallax');
+    $parallaxImage = $parallaxImage === '__deleted' ? null : $parallaxImage;
 
     // —— Datos editables ————————————————————————————————————————
     $nombre          = $invitacion?->nombre ?: 'Mariana';

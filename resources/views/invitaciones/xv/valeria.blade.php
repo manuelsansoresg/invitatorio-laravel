@@ -79,6 +79,7 @@
     $introImage = $introImage === '__deleted' ? null : $introImage;
     $heroImage = $heroImage === '__deleted' ? null : $heroImage;
     $parallaxImage   = $config('hero', 'imagen_parallax');
+    $parallaxImage   = $parallaxImage === '__deleted' ? null : $parallaxImage;
     $musicPath       = $config('musica', 'path', $invitacion?->musica_path ?: 'music/music.mp3');
     $colorPrimario   = $invitacion?->color_primario ?: '#d77c78';
     $colorSecundario = $invitacion?->color_secundario ?: '#f8d8d4';

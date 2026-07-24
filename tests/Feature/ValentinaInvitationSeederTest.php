@@ -37,7 +37,7 @@ test('valentina seeder restores the complete invitation without losing its owner
         ->and($restored->imagen_portada_path)->toBe('images/xv/valeria/foto-intro.jpeg')
         ->and($restored->color_primario)->toBe('#D77C78')
         ->and($restored->blocks()->count())->toBe(11)
-        ->and($restored->gallery()->count())->toBe(8)
+        ->and($restored->gallery()->count())->toBe(6)
         ->and($restored->blocks()->where('tipo', 'hero')->first()->config_json['imagen_hero'])
         ->toBe('images/xv/valeria/valeria-hero.jpeg');
 });

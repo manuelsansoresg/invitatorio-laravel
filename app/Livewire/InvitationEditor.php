@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Invitacion;
 use App\Models\InvitationBlock;
+use App\Models\InvitationGallery;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -23,6 +24,12 @@ class InvitationEditor extends Component
 
     public $heroImage;
 
+    public $featureImage;
+
+    public array $galleryImages = [];
+
+    public array $galleryItems = [];
+
     public $musicFile;
 
     public int $previewNonce;
@@ -31,7 +38,7 @@ class InvitationEditor extends Component
 
     public function mount(Invitacion $invitacion): void
     {
-        $this->invitacion = $invitacion->load('blocks');
+        $this->invitacion = $invitacion->load(['blocks', 'gallery']);
         $this->previewNonce = time();
 
         $this->form = [
@@ -77,6 +84,7 @@ class InvitationEditor extends Component
             ->values()
             ->all();
 
+        $this->refreshGalleryItems();
     }
 
     public function updatedCoverImage(): void
@@ -161,6 +169,113 @@ class InvitationEditor extends Component
         $this->dispatch('saved');
 
         session()->flash('status', 'Imagen principal eliminada.');
+    }
+
+    public function updatedFeatureImage(): void
+    {
+        $this->validate([
+            'featureImage' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
+        ]);
+
+        $heroIndex = $this->ensureHeroBlock();
+        $previousPath = $this->heroConfig($heroIndex)['imagen_parallax'] ?? null;
+        $path = $this->storePublicUpload($this->featureImage, 'destacada');
+
+        $this->setHeroConfigValue('imagen_parallax', $path);
+        $this->persistHeroConfig();
+        $this->deleteOwnedPublicFile($previousPath);
+        $this->featureImage = null;
+        $this->imageActionNonce++;
+        $this->bumpPreview();
+        $this->dispatch('saved');
+
+        session()->flash('status', 'Imagen destacada actualizada.');
+    }
+
+    public function deleteFeatureImage(): void
+    {
+        $heroIndex = $this->heroBlockIndex();
+
+        if ($heroIndex === null) {
+            return;
+        }
+
+        $config = $this->heroConfig($heroIndex);
+        $this->deleteOwnedPublicFile($config['imagen_parallax'] ?? null);
+        $config['imagen_parallax'] = '__deleted';
+        $this->blocks[$heroIndex]['config_json'] = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $this->persistHeroConfig();
+        $this->featureImage = null;
+        $this->imageActionNonce++;
+        $this->bumpPreview();
+        $this->dispatch('saved');
+
+        session()->flash('status', 'Imagen destacada eliminada.');
+    }
+
+    public function updatedGalleryImages(): void
+    {
+        $this->resetValidation('galleryImages');
+        $currentCount = $this->invitacion->gallery()->count();
+        $remaining = max(0, 6 - $currentCount);
+
+        if ($remaining === 0) {
+            $this->addError('galleryImages', 'La galería permite un máximo de 6 imágenes.');
+            $this->galleryImages = [];
+
+            return;
+        }
+
+        $this->validate([
+            'galleryImages' => ['required', 'array', 'min:1', 'max:'.$remaining],
+            'galleryImages.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
+        ], [
+            'galleryImages.max' => 'Solo puedes adjuntar '.$remaining.' '.str('imagen')->plural($remaining).' más.',
+            'galleryImages.*.image' => 'Cada archivo debe ser una imagen válida.',
+            'galleryImages.*.max' => 'Cada imagen puede pesar máximo 8 MB.',
+        ]);
+
+        $this->ensureGalleryBlock();
+        $nextOrder = ((int) $this->invitacion->gallery()->max('orden')) + 1;
+
+        foreach ($this->galleryImages as $image) {
+            $path = $this->storePublicUpload($image, 'galeria');
+            $title = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+
+            $this->invitacion->gallery()->create([
+                'imagen_path' => $path,
+                'titulo' => filled($title) ? $title : 'Foto '.$nextOrder,
+                'orden' => $nextOrder++,
+                'activo' => true,
+            ]);
+        }
+
+        $this->galleryImages = [];
+        $this->refreshGalleryItems();
+        $this->imageActionNonce++;
+        $this->bumpPreview();
+        $this->dispatch('saved');
+
+        session()->flash('status', 'Galería actualizada.');
+    }
+
+    public function deleteGalleryImage(int $galleryId): void
+    {
+        $this->resetValidation('galleryImages');
+        $galleryItem = $this->invitacion->gallery()
+            ->whereKey($galleryId)
+            ->firstOrFail();
+
+        $this->deleteOwnedPublicFile($galleryItem->imagen_path);
+        $galleryItem->delete();
+        $this->normalizeGalleryOrder();
+        $this->refreshGalleryItems();
+        $this->imageActionNonce++;
+        $this->bumpPreview();
+        $this->dispatch('saved');
+
+        session()->flash('status', 'Imagen eliminada de la galería.');
     }
 
     public function updatedMusicFile(): void
@@ -251,6 +366,45 @@ class InvitationEditor extends Component
         return (int) array_key_last($this->blocks);
     }
 
+    private function ensureGalleryBlock(): void
+    {
+        foreach ($this->blocks as $index => $blockData) {
+            if (($blockData['tipo'] ?? null) !== 'galeria') {
+                continue;
+            }
+
+            if (! ($blockData['activo'] ?? false)) {
+                $this->blocks[$index]['activo'] = true;
+                InvitationBlock::query()
+                    ->where('invitacion_id', $this->invitacion->id)
+                    ->whereKey($blockData['id'])
+                    ->update(['activo' => true]);
+            }
+
+            return;
+        }
+
+        $order = ((int) collect($this->blocks)->max(fn (array $block) => (int) ($block['orden'] ?? 0))) + 10;
+        $block = $this->invitacion->blocks()->create([
+            'tipo' => 'galeria',
+            'titulo' => 'Galería de recuerdos',
+            'contenido' => 'Pequeños momentos que forman parte de esta historia tan especial.',
+            'config_json' => [],
+            'orden' => $order,
+            'activo' => true,
+        ]);
+
+        $this->blocks[] = [
+            'id' => $block->id,
+            'tipo' => $block->tipo,
+            'titulo' => $block->titulo,
+            'contenido' => $block->contenido,
+            'config_json' => json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            'orden' => $block->orden,
+            'activo' => true,
+        ];
+    }
+
     private function heroConfig(int $heroIndex): array
     {
         $decoded = json_decode($this->blocks[$heroIndex]['config_json'] ?: '{}', true);
@@ -277,6 +431,30 @@ class InvitationEditor extends Component
                     JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
                 ),
             ]);
+    }
+
+    private function refreshGalleryItems(): void
+    {
+        $this->galleryItems = $this->invitacion->gallery()
+            ->orderBy('orden')
+            ->get()
+            ->map(fn (InvitationGallery $item) => [
+                'id' => $item->id,
+                'imagen_path' => $item->imagen_path,
+                'titulo' => $item->titulo,
+                'orden' => $item->orden,
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function normalizeGalleryOrder(): void
+    {
+        $this->invitacion->gallery()
+            ->orderBy('orden')
+            ->get()
+            ->values()
+            ->each(fn (InvitationGallery $item, int $index) => $item->update(['orden' => $index + 1]));
     }
 
     private function storePublicUpload(mixed $file, string $folder): string

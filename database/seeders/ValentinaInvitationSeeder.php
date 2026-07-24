@@ -199,10 +199,10 @@ class ValentinaInvitationSeeder extends Seeder
     {
         InvitationGallery::query()
             ->where('invitacion_id', $invitation->id)
-            ->whereNotBetween('orden', [1, 8])
+            ->whereNotBetween('orden', [1, 6])
             ->delete();
 
-        foreach (range(1, 8) as $index) {
+        foreach (range(1, 6) as $index) {
             InvitationGallery::query()->updateOrCreate(
                 [
                     'invitacion_id' => $invitation->id,
