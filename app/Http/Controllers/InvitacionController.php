@@ -17,6 +17,7 @@ class InvitacionController extends Controller
         ]);
 
         $template = match ($invitacion->template_key) {
+            'instagram' => 'invitaciones.bodas.instagram',
             'xv-mariana' => 'invitaciones.xv.mariana',
             default => 'invitaciones.xv.valeria',
         };

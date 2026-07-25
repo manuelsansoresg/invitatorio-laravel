@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             InvitacionSeeder::class,
             ValentinaInvitationSeeder::class,
+            InstagramWeddingInvitationSeeder::class,
         ]);
     }
 }
