@@ -35,9 +35,14 @@
     $nombre          = $invitacion?->nombre ?: 'Mariana';
     $nombreCompleto  = $invitacion?->nombre_completo ?: 'Mariana Solís Mendoza';
     $evento          = $invitacion?->titulo ?: 'Mis XV Años';
-    $fechaCorta      = $config('hero', 'fecha_corta', $invitacion?->fecha_evento?->translatedFormat('d · F · Y') ?: '15 · Noviembre · 2026');
-    $fechaLarga      = $config('hero', 'fecha_larga', $invitacion?->fecha_evento?->translatedFormat('l d \\d\\e F \\d\\e Y') ?: 'Sábado 15 de noviembre de 2026');
-    $horaRecepcion   = $config('hero', 'hora_recepcion', $invitacion?->hora_evento?->format('g:i A') ?: '8:00 PM');
+    $fechaCorta      = $invitacion?->fecha_evento
+        ? $invitacion->fecha_evento->locale('es')->translatedFormat('d · F · Y')
+        : $config('hero', 'fecha_corta', '15 · Noviembre · 2026');
+    $fechaLarga      = $invitacion?->fecha_evento
+        ? ucfirst($invitacion->fecha_evento->locale('es')->translatedFormat('l d \\d\\e F \\d\\e Y'))
+        : $config('hero', 'fecha_larga', 'Sábado 15 de noviembre de 2026');
+    $horaRecepcion   = $invitacion?->hora_evento?->format('g:i A')
+        ?: $config('hero', 'hora_recepcion', '8:00 PM');
     $horaCeremonia   = $config('ubicacion', 'hora', '7:00 PM');
     $lugar           = $invitacion?->lugar_nombre ?: 'Hacienda San Antonio';
     $direccion       = $invitacion?->lugar_direccion ?: 'Av. 7 #345, Col. Centro, Puebla, Puebla';
@@ -77,7 +82,9 @@
     $defaultEventDateIso = $invitacion?->fecha_evento
         ? $invitacion->fecha_evento->toDateString().'T'.($invitacion?->hora_evento?->format('H:i:s') ?: '20:00:00').'-06:00'
         : '2026-11-15T19:00:00-06:00';
-    $eventDateIso   = $config('cuenta_regresiva', 'event_date_iso', $defaultEventDateIso);
+    $eventDateIso   = $invitacion?->fecha_evento
+        ? $defaultEventDateIso
+        : $config('cuenta_regresiva', 'event_date_iso', $defaultEventDateIso);
     $musicPath      = $config('musica', 'path', $invitacion?->musica_path ?: 'music/music.mp3');
     $colorPrimario  = $invitacion?->color_primario ?: '#d77c78';
     $colorSecundario = $invitacion?->color_secundario ?: '#f8d8d4';

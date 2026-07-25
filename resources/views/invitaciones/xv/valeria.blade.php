@@ -22,21 +22,34 @@
     $nombre          = $invitacion?->nombre ?: 'Valentina';
     $nombreCompleto  = $invitacion?->nombre_completo ?: 'Valentina Franco García';
     $evento          = $invitacion?->titulo ?: 'Mis XV Años';
-    $fechaCorta      = $config('hero', 'fecha_corta', $invitacion?->fecha_evento?->translatedFormat('d · F · Y') ?: '01 · Agosto · 2026');
-    $fechaLarga      = $config('hero', 'fecha_larga', $invitacion?->fecha_evento?->translatedFormat('l d \\d\\e F \\d\\e Y') ?: 'Sábado 01 de agosto de 2026');
-    $horaRecepcion   = $config('hero', 'hora_recepcion', $invitacion?->hora_evento?->format('g:i A') ?: '10:00 PM');
+    $fechaCorta      = $invitacion?->fecha_evento
+        ? $invitacion->fecha_evento->locale('es')->translatedFormat('d · F · Y')
+        : $config('hero', 'fecha_corta', '01 · Agosto · 2026');
+    $fechaLarga      = $invitacion?->fecha_evento
+        ? ucfirst($invitacion->fecha_evento->locale('es')->translatedFormat('l d \\d\\e F \\d\\e Y'))
+        : $config('hero', 'fecha_larga', 'Sábado 01 de agosto de 2026');
+    $horaRecepcion   = $invitacion?->hora_evento?->format('g:i A')
+        ?: $config('hero', 'hora_recepcion', '10:00 PM');
     $horaCeremonia   = $config('ubicacion', 'hora', '8:30 p.m.');
     $lugar           = $invitacion?->lugar_nombre ?: 'El Pedregal';
     $direccion       = $invitacion?->lugar_direccion ?: 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán';
     $mapsUrl         = $invitacion?->maps_url ?: 'https://www.google.com/maps?q=21.035107,-89.869308';
     $mapsEmbed       = $config('informacion_evento', 'maps_embed', $mapsEmbedFromUrl($mapsUrl));
 
+    $introKicker        = $config('hero', 'intro_kicker', 'Te invitamos');
+    $introButton        = $config('hero', 'intro_boton', 'Abrir invitación');
+    $introHint          = $config('hero', 'intro_indicacion', 'Desliza o toca para continuar');
+    $eventTimeLabel     = $config('hero', 'etiqueta_hora', 'Recepción');
+    $iglesiaKicker      = $config('ubicacion', 'kicker', 'Dónde');
+    $iglesiaTitulo      = $block('ubicacion')?->titulo ?: 'Misa de acción de gracias';
     $iglesiaNombre      = $config('ubicacion', 'nombre', 'Capilla de Guadalupe de Hunucmá');
-    $iglesiaDireccion   = $config('ubicacion', 'direccion', 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán');
     $iglesiaHora        = $config('ubicacion', 'hora', '8:30 p.m.');
+    $iglesiaHoraLabel   = $config('ubicacion', 'hora_etiqueta', 'Hora de la misa');
     $iglesiaCelebrante  = $config('ubicacion', 'celebrante', 'Pbro. Raymundo Abelardo Pérez Bojórquez');
+    $iglesiaCelebranteLabel = $config('ubicacion', 'celebrante_etiqueta', 'Oficia');
     $iglesiaMapsUrl     = $config('ubicacion', 'maps_url', 'https://www.google.com/maps/place/Capilla+de+Nuestra+Se%C3%B1ora+de+Guadalupe/@21.0050406,-89.8819956,19z/data=!4m6!3m5!1s0x8f5607f86cf6c17b:0xc640e10929ff792e!8m2!3d21.0052171!4d-89.8807725!16s%2Fg%2F11n6t3b2yj?entry=tts&g_ep=EgoyMDI2MDcxMi4wIPu8ASoASAFQAw%3D%3D&skid=c0c1509c-b6ac-4c25-9dd5-1d1b48d0ef80');
     $iglesiaMapsEmbed   = $config('ubicacion', 'maps_embed', $mapsEmbedFromUrl($iglesiaMapsUrl));
+    $iglesiaButton      = $config('ubicacion', 'boton', 'Ver ubicación');
 
     $whatsappNumber  = $invitacion?->whatsapp_numero ?: '529991234567';
     $whatsappText    = urlencode($invitacion?->whatsapp_mensaje ?: 'Hola, confirmo mi asistencia a los XV de ' . $nombre);
@@ -46,7 +59,7 @@
     $dressTexto      = $invitacion?->dress_code_descripcion ?: ($block('dress_code')?->contenido ?: 'Solo el rosa está reservado para la quinceañera');
     $lluviaCuerpo    = $block('mesa_regalos')?->contenido ?: 'Tu presencia es el mejor regalo. Si deseas obsequiarme un detalle, habrán sobres para regalos en efectivo.';
     $lluviaCierre    = $config('mesa_regalos', 'cierre', 'Con cariño, gracias por acompañarme.');
-    $bienvenidaTxt   = $block('hero')?->contenido ?: ($invitacion?->mensaje_principal ?: 'Con mucha alegría queremos compartir contigo este día tan especial.');
+    $bienvenidaTxt   = $invitacion?->mensaje_principal ?: ($block('hero')?->contenido ?: 'Con mucha alegría queremos compartir contigo este día tan especial.');
     $familia         = $invitacion?->mensaje_footer ?: 'Con cariño, familia de ' . $nombre;
 
     $mensajeKicker   = $config('mensaje', 'kicker', 'Un sueño especial');
@@ -61,8 +74,10 @@
     $galeriaImagenes = $invitacion?->relationLoaded('gallery')
         ? $invitacion->gallery->where('activo', true)->sortBy('orden')->pluck('imagen_path')->values()->all()
         : [];
+    $galeriaKicker    = $config('galeria', 'kicker', 'Galería');
     $galeriaTitulo    = $block('galeria')?->titulo ?: 'Galería de recuerdos';
     $galeriaSubtitulo = $block('galeria')?->contenido ?: 'Pequeños momentos que forman parte de esta historia tan especial.';
+    $padrinosKicker   = $config('padrinos', 'kicker', 'Con mucho cariño');
     $padrinosGrupos = $config('padrinos', 'grupos', [
         ['label' => 'Padres', 'nombres' => ['Dailly García Pérez', 'José Luís Franco Osalde'], 'destacado' => true],
         ['label' => 'Padrinos', 'nombres' => ['Daniella Traconis Alcocer', 'Enrique Massa Pérez']],
@@ -80,14 +95,23 @@
     $heroImage = $heroImage === '__deleted' ? null : $heroImage;
     $parallaxImage   = $config('hero', 'imagen_parallax');
     $parallaxImage   = $parallaxImage === '__deleted' ? null : $parallaxImage;
-    $musicPath       = $config('musica', 'path', $invitacion?->musica_path ?: 'music/music.mp3');
+    $salonKicker     = $config('informacion_evento', 'kicker', 'Recepción');
+    $salonButton     = $config('informacion_evento', 'boton', 'Ver ubicación');
+    $dressKicker     = $config('dress_code', 'kicker', 'Vestimenta');
+    $reservedColor   = $config('dress_code', 'color_reservado', '#F7C9D6');
+    $giftKicker      = $config('mesa_regalos', 'kicker', 'Detalle');
+    $confirmKicker   = $config('whatsapp', 'kicker', 'RSVP');
+    $confirmButton   = $config('whatsapp', 'boton', 'Confirmar');
+    $musicPath       = $invitacion?->musica_path ?: $config('musica', 'path', 'music/music.mp3');
     $colorPrimario   = $invitacion?->color_primario ?: '#d77c78';
     $colorSecundario = $invitacion?->color_secundario ?: '#f8d8d4';
     $colorAcento     = $invitacion?->color_acento ?: '#e8aaa6';
     $defaultEventDateIso = $invitacion?->fecha_evento
         ? $invitacion->fecha_evento->toDateString() . 'T' . ($invitacion?->hora_evento?->format('H:i:s') ?: '20:30:00') . '-06:00'
         : '2026-08-01T20:30:00-06:00';
-    $eventDateIso    = $config('cuenta_regresiva', 'event_date_iso', $defaultEventDateIso);
+    $eventDateIso    = $invitacion?->fecha_evento
+        ? $defaultEventDateIso
+        : $config('cuenta_regresiva', 'event_date_iso', $defaultEventDateIso);
     $pageUrl        = $invitacion ? route('invitaciones.show', $invitacion) : url('/invitacion/xv-valentina');
     $seoTitle       = $evento . ' de ' . $nombre . ' | Invitación digital';
     $seoDescription = 'Invitación digital para ' . $evento . ' de ' . $nombreCompleto . '. ' . $fechaLarga . ' con ceremonia, recepción, ubicación, música y confirmación de asistencia.';
@@ -2255,14 +2279,14 @@
 
             {{-- Contenido --}}
             <div class="intro-content">
-                <p class="intro-eyebrow">Te invitamos</p>
+                <p class="intro-eyebrow">{{ $introKicker }}</p>
                 <h1 class="intro-title">{{ $evento }}</h1>
                 <div class="intro-divider" aria-hidden="true"></div>
                 <h2 class="intro-name">{{ $nombre }}</h2>
                 <p class="intro-date">{{ $fechaCorta }}</p>
 
                 <button type="button" class="intro-button" onclick="openInvitation()">
-                    Abrir invitación
+                    {{ $introButton }}
                 </button>
 
                 <div class="intro-hint" aria-hidden="true">
@@ -2271,7 +2295,7 @@
                             <path d="M6 9l6 6 6-6"/>
                         </svg>
                     </span>
-                    <p class="intro-cta-hint">Desliza o toca para continuar</p>
+                    <p class="intro-cta-hint">{{ $introHint }}</p>
                 </div>
             </div>
         </div>
@@ -2332,7 +2356,7 @@
                     <div class="hero-event-block">
                         <p class="hero-event-date">{{ $fechaLarga }}</p>
                         <p class="hero-event-time">
-                            <span class="time-label">Recepción</span>{{ $horaRecepcion }}
+                            <span class="time-label">{{ $eventTimeLabel }}</span>{{ $horaRecepcion }}
                         </p>
                     </div>
 
@@ -2443,7 +2467,7 @@
             <div class="xv-gallery-card">
 
                 <div class="gallery-heading">
-                    <span class="section-kicker">Galería</span>
+                    <span class="section-kicker">{{ $galeriaKicker }}</span>
                     <h2>{{ $galeriaTitulo }}</h2>
                     <p>{{ $galeriaSubtitulo }}</p>
                 </div>
@@ -2484,17 +2508,17 @@
         @if ($isActive('ubicacion'))
         <section id="iglesia" class="invite-section reveal" aria-label="Iglesia">
             <div class="section-card">
-                <p class="eyebrow">Dónde</p>
-                <h2 class="section-title">Misa de acción de gracias</h2>
+                <p class="eyebrow">{{ $iglesiaKicker }}</p>
+                <h2 class="section-title">{{ $iglesiaTitulo }}</h2>
                 <div class="section-divider" aria-hidden="true"></div>
 
                 <h3 class="ubicacion-name">{{ $iglesiaNombre }}</h3>
-                <p class="ubicacion-addr">Hora de la misa: {{ $iglesiaHora }}</p>
-                <p class="ubicacion-addr">Oficia: {{ $iglesiaCelebrante }}</p>
+                <p class="ubicacion-addr">{{ $iglesiaHoraLabel }}: {{ $iglesiaHora }}</p>
+                <p class="ubicacion-addr">{{ $iglesiaCelebranteLabel }}: {{ $iglesiaCelebrante }}</p>
 
                 <div class="ubicacion-cta">
                     <a href="{{ $iglesiaMapsUrl }}" target="_blank" rel="noopener" class="btn btn-primary">
-                        Ver ubicación
+                        {{ $iglesiaButton }}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M7 17L17 7M9 7h8v8"/>
                         </svg>
@@ -2520,7 +2544,7 @@
         <section id="padrinos" class="xv-sponsors-section reveal" aria-label="Padrinos">
             <div class="xv-sponsors-card">
 
-                <span class="section-kicker">{{ $config('padrinos', 'kicker', 'Con mucho cariño') }}</span>
+                <span class="section-kicker">{{ $padrinosKicker }}</span>
                 <h2>{{ $block('padrinos')?->titulo ?: 'Familia y padrinos' }}</h2>
 
                 <div class="sponsors-divider" aria-hidden="true">
@@ -2555,7 +2579,7 @@
         @if ($isActive('informacion_evento'))
         <section id="salon" class="invite-section reveal" aria-label="Salón de fiestas">
             <div class="section-card">
-                <p class="eyebrow">{{ $config('informacion_evento', 'kicker', 'Recepción') }}</p>
+                <p class="eyebrow">{{ $salonKicker }}</p>
                 <h2 class="section-title">{{ $block('informacion_evento')?->titulo ?: $lugar }}</h2>
                 <div class="section-divider" aria-hidden="true"></div>
 
@@ -2564,7 +2588,7 @@
 
                 <div class="ubicacion-cta">
                     <a href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="btn btn-primary">
-                        Ver ubicación
+                        {{ $salonButton }}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M7 17L17 7M9 7h8v8"/>
                         </svg>
@@ -2589,7 +2613,7 @@
         @if ($isActive('dress_code'))
         <section id="dress-code" class="invite-section reveal" aria-label="Dress code">
             <div class="section-card dress-card">
-                <p class="eyebrow">{{ $config('dress_code', 'kicker', 'Vestimenta') }}</p>
+                <p class="eyebrow">{{ $dressKicker }}</p>
                 <h2 class="section-title">{{ $block('dress_code')?->titulo ?: 'Dress code' }}</h2>
                 <div class="section-divider" aria-hidden="true"></div>
 
@@ -2599,7 +2623,7 @@
                 {{-- Mensaje 2: solo el rosa está reservado para la Xvañera --}}
                 <div class="dress-reserved" role="note">
                     <div class="dress-reserved-circle-wrap" aria-hidden="true">
-                        <span class="dress-reserved-circle" style="background:{{ $config('dress_code', 'color_reservado', '#F7C9D6') }}"></span>
+                        <span class="dress-reserved-circle" style="background:{{ $reservedColor }}"></span>
                         <svg class="dress-reserved-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                             <line x1="6" y1="6" x2="18" y2="18"/>
                             <line x1="6" y1="18" x2="18" y2="6"/>
@@ -2618,7 +2642,7 @@
         @if ($isActive('mesa_regalos'))
         <section id="lluvia-sobres" class="invite-section reveal" aria-label="Lluvia de sobres">
             <div class="section-card lluvia-card">
-                <p class="eyebrow">{{ $config('mesa_regalos', 'kicker', 'Detalle') }}</p>
+                <p class="eyebrow">{{ $giftKicker }}</p>
                 <h2 class="section-title">{{ $block('mesa_regalos')?->titulo ?: 'Lluvia de sobres' }}</h2>
                 <div class="section-divider" aria-hidden="true"></div>
 
@@ -2645,7 +2669,7 @@
         @if ($isActive('whatsapp'))
         <section id="confirmacion" class="invite-section reveal" aria-label="Confirmar asistencia">
             <div class="section-card confirm-card">
-                <p class="eyebrow">{{ $config('whatsapp', 'kicker', 'RSVP') }}</p>
+                <p class="eyebrow">{{ $confirmKicker }}</p>
                 <h2 class="section-title">{{ $block('whatsapp')?->titulo ?: 'Confirma tu asistencia' }}</h2>
                 <div class="section-divider" aria-hidden="true"></div>
                 <p class="confirm-text">
@@ -2662,7 +2686,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M20 6L9 17l-5-5"/>
                         </svg>
-                        Confirmar
+                        {{ $confirmButton }}
                     </button>
                 </div>
             </div>

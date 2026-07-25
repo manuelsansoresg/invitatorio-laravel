@@ -11,9 +11,11 @@
 
     $heroIndex = $blockIndex('hero');
     $countdownIndex = $blockIndex('cuenta_regresiva');
+    $messageIndex = $blockIndex('mensaje');
     $eventIndex = $blockIndex('informacion_evento');
     $dressIndex = $blockIndex('dress_code');
     $locationIndex = $blockIndex('ubicacion');
+    $sponsorsIndex = $blockIndex('padrinos');
     $giftIndex = $blockIndex('mesa_regalos');
     $musicIndex = $blockIndex('musica');
     $whatsappIndex = $blockIndex('whatsapp');
@@ -226,6 +228,29 @@
                 <h2 class="font-display text-xl font-extrabold text-slate-900">Portada</h2>
                 <p class="mt-1 text-sm font-medium text-slate-500">Personaliza la portada de tu invitación.</p>
 
+                <div class="editor-field-card mt-6 grid gap-4">
+                    <label class="block text-sm font-extrabold text-slate-800">
+                        Texto superior
+                        <input wire:model.live.debounce.400ms="sectionSettings.hero.intro_kicker" class="editor-input mt-2">
+                    </label>
+                    <label class="block text-sm font-extrabold text-slate-800">
+                        Texto del botón
+                        <input wire:model.live.debounce.400ms="sectionSettings.hero.intro_boton" class="editor-input mt-2">
+                    </label>
+                    <label class="block text-sm font-extrabold text-slate-800">
+                        Indicación inferior
+                        <input wire:model.live.debounce.400ms="sectionSettings.hero.intro_indicacion" class="editor-input mt-2">
+                    </label>
+                    <label class="block text-sm font-extrabold text-slate-800">
+                        Mensaje principal
+                        <textarea wire:model.live.debounce.400ms="form.mensaje_principal" rows="3" class="editor-input mt-2"></textarea>
+                    </label>
+                    <label class="block text-sm font-extrabold text-slate-800">
+                        Etiqueta de la hora
+                        <input wire:model.live.debounce.400ms="sectionSettings.hero.etiqueta_hora" class="editor-input mt-2" placeholder="Recepción">
+                    </label>
+                </div>
+
                 <div class="editor-field-card mt-7" wire:key="cover-image-card-{{ $imageActionNonce }}">
                     <p class="text-sm font-extrabold text-slate-900">Imagen de portada / intro</p>
                     <p class="mt-1 text-sm font-medium text-slate-500">Esta imagen aparece en la primera portada antes de abrir la invitación.</p>
@@ -368,6 +393,36 @@
                 </div>
             </div>
 
+            @if (! is_null($messageIndex))
+                <div id="section-message" class="editor-card p-5 md:p-7">
+                    <span class="editor-section-pill">Editando mensaje especial</span>
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h2 class="font-display text-xl font-extrabold text-slate-900">Mensaje especial</h2>
+                            <p class="mt-1 text-sm font-medium text-slate-500">Edita todo el bloque que aparece después de la imagen destacada.</p>
+                        </div>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700">
+                            <input type="checkbox" wire:model.live="blocks.{{ $messageIndex }}.activo" class="rounded border-border-soft text-purple-brand">
+                            Mostrar
+                        </label>
+                    </div>
+                    <div class="mt-6 grid gap-4">
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto superior
+                            <input wire:model.live.debounce.400ms="sectionSettings.mensaje.kicker" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Título
+                            <textarea wire:model.live.debounce.400ms="blocks.{{ $messageIndex }}.titulo" rows="3" class="editor-input mt-2"></textarea>
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Mensaje
+                            <textarea wire:model.live.debounce.400ms="blocks.{{ $messageIndex }}.contenido" rows="4" class="editor-input mt-2"></textarea>
+                        </label>
+                    </div>
+                </div>
+            @endif
+
             <div id="section-gallery" class="editor-card p-5 md:p-7" wire:key="gallery-card-{{ $imageActionNonce }}">
                 <span class="editor-section-pill">Editando galería</span>
                 <div class="flex items-start justify-between gap-4">
@@ -380,6 +435,14 @@
 
                 @if (! is_null($galleryIndex))
                     <div class="mt-5 grid gap-3">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700">
+                            <input type="checkbox" wire:model.live="blocks.{{ $galleryIndex }}.activo" class="rounded border-border-soft text-purple-brand">
+                            Mostrar galería
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto superior
+                            <input wire:model.live.debounce.400ms="sectionSettings.galeria.kicker" class="editor-input mt-2">
+                        </label>
                         <label class="block text-sm font-extrabold text-slate-800">
                             Título
                             <input wire:model.live.debounce.400ms="blocks.{{ $galleryIndex }}.titulo" class="editor-input mt-2">
@@ -477,6 +540,10 @@
                         <input wire:model.live.debounce.400ms="form.subtitulo" maxlength="80" class="editor-input mt-2">
                         <span class="mt-1 block text-right text-xs font-semibold text-slate-400">{{ strlen($form['subtitulo'] ?? '') }}/80</span>
                     </label>
+                    <label class="block text-sm font-extrabold text-slate-800">
+                        Mensaje del pie de página
+                        <input wire:model.live.debounce.400ms="form.mensaje_footer" class="editor-input mt-2">
+                    </label>
                 </div>
             </div>
 
@@ -516,6 +583,16 @@
                 <p class="mt-1 text-sm font-medium text-slate-500">Define la vestimenta sugerida.</p>
 
                 <div class="mt-6 grid gap-4">
+                    @if (! is_null($dressIndex))
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto superior
+                            <input wire:model.live.debounce.400ms="sectionSettings.dress_code.kicker" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Título de la sección
+                            <input wire:model.live.debounce.400ms="blocks.{{ $dressIndex }}.titulo" class="editor-input mt-2">
+                        </label>
+                    @endif
                     <label class="block text-sm font-extrabold text-slate-800">
                         Dress code
                         <input wire:model.live.debounce.400ms="form.dress_code" class="editor-input mt-2" placeholder="Formal">
@@ -530,25 +607,168 @@
                         Descripción
                         <textarea wire:model.live.debounce.400ms="form.dress_code_descripcion" rows="3" class="editor-input mt-2"></textarea>
                     </label>
+                    <label class="block text-sm font-extrabold text-slate-800">
+                        Color reservado
+                        <input type="color" wire:model.live="sectionSettings.dress_code.color_reservado" class="mt-2 h-12 w-full rounded-xl border border-border-soft p-1">
+                        <input wire:model.live.debounce.300ms="sectionSettings.dress_code.color_reservado" class="editor-input mt-2 font-mono uppercase" placeholder="#F7C9D6">
+                    </label>
                 </div>
             </div>
 
             <div id="section-location" class="editor-card p-5 md:p-7">
-                <span class="editor-section-pill">Editando ubicación</span>
-                <h2 class="font-display text-xl font-extrabold text-slate-900">Ubicación</h2>
-                <p class="mt-1 text-sm font-medium text-slate-500">Agrega la dirección y el enlace de Google Maps.</p>
+                <span class="editor-section-pill">Editando misa y salón</span>
+                <h2 class="font-display text-xl font-extrabold text-slate-900">Ubicaciones</h2>
+                <p class="mt-1 text-sm font-medium text-slate-500">Edita por separado la ceremonia religiosa y la recepción.</p>
 
-                <div class="mt-6 grid gap-4">
-                    <label class="block text-sm font-extrabold text-slate-800">
-                        Dirección
-                        <textarea wire:model.live.debounce.400ms="form.lugar_direccion" rows="3" class="editor-input mt-2"></textarea>
-                    </label>
-                    <label class="block text-sm font-extrabold text-slate-800">
-                        Google Maps URL
-                        <textarea wire:model.live.debounce.400ms="form.maps_url" rows="2" class="editor-input mt-2"></textarea>
-                    </label>
-                </div>
+                @if (! is_null($locationIndex))
+                    <div class="editor-field-card mt-6 grid gap-4">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-display text-lg font-extrabold text-slate-900">Misa / ceremonia</h3>
+                            <label class="flex items-center gap-2 text-sm font-bold text-slate-700">
+                                <input type="checkbox" wire:model.live="blocks.{{ $locationIndex }}.activo" class="rounded border-border-soft text-purple-brand">
+                                Mostrar
+                            </label>
+                        </div>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto superior
+                            <input wire:model.live.debounce.400ms="sectionSettings.ubicacion.kicker" class="editor-input mt-2" placeholder="Dónde">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Título
+                            <input wire:model.live.debounce.400ms="blocks.{{ $locationIndex }}.titulo" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Nombre de la iglesia o lugar
+                            <input wire:model.live.debounce.400ms="sectionSettings.ubicacion.nombre" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Hora
+                            <input wire:model.live.debounce.400ms="sectionSettings.ubicacion.hora" class="editor-input mt-2" placeholder="8:30 p.m.">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Etiqueta de la hora
+                            <input wire:model.live.debounce.400ms="sectionSettings.ubicacion.hora_etiqueta" class="editor-input mt-2" placeholder="Hora de la misa">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Celebrante
+                            <input wire:model.live.debounce.400ms="sectionSettings.ubicacion.celebrante" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Etiqueta del celebrante
+                            <input wire:model.live.debounce.400ms="sectionSettings.ubicacion.celebrante_etiqueta" class="editor-input mt-2" placeholder="Oficia">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Enlace para abrir Google Maps
+                            <textarea wire:model.live.debounce.400ms="sectionSettings.ubicacion.maps_url" rows="2" class="editor-input mt-2"></textarea>
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Enlace del mapa incrustado
+                            <textarea wire:model.live.debounce.400ms="sectionSettings.ubicacion.maps_embed" rows="2" class="editor-input mt-2" placeholder="https://www.google.com/maps?...&output=embed"></textarea>
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto del botón
+                            <input wire:model.live.debounce.400ms="sectionSettings.ubicacion.boton" class="editor-input mt-2">
+                        </label>
+                    </div>
+                @endif
+
+                @if (! is_null($eventIndex))
+                    <div class="editor-field-card mt-5 grid gap-4">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-display text-lg font-extrabold text-slate-900">Salón / recepción</h3>
+                            <label class="flex items-center gap-2 text-sm font-bold text-slate-700">
+                                <input type="checkbox" wire:model.live="blocks.{{ $eventIndex }}.activo" class="rounded border-border-soft text-purple-brand">
+                                Mostrar
+                            </label>
+                        </div>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto superior
+                            <input wire:model.live.debounce.400ms="sectionSettings.informacion_evento.kicker" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Título de la sección
+                            <input wire:model.live.debounce.400ms="blocks.{{ $eventIndex }}.titulo" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Nombre del salón
+                            <input wire:model.live.debounce.400ms="form.lugar_nombre" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Dirección
+                            <textarea wire:model.live.debounce.400ms="form.lugar_direccion" rows="2" class="editor-input mt-2"></textarea>
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Enlace para abrir Google Maps
+                            <textarea wire:model.live.debounce.400ms="form.maps_url" rows="2" class="editor-input mt-2"></textarea>
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Enlace del mapa incrustado
+                            <textarea wire:model.live.debounce.400ms="sectionSettings.informacion_evento.maps_embed" rows="2" class="editor-input mt-2" placeholder="https://www.google.com/maps?...&output=embed"></textarea>
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto del botón
+                            <input wire:model.live.debounce.400ms="sectionSettings.informacion_evento.boton" class="editor-input mt-2">
+                        </label>
+                    </div>
+                @endif
             </div>
+
+            @if (! is_null($sponsorsIndex))
+                <div id="section-sponsors" class="editor-card p-5 md:p-7">
+                    <span class="editor-section-pill">Editando familia y padrinos</span>
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h2 class="font-display text-xl font-extrabold text-slate-900">Padrinos y familia</h2>
+                            <p class="mt-1 text-sm font-medium text-slate-500">Puedes editar, agregar o quitar grupos.</p>
+                        </div>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700">
+                            <input type="checkbox" wire:model.live="blocks.{{ $sponsorsIndex }}.activo" class="rounded border-border-soft text-purple-brand">
+                            Mostrar
+                        </label>
+                    </div>
+                    <div class="mt-6 grid gap-4">
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto superior
+                            <input wire:model.live.debounce.400ms="sectionSettings.padrinos.kicker" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Título
+                            <input wire:model.live.debounce.400ms="blocks.{{ $sponsorsIndex }}.titulo" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Descripción
+                            <textarea wire:model.live.debounce.400ms="blocks.{{ $sponsorsIndex }}.contenido" rows="3" class="editor-input mt-2"></textarea>
+                        </label>
+
+                        @foreach (data_get($sectionSettings, 'padrinos.grupos', []) as $groupIndex => $group)
+                            <div class="rounded-xl border border-border-soft bg-slate-50 p-4" wire:key="sponsor-group-{{ $groupIndex }}">
+                                <div class="flex items-center justify-between gap-3">
+                                    <p class="text-sm font-extrabold text-slate-900">Grupo {{ $groupIndex + 1 }}</p>
+                                    <button type="button" wire:click="removeSponsorGroup({{ $groupIndex }})" class="cursor-pointer text-xs font-extrabold text-red-700">Eliminar grupo</button>
+                                </div>
+                                <label class="mt-3 block text-sm font-extrabold text-slate-800">
+                                    Tipo de grupo
+                                    <input wire:model.live.debounce.400ms="sectionSettings.padrinos.grupos.{{ $groupIndex }}.label" class="editor-input mt-2" placeholder="Padres o Padrinos">
+                                </label>
+                                @foreach (data_get($group, 'nombres', []) as $nameIndex => $name)
+                                    <label class="mt-3 block text-sm font-extrabold text-slate-800">
+                                        Nombre {{ $nameIndex + 1 }}
+                                        <input wire:model.live.debounce.400ms="sectionSettings.padrinos.grupos.{{ $groupIndex }}.nombres.{{ $nameIndex }}" class="editor-input mt-2">
+                                    </label>
+                                @endforeach
+                                <label class="mt-3 flex items-center gap-2 text-sm font-bold text-slate-700">
+                                    <input type="checkbox" wire:model.live="sectionSettings.padrinos.grupos.{{ $groupIndex }}.destacado" class="rounded border-border-soft text-purple-brand">
+                                    Destacar este grupo
+                                </label>
+                            </div>
+                        @endforeach
+
+                        <button type="button" wire:click="addSponsorGroup" class="cursor-pointer rounded-xl border border-purple-brand/30 bg-purple-soft px-4 py-3 text-sm font-extrabold text-purple-brand transition hover:border-purple-brand">
+                            Agregar grupo
+                        </button>
+                    </div>
+                </div>
+            @endif
 
             <div id="section-gifts" class="editor-card p-5 md:p-7">
                 <span class="editor-section-pill">Editando mesa de regalos</span>
@@ -561,12 +781,20 @@
                             Mostrar mesa de regalos
                         </label>
                         <label class="block text-sm font-extrabold text-slate-800">
+                            Texto superior
+                            <input wire:model.live.debounce.400ms="sectionSettings.mesa_regalos.kicker" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
                             Título
                             <input wire:model.live.debounce.400ms="blocks.{{ $giftIndex }}.titulo" class="editor-input mt-2">
                         </label>
                         <label class="block text-sm font-extrabold text-slate-800">
                             Mensaje
                             <textarea wire:model.live.debounce.400ms="blocks.{{ $giftIndex }}.contenido" rows="3" class="editor-input mt-2"></textarea>
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Mensaje de cierre
+                            <textarea wire:model.live.debounce.400ms="sectionSettings.mesa_regalos.cierre" rows="2" class="editor-input mt-2"></textarea>
                         </label>
                     </div>
                 @endif
@@ -577,6 +805,12 @@
                 <h2 class="font-display text-xl font-extrabold text-slate-900">Música</h2>
                 <p class="mt-1 text-sm font-medium text-slate-500">Agrega música de fondo a la invitación.</p>
                 <div class="mt-6 grid gap-4">
+                    @if (! is_null($musicIndex))
+                        <label class="flex items-center gap-3 text-sm font-bold text-slate-700">
+                            <input type="checkbox" wire:model.live="blocks.{{ $musicIndex }}.activo" class="h-5 w-9 rounded-full border-border-soft text-purple-brand focus:ring-purple-brand">
+                            Reproducir música en la invitación
+                        </label>
+                    @endif
                     <label class="block text-sm font-extrabold text-slate-800">
                         Título
                         <input wire:model.live.debounce.400ms="form.musica_titulo" class="editor-input mt-2">
@@ -632,6 +866,28 @@
                 <h2 class="font-display text-xl font-extrabold text-slate-900">WhatsApp</h2>
                 <p class="mt-1 text-sm font-medium text-slate-500">Configura el botón de confirmación.</p>
                 <div class="mt-6 grid gap-4">
+                    @if (! is_null($whatsappIndex))
+                        <label class="flex items-center gap-3 text-sm font-bold text-slate-700">
+                            <input type="checkbox" wire:model.live="blocks.{{ $whatsappIndex }}.activo" class="h-5 w-9 rounded-full border-border-soft text-purple-brand focus:ring-purple-brand">
+                            Mostrar confirmación
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto superior
+                            <input wire:model.live.debounce.400ms="sectionSettings.whatsapp.kicker" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Título
+                            <input wire:model.live.debounce.400ms="blocks.{{ $whatsappIndex }}.titulo" class="editor-input mt-2">
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Descripción
+                            <textarea wire:model.live.debounce.400ms="blocks.{{ $whatsappIndex }}.contenido" rows="3" class="editor-input mt-2"></textarea>
+                        </label>
+                        <label class="block text-sm font-extrabold text-slate-800">
+                            Texto del botón
+                            <input wire:model.live.debounce.400ms="sectionSettings.whatsapp.boton" class="editor-input mt-2">
+                        </label>
+                    @endif
                     <label class="block text-sm font-extrabold text-slate-800">
                         Número
                         <input wire:model.live.debounce.400ms="form.whatsapp_numero" class="editor-input mt-2">

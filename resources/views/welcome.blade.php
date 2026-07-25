@@ -705,7 +705,7 @@
             <div class="grid grid-cols-1 gap-5 lg:gap-7">
 
                 {{-- Card único: XV años Mariana — caso real destacado --}}
-                <a href="/invitacion/xv-mariana" target="_blank" rel="noopener"
+                <a href="/invitacion/xv-valeria-mendez" target="_blank" rel="noopener"
                    class="card-gallery block group relative
                           rounded-2xl overflow-hidden bg-white
                           shadow-[0_18px_40px_-22px_rgba(43,20,63,.35)]

@@ -30,6 +30,8 @@ class InvitationEditor extends Component
 
     public array $galleryItems = [];
 
+    public array $sectionSettings = [];
+
     public $musicFile;
 
     public int $previewNonce;
@@ -84,7 +86,31 @@ class InvitationEditor extends Component
             ->values()
             ->all();
 
+        $this->loadSectionSettings();
         $this->refreshGalleryItems();
+    }
+
+    public function addSponsorGroup(): void
+    {
+        $this->sectionSettings['padrinos']['grupos'][] = [
+            'label' => 'Padrinos',
+            'nombres' => ['', ''],
+            'destacado' => false,
+        ];
+
+        $this->save(false);
+    }
+
+    public function removeSponsorGroup(int $index): void
+    {
+        if (! isset($this->sectionSettings['padrinos']['grupos'][$index])) {
+            return;
+        }
+
+        unset($this->sectionSettings['padrinos']['grupos'][$index]);
+        $this->sectionSettings['padrinos']['grupos'] = array_values($this->sectionSettings['padrinos']['grupos']);
+
+        $this->save(false);
     }
 
     public function updatedCoverImage(): void
@@ -494,13 +520,19 @@ class InvitationEditor extends Component
 
     public function updated(string $property): void
     {
-        if (str_starts_with($property, 'form.') || str_starts_with($property, 'blocks.')) {
+        if (
+            str_starts_with($property, 'form.')
+            || str_starts_with($property, 'blocks.')
+            || str_starts_with($property, 'sectionSettings.')
+        ) {
             $this->save(false);
         }
     }
 
     public function save(bool $showStatus = true): void
     {
+        $this->syncSectionSettingsIntoBlocks();
+
         $validated = $this->validate([
             'form.nombre' => ['required', 'string', 'max:80'],
             'form.apellido_paterno' => ['required', 'string', 'max:80'],
@@ -535,6 +567,12 @@ class InvitationEditor extends Component
             'blocks.*.config_json' => ['nullable', 'json'],
             'blocks.*.orden' => ['required', 'integer', 'min:0'],
             'blocks.*.activo' => ['boolean'],
+            'sectionSettings.*.*' => ['nullable'],
+            'sectionSettings.padrinos.grupos' => ['array', 'max:12'],
+            'sectionSettings.padrinos.grupos.*.label' => ['nullable', 'string', 'max:80'],
+            'sectionSettings.padrinos.grupos.*.nombres' => ['array', 'max:4'],
+            'sectionSettings.padrinos.grupos.*.nombres.*' => ['nullable', 'string', 'max:120'],
+            'sectionSettings.padrinos.grupos.*.destacado' => ['boolean'],
         ]);
 
         $form = $validated['form'];
@@ -575,5 +613,120 @@ class InvitationEditor extends Component
     {
         return view('livewire.invitation-editor')
             ->layout('layouts.editor', ['title' => 'Editor de invitación']);
+    }
+
+    private function loadSectionSettings(): void
+    {
+        $settings = fn (string $type): array => $this->blockConfigByType($type);
+
+        $this->sectionSettings = [
+            'hero' => array_merge([
+                'intro_kicker' => 'Te invitamos',
+                'intro_boton' => 'Abrir invitación',
+                'intro_indicacion' => 'Desliza o toca para continuar',
+                'etiqueta_hora' => 'Recepción',
+            ], $settings('hero')),
+            'mensaje' => array_merge([
+                'kicker' => 'Un sueño especial',
+            ], $settings('mensaje')),
+            'galeria' => array_merge([
+                'kicker' => 'Galería',
+            ], $settings('galeria')),
+            'ubicacion' => array_merge([
+                'kicker' => 'Dónde',
+                'nombre' => '',
+                'direccion' => '',
+                'hora' => '',
+                'hora_etiqueta' => 'Hora de la misa',
+                'celebrante' => '',
+                'celebrante_etiqueta' => 'Oficia',
+                'maps_url' => '',
+                'maps_embed' => '',
+                'boton' => 'Ver ubicación',
+            ], $settings('ubicacion')),
+            'padrinos' => array_merge([
+                'kicker' => 'Con mucho cariño',
+                'grupos' => [],
+            ], $settings('padrinos')),
+            'informacion_evento' => array_merge([
+                'kicker' => 'Recepción',
+                'maps_embed' => '',
+                'boton' => 'Ver ubicación',
+            ], $settings('informacion_evento')),
+            'dress_code' => array_merge([
+                'kicker' => 'Vestimenta',
+                'color_reservado' => '#F7C9D6',
+            ], $settings('dress_code')),
+            'mesa_regalos' => array_merge([
+                'kicker' => 'Detalle',
+                'cierre' => 'Con cariño, gracias por acompañarme.',
+            ], $settings('mesa_regalos')),
+            'whatsapp' => array_merge([
+                'kicker' => 'RSVP',
+                'boton' => 'Confirmar',
+            ], $settings('whatsapp')),
+        ];
+
+        $this->sectionSettings['padrinos']['grupos'] = collect($this->sectionSettings['padrinos']['grupos'] ?? [])
+            ->map(fn (array $group) => [
+                'label' => (string) ($group['label'] ?? 'Padrinos'),
+                'nombres' => array_values(array_pad(array_slice($group['nombres'] ?? [], 0, 4), 4, '')),
+                'destacado' => (bool) ($group['destacado'] ?? false),
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function blockConfigByType(string $type): array
+    {
+        foreach ($this->blocks as $block) {
+            if (($block['tipo'] ?? null) !== $type) {
+                continue;
+            }
+
+            $config = json_decode($block['config_json'] ?: '{}', true);
+
+            return is_array($config) ? $config : [];
+        }
+
+        return [];
+    }
+
+    private function syncSectionSettingsIntoBlocks(): void
+    {
+        foreach ($this->sectionSettings as $type => $settings) {
+            foreach ($this->blocks as $index => $block) {
+                if (($block['tipo'] ?? null) !== $type) {
+                    continue;
+                }
+
+                $current = json_decode($block['config_json'] ?: '{}', true);
+                $current = is_array($current) ? $current : [];
+                $merged = array_merge($current, is_array($settings) ? $settings : []);
+
+                if ($type === 'padrinos') {
+                    $merged['grupos'] = collect($settings['grupos'] ?? [])
+                        ->map(fn (array $group) => [
+                            'label' => trim((string) ($group['label'] ?? 'Padrinos')),
+                            'nombres' => collect($group['nombres'] ?? [])
+                                ->map(fn ($name) => trim((string) $name))
+                                ->filter()
+                                ->values()
+                                ->all(),
+                            'destacado' => (bool) ($group['destacado'] ?? false),
+                        ])
+                        ->filter(fn (array $group) => filled($group['label']) || $group['nombres'] !== [])
+                        ->values()
+                        ->all();
+                }
+
+                $this->blocks[$index]['config_json'] = json_encode(
+                    $merged,
+                    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
+                );
+
+                break;
+            }
+        }
     }
 }
