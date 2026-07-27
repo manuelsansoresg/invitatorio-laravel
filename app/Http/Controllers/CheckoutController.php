@@ -7,6 +7,7 @@ use App\Models\Paquete;
 use App\Services\MercadoPagoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -26,6 +27,12 @@ class CheckoutController extends Controller
      */
     public function show(Paquete $paquete): View
     {
+        Log::info('Checkout::show', [
+            'paquete_id'    => $paquete->id,
+            'paquete_slug'  => $paquete->slug,
+            'paquete_activo'=> $paquete->activo,
+            'request_url'   => request()->fullUrl(),
+        ]);
         abort_unless($paquete->activo, 404);
 
         return view('checkout.buy', [
