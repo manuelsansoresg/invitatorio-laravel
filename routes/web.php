@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ConfirmacionController;
 use App\Http\Controllers\ConfirmadosController;
 use App\Http\Controllers\InvitacionController;
+use App\Http\Controllers\MercadoPagoCallbackController;
+use App\Http\Controllers\WebhookController;
 use App\Livewire\InvitationEditor;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
@@ -87,3 +90,54 @@ Route::get('/invitacion/{invitacion}', [InvitacionController::class, 'show'])
 // Confirmación de asistencia — formulario del popup en la invitación.
 Route::post('/confirmar-asistencia', [ConfirmacionController::class, 'store'])
     ->name('confirmacion.store');
+
+/*
+|--------------------------------------------------------------------------
+| Checkout — compra de paquetes con Mercado Pago
+|--------------------------------------------------------------------------
+|
+| Flujo:
+|   /comprar/{paquete}          → form con datos del comprador
+|   POST /comprar/{paquete}     → crea la orden + preference → redirige a MP
+|   /checkout/success           → MP redirige acá si todo salió bien
+|   /checkout/pending           → si el pago quedó en revisión
+|   /checkout/failure           → si el usuario canceló o fue rechazado
+|
+| Nota: el webhook NO vive acá, está en /api/mercadopago/webhook para que
+| MP lo pueda llamar sin la sesión de la app.
+*/
+Route::get('/comprar/{paquete:slug}', [CheckoutController::class, 'show'])
+    ->name('checkout.show');
+Route::post('/comprar/{paquete:slug}', [CheckoutController::class, 'buy'])
+    ->name('checkout.buy');
+Route::get('/checkout/success', [CheckoutController::class, 'success'])
+    ->name('checkout.success');
+Route::get('/checkout/pending', [CheckoutController::class, 'pending'])
+    ->name('checkout.pending');
+Route::get('/checkout/failure', [CheckoutController::class, 'failure'])
+    ->name('checkout.failure');
+
+/*
+|--------------------------------------------------------------------------
+| Webhook IPN de Mercado Pago
+|--------------------------------------------------------------------------
+| MP llama esta URL en segundo plano cuando hay un cambio de estado en un
+| pago. Se mantiene fuera del grupo web con sesión porque MP no necesita
+| cookies, solo confirmar y responder 200.
+*/
+Route::post('/api/mercadopago/webhook', [WebhookController::class, 'handle'])
+    ->withoutMiddleware([
+        VerifyCsrfToken::class,
+        PreventRequestForgery::class,
+    ])
+    ->name('mercadopago.webhook');
+
+/*
+|--------------------------------------------------------------------------
+| Callback OAuth (Mercado Pago Connect)
+|--------------------------------------------------------------------------
+| URL declarada en el panel de MP. Hoy no usamos OAuth, pero dejamos la
+| ruta para que la URL no devuelva 404 si por error alguien la abre.
+*/
+Route::get('/api/mercadopago/callback', MercadoPagoCallbackController::class)
+    ->name('mercadopago.callback');

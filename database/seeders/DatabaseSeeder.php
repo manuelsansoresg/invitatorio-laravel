@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         // Invitación por defecto para la XVañera (Valentina)
         $this->call([
             AdminUserSeeder::class,
+            PaqueteSeeder::class,
             InvitacionSeeder::class,
             ValentinaInvitationSeeder::class,
             InstagramWeddingInvitationSeeder::class,
