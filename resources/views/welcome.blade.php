@@ -975,35 +975,141 @@
             </header>
 
             @php
-                use App\Models\Paquete;
-
-                // Etiqueta y descripción por formato (estáticas, no van a DB).
-                // Los paquetes en sí se leen de la tabla `paquetes` para poder
-                // actualizarlos sin tocar código.
-                $formatMeta = [
+                $packageFormats = [
                     'web' => [
-                        'label'       => 'Web',
-                        'description' => 'La opción más completa: enlace, música, ubicación, fotos y detalles del evento.',
+                        'label' => 'Web',
+                                'description' => 'La opción más completa: enlace, música, ubicación, fotos y detalles del evento.',
+                        'packages' => [
+                            [
+                                'slug' => 'web-esencial',
+                                'name' => 'Web Esencial',
+                                'description' => 'Para eventos sencillos que necesitan verse bien y compartir todos los datos básicos.',
+                                'price' => '$600',
+                                'badge' => 'Básica',
+                                'featured' => false,
+                                'items' => [
+                                    'Invitación web adaptable a celular',
+                                    'Fecha, hora y datos del evento',
+                                    'Música de fondo',
+                                    'Cuenta regresiva',
+                                    'Mesa de regalos',
+                                    'Galería de fotos hasta 3 imágenes',
+                                    'Botón de WhatsApp',
+                                ],
+                            ],
+                            [
+                                'slug' => 'web-plus',
+                                'name' => 'Web Plus',
+                                'description' => 'Para quienes quieren una invitación más completa sin llegar al paquete premium.',
+                                'price' => '$900',
+                                'badge' => 'Más elegida',
+                                'featured' => true,
+                                'items' => [
+                                    'Todo lo de Web Esencial',
+                                    'Ubicación con Google Maps',
+                                    'Galería de fotos hasta 5 imágenes',
+                                    'Itinerario del evento',
+                                    'Botón para agregar al calendario',
+                                    'Diseño con más detalles visuales',
+                                ],
+                            ],
+                            [
+                                'slug' => 'web-premium',
+                                'name' => 'Web Premium',
+                                'description' => 'Para bodas, XV años y eventos formales donde necesitas confirmaciones y más secciones.',
+                                'price' => '$1,300',
+                                'badge' => 'Completa',
+                                'featured' => false,
+                                'items' => [
+                                    'Todo lo de Web Plus',
+                                    'Galería de fotos hasta 10 imágenes',
+                                    'Confirmación de asistencia RSVP',
+                                    'Lista básica de invitados confirmados',
+                                    'Sección de padres, padrinos o familia',
+                                    'Recomendaciones para invitados',
+                                    'Diseño más elegante y trabajado',
+                                ],
+                            ],
+                        ],
                     ],
                     'imagen' => [
-                        'label'       => 'Imagen',
-                        'description' => 'Ideal para fiestas rápidas, estados de WhatsApp o invitaciones sencillas.',
+                        'label' => 'Imagen',
+                                'description' => 'Ideal para fiestas rápidas, estados de WhatsApp o invitaciones sencillas.',
+                        'packages' => [
+                            [
+                                'slug' => 'imagen-basica',
+                                'name' => 'Imagen Básica',
+                                'description' => 'Para fiestas, cumpleaños o reuniones que necesitan una invitación visual rápida.',
+                                'price' => '$150',
+                                'badge' => 'Rápida',
+                                'featured' => false,
+                                'items' => [
+                                    'Diseño estático personalizado',
+                                    'Formato vertical para WhatsApp',
+                                    'Nombres, fecha, hora y lugar',
+                                    'Dress code o nota especial',
+                                    'Entrega en PNG/JPG',
+                                ],
+                            ],
+                            [
+                                'slug' => 'imagen-premium',
+                                'name' => 'Imagen Premium',
+                                'description' => 'Para fiestas con temática, baby shower, bautizos o celebraciones que necesitan verse más cuidadas.',
+                                'price' => '$250',
+                                'badge' => 'Más elegida',
+                                'featured' => true,
+                                'items' => [
+                                    'Todo lo de Imagen Básica',
+                                    'Diseño con más detalle visual',
+                                    'Versión para historia o estado',
+                                    'Versión cuadrada para publicación',
+                                    'Un ajuste posterior incluido',
+                                ],
+                            ],
+                        ],
                     ],
                     'video' => [
-                        'label'       => 'Video',
-                        'description' => 'Una versión animada para compartir en estados, historias o por mensaje.',
+                        'label' => 'Video',
+                                'description' => 'Una versión animada para compartir en estados, historias o por mensaje.',
+                        'packages' => [
+                            [
+                                'slug' => 'video-basico',
+                                'name' => 'Video Básico',
+                                'description' => 'Para presentar tu evento con una versión animada sencilla.',
+                                'price' => '$300',
+                                'badge' => 'Animado',
+                                'featured' => false,
+                                'items' => [
+                                    'Video vertical animado',
+                                    'Música de fondo',
+                                    'Texto con datos principales',
+                                    'Fotos o elementos visuales del evento',
+                                    'Formato MP4 para redes',
+                                ],
+                            ],
+                            [
+                                'slug' => 'video-premium',
+                                'name' => 'Video Premium',
+                                'description' => 'Para un video simple con más escenas y mejor ritmo visual.',
+                                'price' => '$450',
+                                'badge' => 'Más elegido',
+                                'featured' => true,
+                                'items' => [
+                                    'Todo lo de Video Básico',
+                                    'Animaciones más elaboradas',
+                                    'Más escenas o momentos',
+                                    'Diseño según temática',
+                                    'Un ajuste posterior incluido',
+                                ],
+                            ],
+                        ],
                     ],
                 ];
-
-                $packagesByFormat = Paquete::activos()
-                    ->get()
-                    ->groupBy('formato')
-                    ->map(fn ($group) => $group->values());
             @endphp
 
             <div class="reveal" data-pricing-tabs>
                 <div class="mx-auto mb-10 flex w-full max-w-xl rounded-lg border border-[#F1E6D9] bg-white p-1.5 shadow-[0_16px_34px_-28px_rgba(43,20,63,.45)]" role="tablist" aria-label="Formatos de invitación">
-                    @foreach ($formatMeta as $formatKey => $format)
+                    @foreach ($packageFormats as $formatKey => $format)
                         <button
                             type="button"
                             id="pricing-tab-{{ $formatKey }}"
@@ -1018,10 +1124,7 @@
                     @endforeach
                 </div>
 
-                @foreach ($formatMeta as $formatKey => $format)
-                    @php
-                        $formatPackages = $packagesByFormat->get($formatKey, collect());
-                    @endphp
+                @foreach ($packageFormats as $formatKey => $format)
                     <div
                         id="pricing-panel-{{ $formatKey }}"
                         class="pricing-panel {{ $loop->first ? '' : 'hidden' }}"
@@ -1031,49 +1134,41 @@
                     >
                         <p class="mb-7 text-center text-sm sm:text-base text-[#5F5A66]">{{ $format['description'] }}</p>
 
-                        @if ($formatPackages->isEmpty())
-                            <p class="rounded-2xl border border-dashed border-[#F1E6D9] bg-white px-6 py-10 text-center text-sm text-[#5F5A66]">
-                                Próximamente más opciones en este formato. Mientras tanto, escríbenos por WhatsApp y te cotizamos al toque.
-                            </p>
-                        @else
-                            <div class="grid grid-cols-1 {{ $formatPackages->count() === 3 ? 'lg:grid-cols-3' : 'md:grid-cols-2 max-w-4xl mx-auto' }} gap-5 lg:gap-6 items-stretch">
-                                @foreach ($formatPackages as $paquete)
-                                    <article class="{{ $paquete->destacado ? 'pricing-card-featured' : 'pricing-card' }} reveal {{ $paquete->destacado ? 'anim-pulse' : '' }}" data-reveal-delay="{{ $loop->index * 120 }}">
-                                        @if ($paquete->destacado)
-                                            <span class="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#EB7512] text-white text-[11px] font-bold uppercase tracking-wider px-3.5 py-1.5 shadow-lg shadow-orange-500/40">
-                                                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                                    <path d="M12 2l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 9l6-1z"/>
-                                                </svg>
-                                                {{ $paquete->badge }}
-                                            </span>
-                                        @else
-                                            <span class="inline-flex self-start rounded-full bg-[#FFF1E1] px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#EB7512] mb-5">{{ $paquete->badge }}</span>
-                                        @endif
+                        <div class="grid grid-cols-1 {{ count($format['packages']) === 3 ? 'lg:grid-cols-3' : 'md:grid-cols-2 max-w-4xl mx-auto' }} gap-5 lg:gap-6 items-stretch">
+                            @foreach ($format['packages'] as $package)
+                                <article class="{{ $package['featured'] ? 'pricing-card-featured' : 'pricing-card' }} reveal {{ $package['featured'] ? 'anim-pulse' : '' }}" data-reveal-delay="{{ $loop->index * 120 }}">
+                                    @if ($package['featured'])
+                                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-[#EB7512] text-white text-[11px] font-bold uppercase tracking-wider px-3.5 py-1.5 shadow-lg shadow-orange-500/40">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                <path d="M12 2l3 6 6 1-4.5 4.5L18 21l-6-3-6 3 1.5-6.5L3 9l6-1z"/>
+                                            </svg>
+                                            {{ $package['badge'] }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex self-start rounded-full bg-[#FFF1E1] px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#EB7512] mb-5">{{ $package['badge'] }}</span>
+                                    @endif
 
-                                        <header class="mb-6 {{ $paquete->destacado ? 'mt-2' : '' }}">
-                                            <h3 class="font-display font-bold text-lg text-[#2B143F]">{{ $paquete->nombre }}</h3>
-                                            <p class="mt-2 text-[13px] leading-relaxed text-[#5F5A66]">{{ $paquete->descripcion }}</p>
-                                        </header>
-                                        <div class="mb-5">
-                                            <p class="font-display font-extrabold text-4xl text-[#2B143F] leading-none">
-                                                {{ $paquete->precio_formateado }}<span class="text-base font-semibold text-[#5F5A66] ml-1">MXN</span>
-                                            </p>
-                                        </div>
-                                        <ul class="space-y-2.5 text-sm text-[#18111F] mb-7 flex-1">
-                                            @foreach (($paquete->items ?? []) as $item)
-                                                <li class="flex gap-2">
-                                                    <span class="text-[#EB7512] mt-0.5">✓</span>
-                                                    <span class="{{ str_starts_with($item, 'Todo lo') ? 'font-semibold' : '' }}">{{ $item }}</span>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                        <a href="{{ route('checkout.show', $paquete) }}" class="inline-flex w-full items-center justify-center gap-2 rounded-lg {{ $paquete->destacado ? 'bg-[#EB7512] hover:bg-[#F45A00] text-white shadow-lg shadow-orange-500/30 hover:-translate-y-0.5' : 'border border-[#EB7512] text-[#EB7512] hover:bg-[#EB7512] hover:text-white' }} font-semibold py-3 transition-all">
-                                            Comprar este paquete
-                                        </a>
-                                    </article>
-                                @endforeach
-                            </div>
-                        @endif
+                                    <header class="mb-6 {{ $package['featured'] ? 'mt-2' : '' }}">
+                                        <h3 class="font-display font-bold text-lg text-[#2B143F]">{{ $package['name'] }}</h3>
+                                        <p class="mt-2 text-[13px] leading-relaxed text-[#5F5A66]">{{ $package['description'] }}</p>
+                                    </header>
+                                    <div class="mb-5">
+                                        <p class="font-display font-extrabold text-4xl text-[#2B143F] leading-none">{{ $package['price'] }}<span class="text-base font-semibold text-[#5F5A66] ml-1">MXN</span></p>
+                                    </div>
+                                    <ul class="space-y-2.5 text-sm text-[#18111F] mb-7 flex-1">
+                                        @foreach ($package['items'] as $item)
+                                            <li class="flex gap-2">
+                                                <span class="text-[#EB7512] mt-0.5">✓</span>
+                                                <span class="{{ str_starts_with($item, 'Todo lo') ? 'font-semibold' : '' }}">{{ $item }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    <a href="{{ route('checkout.show', $package['slug']) }}" class="inline-flex w-full items-center justify-center gap-2 rounded-lg {{ $package['featured'] ? 'bg-[#EB7512] hover:bg-[#F45A00] text-white shadow-lg shadow-orange-500/30 hover:-translate-y-0.5' : 'border border-[#EB7512] text-[#EB7512] hover:bg-[#EB7512] hover:text-white' }} font-semibold py-3 transition-all">
+                                        Comprar este paquete
+                                    </a>
+                                </article>
+                            @endforeach
+                        </div>
                     </div>
                 @endforeach
             </div>
