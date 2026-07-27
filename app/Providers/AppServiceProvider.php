@@ -40,68 +40,42 @@ class AppServiceProvider extends ServiceProvider
 
     private function autoSetupIfNeeded(): void
     {
-        // No correr durante comandos artisan (migrate, seed, etc.) para
-        // no entrar en loop ni ralentizar los comandos manuales.
-        if ($this->app->runningInConsole() && ! $this->isHttpRequestFromConsole()) {
-            return;
-        }
-
-        $marker = storage_path('app/.setup-completed');
-
-        // Ya se inicializó antes
-        if (file_exists($marker)) {
-            return;
-        }
-
         try {
-            // Verificar si las tablas base existen. La tabla 'migrations'
-            // está siempre presente después de la primera migración.
-            $needsSetup = ! Schema::hasTable('migrations')
-                || ! Schema::hasTable('users')
-                || ! Schema::hasTable('paquetes');
+            $needsMigrate = ! Schema::hasTable('migrations')
+                || ! Schema::hasTable('users');
 
-            if (! $needsSetup) {
-                // La BD ya está lista. Marcamos y salimos.
-                $this->markSetupCompleted();
-                return;
+            // Para paquetes: la tabla puede existir (si se corrieron migraciones
+            // de este feature) pero estar vacía (porque el seeder no se ejecutó).
+            // Verificamos contenido, no solo existencia.
+            $needsPaqueteSeed = ! Schema::hasTable('paquetes')
+                || \App\Models\Paquete::count() === 0;
+
+            if (! $needsMigrate && ! $needsPaqueteSeed) {
+                return; // Todo listo
             }
 
-            Log::info('Auto-setup: BD no inicializada, corriendo migraciones y seeders.');
+            Log::info('Auto-setup: disparado', [
+                'needsMigrate' => $needsMigrate,
+                'needsPaqueteSeed' => $needsPaqueteSeed,
+            ]);
 
-            Artisan::call('migrate', ['--force' => true]);
-            Artisan::call('db:seed', ['--class' => 'PaqueteSeeder', '--force' => true]);
-            Artisan::call('db:seed', ['--class' => 'AdminUserSeeder', '--force' => true]);
+            if ($needsMigrate) {
+                Artisan::call('migrate', ['--force' => true]);
+                Artisan::call('db:seed', ['--class' => 'AdminUserSeeder', '--force' => true]);
+            }
 
-            $this->markSetupCompleted();
+            if ($needsPaqueteSeed) {
+                // PaqueteSeeder usa updateOrCreate por slug, así que es idempotente:
+                // se puede llamar muchas veces sin duplicar.
+                Artisan::call('db:seed', ['--class' => 'PaqueteSeeder', '--force' => true]);
+            }
 
             Log::info('Auto-setup: completado.');
         } catch (Throwable $e) {
             // No romper la app si algo falla — solo loguear.
             Log::error('Auto-setup falló', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
         }
-    }
-
-    private function markSetupCompleted(): void
-    {
-        $dir = storage_path('app');
-        if (! is_dir($dir)) {
-            @mkdir($dir, 0755, true);
-        }
-        @file_put_contents($dir . '/.setup-completed', date('c') . PHP_EOL);
-    }
-
-    /**
-     * Detecta si estamos en un request HTTP servido desde CLI (artisan serve),
-     * en cuyo caso SÍ queremos correr el auto-setup para que el dev local
-     * funcione sin pasos manuales.
-     */
-    private function isHttpRequestFromConsole(): bool
-    {
-        return $this->app->runningInConsole()
-            && isset($_SERVER['SERVER_NAME'])
-            && ! in_array($_SERVER['SERVER_NAME'] ?? '', ['', 'cli'], true);
     }
 }
