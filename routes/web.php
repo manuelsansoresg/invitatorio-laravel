@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ConfirmacionController;
 use App\Http\Controllers\ConfirmadosController;
+use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\InvitacionController;
 use App\Http\Controllers\MercadoPagoCallbackController;
 use App\Http\Controllers\WebhookController;
@@ -141,3 +142,13 @@ Route::post('/api/mercadopago/webhook', [WebhookController::class, 'handle'])
 */
 Route::get('/api/mercadopago/callback', MercadoPagoCallbackController::class)
     ->name('mercadopago.callback');
+
+/*
+|--------------------------------------------------------------------------
+| Diagnóstico (TEMPORAL — eliminar después de resolver problemas)
+|--------------------------------------------------------------------------
+| Útil para verificar el estado de BD y rutas en producción sin acceso SSH.
+| Devuelve JSON con info de paquetes, conexión a BD, rutas registradas, etc.
+*/
+Route::get('/api/diagnose', [DiagnoseController::class, 'show'])
+    ->name('diagnose.show');
