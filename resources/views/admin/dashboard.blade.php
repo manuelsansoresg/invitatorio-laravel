@@ -22,7 +22,10 @@
             <div class="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
                 <p class="text-xs font-semibold uppercase tracking-wider text-text-gray">Total histórico</p>
                 <p class="mt-2 font-display text-3xl font-extrabold text-purple-dark">${{ number_format($ganancias['total_historico'] / 100, 0, '.', ',') }}</p>
-                <p class="mt-1 text-xs text-text-gray">{{ $ganancias['ordenes_total'] }} {{ \Illuminate\Support\Str::plural('orden', $ganancias['ordenes_total']) }} aprobada{{ $ganancias['ordenes_total'] === 1 ? '' : 's' }}</p>
+                <p class="mt-1 text-xs text-text-gray">
+                    {{ $ganancias['ordenes_total'] }}
+                    {{ $ganancias['ordenes_total'] === 1 ? 'orden aprobada' : 'órdenes aprobadas' }}
+                </p>
             </div>
             <div class="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
                 <p class="text-xs font-semibold uppercase tracking-wider text-text-gray">Este mes</p>
@@ -57,7 +60,8 @@
         <div class="mb-4 flex items-center justify-between gap-4">
             <h2 class="font-display text-xl font-bold text-text-dark">Invitaciones compradas</h2>
             <span class="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800">
-                {{ $ordenesPagadas->count() }} {{ \Illuminate\Support\Str::plural('orden', $ordenesPagadas->count()) }} pagada{{ $ordenesPagadas->count() === 1 ? '' : 's' }}
+                {{ $ordenesPagadas->count() }}
+                {{ $ordenesPagadas->count() === 1 ? 'orden pagada' : 'órdenes pagadas' }}
             </span>
         </div>
 
