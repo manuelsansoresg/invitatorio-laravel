@@ -22,6 +22,7 @@ class Paquete extends Model
         'badge',
         'destacado',
         'items',
+        'permite_gestionar_invitados',
         'activo',
         'orden',
     ];
@@ -34,6 +35,7 @@ class Paquete extends Model
             'activo'     => 'boolean',
             'precio_centavos' => 'integer',
             'orden'      => 'integer',
+            'permite_gestionar_invitados' => 'boolean',
         ];
     }
 

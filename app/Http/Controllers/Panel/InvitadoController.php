@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Panel;
 use App\Http\Controllers\Controller;
 use App\Models\Invitacion;
 use App\Models\Invitado;
+use App\Models\Paquete;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -23,6 +24,20 @@ class InvitadoController extends Controller
     public function index(Request $request, Invitacion $invitacion): View
     {
         $this->autorizar($request->user(), $invitacion);
+
+        $user = $request->user();
+        $paquete = $user->paqueteActivo();
+        $habilitado = $this->paqueteHabilita($user, $paquete);
+
+        // Si NO está habilitado, mostramos vista "no disponible" con
+        // explicación amable y (si es admin) opción de activarlo.
+        if (! $habilitado) {
+            return view('panel.invitados.no-habilitado', [
+                'invitacion' => $invitacion,
+                'paquete'    => $paquete,
+                'esAdmin'    => $user->isAdmin(),
+            ]);
+        }
 
         $invitados = $invitacion->invitados()
             ->orderByRaw("FIELD(estado, 'pendiente', 'confirmado', 'no_asistira')")
@@ -43,18 +58,22 @@ class InvitadoController extends Controller
             'invitacion' => $invitacion,
             'invitados'  => $invitados,
             'totales'    => $totales,
+            'paquete'    => $paquete,
         ]);
     }
 
     public function create(Request $request, Invitacion $invitacion): View
     {
         $this->autorizar($request->user(), $invitacion);
+        $this->asegurarPaqueteHabilita($request->user(), $invitacion);
+
         return view('panel.invitados.create', ['invitacion' => $invitacion]);
     }
 
     public function store(Request $request, Invitacion $invitacion): RedirectResponse
     {
         $this->autorizar($request->user(), $invitacion);
+        $this->asegurarPaqueteHabilita($request->user(), $invitacion);
 
         $data = $this->validarInvitado($request);
 
@@ -69,6 +88,7 @@ class InvitadoController extends Controller
     {
         $this->autorizar($request->user(), $invitacion);
         $this->asegurarMismaInvitacion($invitado, $invitacion);
+        $this->asegurarPaqueteHabilita($request->user(), $invitacion);
 
         return view('panel.invitados.edit', [
             'invitacion' => $invitacion,
@@ -80,6 +100,7 @@ class InvitadoController extends Controller
     {
         $this->autorizar($request->user(), $invitacion);
         $this->asegurarMismaInvitacion($invitado, $invitacion);
+        $this->asegurarPaqueteHabilita($request->user(), $invitacion);
 
         $data = $this->validarInvitado($request);
 
@@ -106,6 +127,11 @@ class InvitadoController extends Controller
     {
         $this->autorizar($request->user(), $invitacion);
         $this->asegurarMismaInvitacion($invitado, $invitacion);
+        // NOTA: no chequeamos paquete aquí para que el admin pueda limpiar
+        // invitados aunque el flag esté apagado (limpieza administrativa).
+        if (! $request->user()->isAdmin()) {
+            $this->asegurarPaqueteHabilita($request->user(), $invitacion);
+        }
 
         $invitado->delete();
 
@@ -125,6 +151,7 @@ class InvitadoController extends Controller
     public function storeBulk(Request $request, Invitacion $invitacion): RedirectResponse
     {
         $this->autorizar($request->user(), $invitacion);
+        $this->asegurarPaqueteHabilita($request->user(), $invitacion);
 
         $validated = $request->validate([
             'texto' => ['required', 'string', 'min:2', 'max:10000'],
@@ -182,6 +209,7 @@ class InvitadoController extends Controller
     {
         $this->autorizar($request->user(), $invitacion);
         $this->asegurarMismaInvitacion($invitado, $invitacion);
+        $this->asegurarPaqueteHabilita($request->user(), $invitacion);
 
         $invitado->token = Invitado::generarTokenUnico();
         $invitado->save();
@@ -190,6 +218,30 @@ class InvitadoController extends Controller
     }
 
     // ─── helpers ────────────────────────────────────────────────────────
+
+    /**
+     * ¿El paquete del usuario permite gestionar invitados?
+     *
+     * El admin SIEMPRE puede entrar (override para soporte y testing).
+     */
+    private function paqueteHabilita(User $user, ?Paquete $paquete): bool
+    {
+        if ($user->isAdmin()) {
+            return true;
+        }
+        return $paquete?->permite_gestionar_invitados === true;
+    }
+
+    private function asegurarPaqueteHabilita(User $user, Invitacion $invitacion): void
+    {
+        if ($user->isAdmin()) {
+            return;
+        }
+        $paquete = $user->paqueteActivo();
+        if (! $paquete?->permite_gestionar_invitados) {
+            abort(403, 'Tu paquete no incluye la gestión de invitados.');
+        }
+    }
 
     private function validarInvitado(Request $request): array
     {
