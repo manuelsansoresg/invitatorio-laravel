@@ -48,6 +48,7 @@ class Invitacion extends Model
         'color_acento',
         'template_key',
         'estado',
+        'mostrar_contador_confirmados',
         'publicada_at',
     ];
 
@@ -57,6 +58,7 @@ class Invitacion extends Model
             'fecha_evento' => 'date',
             'hora_evento' => 'datetime:H:i',
             'publicada_at' => 'datetime',
+            'mostrar_contador_confirmados' => 'boolean',
         ];
     }
 
@@ -103,6 +105,33 @@ class Invitacion extends Model
     public function cliente(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Lista administrada por el cliente (links únicos por invitado).
+     * Es independiente del sistema viejo de Confirmacion (popup).
+     */
+    public function invitados(): HasMany
+    {
+        return $this->hasMany(Invitado::class);
+    }
+
+    /**
+     * Total de lugares confirmados (suma lugares_confirmados).
+     */
+    public function getLugaresConfirmadosAttribute(): int
+    {
+        return (int) $this->invitados()
+            ->where('estado', 'confirmado')
+            ->sum('lugares_confirmados');
+    }
+
+    /**
+     * Total de lugares asignados (suma lugares_asignados).
+     */
+    public function getLugaresAsignadosTotalAttribute(): int
+    {
+        return (int) $this->invitados()->sum('lugares_asignados');
     }
 
     /**
