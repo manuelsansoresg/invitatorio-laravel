@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Invitacion;
 use App\Models\Template;
 use App\Services\SuscripcionService;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -23,10 +22,8 @@ use Illuminate\View\View;
  *   3. Elige template → POST /panel/invitaciones → crea invitación
  *      en borrador, con template_id y suscripcion_id de su suscripción
  *      activa.
- *   4. Si formato=web: redirige al InvitationEditor (Livewire, ruta
- *      ya existente en /admin/invitaciones/{id}/editar — el cliente
- *      también puede entrar, lo controlamos por user_id en el model
- *      o con un Gate simple).
+ *   4. Si formato=web: redirige al InvitationEditor (ruta
+ *      /admin/invitaciones/{id}/editar).
  *      Si formato=imagen/video: redirige al formulario simple
  *      /panel/invitaciones/{id}/datos.
  *   5. Cuando está conforme → "Publicar" consume cupo de la

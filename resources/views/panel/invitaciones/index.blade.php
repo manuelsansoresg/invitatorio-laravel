@@ -1,12 +1,12 @@
-@extends('layouts.admin', ['title' => 'Mis invitaciones', 'wide' => true])
+@extends('layouts.admin', ['title' => 'Mis invitaciones'])
 
 @section('content')
     <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-orange-brand">Mi panel</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-orange-brand">Panel</p>
             <h1 class="mt-2 font-display text-3xl font-extrabold text-purple-dark">Mis invitaciones</h1>
             <p class="mt-2 max-w-2xl text-sm text-text-gray">
-                Cada invitación que publiques consume 1 cupo de tu suscripción. Si te quedas sin cupo, compra otro paquete o pídele al admin que te asigne una suscripción manual.
+                Aquí ves todas tus invitaciones. Crea una nueva, edítala mientras esté en borrador y publícala cuando esté lista.
             </p>
         </div>
         <a href="{{ route('panel.invitaciones.create') }}"
@@ -16,32 +16,6 @@
         </a>
     </div>
 
-    {{-- Banner de suscripción --}}
-    @if ($suscripcion)
-        @php($color = match($suscripcion->estado) {
-            'activa'    => 'border-green-200 bg-green-50 text-green-900',
-            'agotada'   => 'border-amber-200 bg-amber-50 text-amber-900',
-            'vencida'   => 'border-red-200 bg-red-50 text-red-900',
-            'cancelada' => 'border-slate-200 bg-slate-50 text-slate-700',
-            default     => 'border-slate-200 bg-slate-50 text-slate-700',
-        })
-        <div class="mb-6 flex flex-col gap-2 rounded-md border px-4 py-3 sm:flex-row sm:items-center sm:justify-between {{ $color }}">
-            <p class="text-sm font-semibold">
-                Suscripción: <span class="font-bold">{{ $suscripcion->paquete->nombre ?? '—' }}</span>
-                · {{ $suscripcion->invitaciones_usadas }} / {{ $suscripcion->max_invitaciones }} invitaciones usadas
-                · {{ $suscripcion->estado_legible }}
-            </p>
-            @if ($suscripcion->fecha_fin)
-                <p class="text-xs">Vence: {{ $suscripcion->fecha_fin->format('d/m/Y') }}</p>
-            @endif
-        </div>
-    @else
-        <div class="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            <p class="font-semibold">Aún no tienes una suscripción activa.</p>
-            <p class="mt-1 text-xs">Compra un paquete en la <a href="{{ url('/#paquetes') }}" class="underline">landing</a> o pídele al admin que te asigne una cortesía.</p>
-        </div>
-    @endif
-
     @if (session('status'))
         <div class="mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800">
             {{ session('status') }}
@@ -49,9 +23,11 @@
     @endif
 
     @if ($errors->any())
-        <div class="mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div class="mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
             <ul class="list-disc pl-5">
-                @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
             </ul>
         </div>
     @endif

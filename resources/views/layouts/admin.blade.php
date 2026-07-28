@@ -21,7 +21,6 @@
                 @auth
                     <div class="flex flex-wrap items-center gap-3 text-sm text-text-gray">
                         @if (auth()->user()->isAdmin())
-                            <a href="{{ route('admin.templates.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Templates</a>
                             <a href="{{ route('admin.paquetes.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Paquetes</a>
                             <a href="{{ route('admin.cupones.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Cupones</a>
                             <a href="{{ route('admin.users.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Usuarios</a>

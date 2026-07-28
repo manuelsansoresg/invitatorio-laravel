@@ -195,7 +195,7 @@
             @endphp
 
             @if ($templates->isEmpty())
-                <p class="text-sm text-text-gray">No hay templates en el catálogo todavía. <a href="{{ route('admin.templates.create') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Crear uno →</a></p>
+                <p class="text-sm text-text-gray">No hay templates en el catálogo todavía.</p>
             @else
                 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($templates as $t)
