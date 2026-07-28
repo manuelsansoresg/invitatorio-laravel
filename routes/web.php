@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\CuponController;
+use App\Http\Controllers\Admin\PaqueteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ConfirmacionController;
@@ -37,6 +39,22 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/invitaciones/{invitacion}/clonar', [AdminController::class, 'cloneInvitation'])->name('invitaciones.clone');
     Route::patch('/invitaciones/{invitacion}/cliente', [AdminController::class, 'updateInvitationClient'])->name('invitaciones.cliente.update');
     Route::delete('/invitaciones/{invitacion}', [AdminController::class, 'destroyInvitation'])->name('invitaciones.destroy');
+
+    // Paquetes: CRUD completo
+    Route::get('/paquetes', [PaqueteController::class, 'index'])->name('paquetes.index');
+    Route::get('/paquetes/nuevo', [PaqueteController::class, 'create'])->name('paquetes.create');
+    Route::post('/paquetes', [PaqueteController::class, 'store'])->name('paquetes.store');
+    Route::get('/paquetes/{paquete}/editar', [PaqueteController::class, 'edit'])->name('paquetes.edit');
+    Route::put('/paquetes/{paquete}', [PaqueteController::class, 'update'])->name('paquetes.update');
+    Route::delete('/paquetes/{paquete}', [PaqueteController::class, 'destroy'])->name('paquetes.destroy');
+
+    // Cupones: CRUD completo (parámetro {cupon} para que no sea {cupone})
+    Route::get('/cupones', [CuponController::class, 'index'])->name('cupones.index');
+    Route::get('/cupones/nuevo', [CuponController::class, 'create'])->name('cupones.create');
+    Route::post('/cupones', [CuponController::class, 'store'])->name('cupones.store');
+    Route::get('/cupones/{cupon}/editar', [CuponController::class, 'edit'])->name('cupones.edit');
+    Route::put('/cupones/{cupon}', [CuponController::class, 'update'])->name('cupones.update');
+    Route::delete('/cupones/{cupon}', [CuponController::class, 'destroy'])->name('cupones.destroy');
 });
 
 Route::middleware('auth')->prefix('panel')->name('panel.')->group(function () {

@@ -51,6 +51,10 @@ class MercadoPagoService
      * El preference es solo "lo que el usuario va a comprar". El pago se
      * confirma después con el webhook.
      *
+     * Si la orden trae cupón aplicado, cobramos el total_final_centavos
+     * (post-descuento), NO el precio del paquete. La diferencia queda
+     * documentada en metadata.cupon_codigo para auditoría.
+     *
      * @return array{id: string, init_point: string, sandbox_init_point: string}
      */
     public function crearPreference(Paquete $paquete, Orden $orden): array
@@ -58,6 +62,8 @@ class MercadoPagoService
         $idempotencyKey = (string) Str::uuid();
 
         $backUrlSuccess = $this->resolveCallback(config('mercadopago.back_urls.success'));
+
+        $totalACobrar = $orden->total_final_centavos / 100;
 
         $request = [
             'items' => [
@@ -67,7 +73,7 @@ class MercadoPagoService
                     'description' => Str::limit($paquete->descripcion, 250, ''),
                     'quantity'    => 1,
                     'currency_id' => config('mercadopago.currency'),
-                    'unit_price'  => $orden->precio_decimal,
+                    'unit_price'  => $totalACobrar,
                     'picture_url' => $this->imagenDelPaquete($paquete),
                     'category_id' => 'services',
                 ],
@@ -86,9 +92,11 @@ class MercadoPagoService
             'external_reference' => (string) $orden->id,
             'statement_descriptor' => 'INVITATORIO',
             'metadata' => [
-                'orden_id'    => $orden->id,
-                'paquete_id'  => $paquete->id,
-                'paquete_slug'=> $paquete->slug,
+                'orden_id'          => $orden->id,
+                'paquete_id'        => $paquete->id,
+                'paquete_slug'      => $paquete->slug,
+                'cupon_codigo'      => $orden->cupon_codigo,
+                'descuento_centavos'=> (int) $orden->descuento_centavos,
             ],
             'expires' => true,
             'expiration_date_from' => now()->toIso8601String(),

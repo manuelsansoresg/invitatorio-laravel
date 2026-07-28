@@ -12,6 +12,11 @@
             'video'  => 'Invitación en video',
             default  => 'Invitación',
         };
+
+        $subtotalFmt       = '$' . number_format($paquete->precio_centavos / 100, 0, '.', ',');
+        $descuentoFmt      = '$' . number_format($descuentoCentavos / 100, 0, '.', ',');
+        $totalFinalFmt     = '$' . number_format($totalFinalCentavos / 100, 0, '.', ',');
+        $cuponAplicado     = $couponOk && $coupon;
     @endphp
 
     <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
@@ -58,9 +63,64 @@
                 </div>
             @endif
 
+            {{-- Banner de cupón si viene por URL --}}
+            @if ($cuponAplicado)
+                <div class="mt-6 flex items-start gap-3 rounded-lg border border-[#A8E1B5] bg-[#E7F8EE] px-4 py-3 text-sm text-[#0F5F33]">
+                    <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <div>
+                        <p class="font-bold">¡Cupón <span class="font-mono">{{ $coupon->codigo }}</span> aplicado!</p>
+                        <p class="mt-0.5 text-[13px]">Tienes {{ $coupon->descuento_legible }} de descuento sobre el precio de este paquete.</p>
+                    </div>
+                </div>
+            @elseif ($couponCodigo === null && filled($couponMensaje))
+                <div class="mt-6 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                    <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    <div>
+                        <p class="font-bold">No pudimos aplicar tu cupón.</p>
+                        <p class="mt-0.5 text-[13px]">{{ $couponMensaje }}</p>
+                    </div>
+                </div>
+            @endif
+
             {{-- Form --}}
             <form method="POST" action="{{ route('checkout.buy', $paquete) }}" class="mt-6 space-y-5">
                 @csrf
+
+                {{-- Campo de cupón (opcional, oculto si ya viene aplicado por URL) --}}
+                <details class="group rounded-lg border border-[#F1E6D9] bg-white" @if($cuponAplicado || $couponCodigo) open @endif>
+                    <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3 [&::-webkit-details-marker]:hidden">
+                        <span class="flex items-center gap-2 text-sm font-semibold text-[#2B143F]">
+                            <svg class="h-4 w-4 text-[#EB7512]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M20 12V8a2 2 0 0 0-2-2h-4l-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>
+                                <path d="M14 14h.01"/>
+                            </svg>
+                            ¿Tienes un cupón?
+                        </span>
+                        <svg class="h-4 w-4 text-[#5F5A66] transition group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </summary>
+                    <div class="border-t border-[#F1E6D9] px-4 py-4">
+                        <label for="coupon" class="block text-sm font-semibold text-[#2B143F]">Código de descuento</label>
+                        <div class="mt-2 flex gap-2">
+                            <input
+                                type="text"
+                                name="coupon"
+                                id="coupon"
+                                maxlength="40"
+                                autocomplete="off"
+                                placeholder="VERANO20"
+                                value="{{ old('coupon', $couponCodigo ?? '') }}"
+                                class="flex-1 rounded-lg border border-[#F1E6D9] bg-white px-4 py-3 font-mono text-sm uppercase outline-none transition focus:border-[#EB7512] focus:ring-2 focus:ring-[#FFF1E1]"
+                            >
+                        </div>
+                        <p class="mt-1.5 text-xs text-[#5F5A66]">Déjalo vacío si no tienes. Se aplica al confirmar el pago.</p>
+                    </div>
+                </details>
 
                 <div>
                     <label for="comprador_nombre" class="mb-1.5 block text-sm font-semibold text-[#2B143F]">
@@ -152,7 +212,11 @@
                         <rect x="2" y="5" width="20" height="14" rx="2"/>
                         <path d="M2 10h20"/>
                     </svg>
-                    Pagar {{ $paquete->precio_formateado }} MXN con Mercado Pago
+                    @if ($cuponAplicado)
+                        Pagar {{ $totalFinalFmt }} MXN con Mercado Pago
+                    @else
+                        Pagar {{ $paquete->precio_formateado }} MXN con Mercado Pago
+                    @endif
                 </button>
 
                 <p class="text-center text-[12px] text-[#5F5A66]">
@@ -178,13 +242,45 @@
                     </p>
                 </div>
 
-                {{-- Precio --}}
-                <div class="flex items-baseline justify-between gap-4 border-b border-[#F1E6D9] px-6 py-5">
-                    <span class="text-sm font-semibold text-[#5F5A66]">Total a pagar</span>
-                    <span class="font-display text-3xl font-extrabold leading-none text-[#2B143F]">
-                        {{ $paquete->precio_formateado }}
-                        <span class="text-base font-semibold text-[#5F5A66]">MXN</span>
-                    </span>
+                {{-- Resumen de precio (con o sin descuento) --}}
+                <div class="border-b border-[#F1E6D9] px-6 py-5">
+                    <p class="mb-3 text-[11px] font-semibold uppercase tracking-wider text-[#5F5A66]">Resumen</p>
+
+                    @if ($cuponAplicado)
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-baseline justify-between">
+                                <span class="text-[#5F5A66]">Subtotal</span>
+                                <span class="font-medium text-[#18111F]">{{ $subtotalFmt }} MXN</span>
+                            </div>
+                            <div class="flex items-baseline justify-between">
+                                <span class="text-[#0F5F33]">
+                                    Cupón
+                                    <span class="ml-1 inline-flex items-center rounded-md bg-[#E7F8EE] px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-[#1F8B4C]">
+                                        {{ $coupon->codigo }}
+                                    </span>
+                                </span>
+                                <span class="font-medium text-[#0F5F33]">-{{ $descuentoFmt }} MXN</span>
+                            </div>
+                            <div class="mt-3 flex items-baseline justify-between border-t border-[#F1E6D9] pt-3">
+                                <span class="text-sm font-semibold text-[#5F5A66]">Total a pagar</span>
+                                <span class="font-display text-3xl font-extrabold leading-none text-[#2B143F]">
+                                    {{ $totalFinalFmt }}
+                                    <span class="text-base font-semibold text-[#5F5A66]">MXN</span>
+                                </span>
+                            </div>
+                            <p class="text-right text-[11px] font-semibold text-[#1F8B4C]">
+                                Te ahorras {{ $descuentoFmt }} MXN
+                            </p>
+                        </div>
+                    @else
+                        <div class="flex items-baseline justify-between">
+                            <span class="text-sm font-semibold text-[#5F5A66]">Total a pagar</span>
+                            <span class="font-display text-3xl font-extrabold leading-none text-[#2B143F]">
+                                {{ $paquete->precio_formateado }}
+                                <span class="text-base font-semibold text-[#5F5A66]">MXN</span>
+                            </span>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Items --}}
