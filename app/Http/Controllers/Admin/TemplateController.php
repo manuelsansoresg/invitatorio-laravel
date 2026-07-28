@@ -79,8 +79,10 @@ class TemplateController extends Controller
     {
         $template->update(['activo' => ! $template->activo]);
 
+        // Volvemos al dashboard (donde el admin tiene la lista de templates
+        // con sus toggles inline), no a la página separada de /admin/templates.
         return redirect()
-            ->route('admin.templates.index')
+            ->route('admin.dashboard')
             ->with('status', $template->activo
                 ? "Template \"{$template->nombre}\" reactivado."
                 : "Template \"{$template->nombre}\" desactivado (ya no aparece a los clientes).");

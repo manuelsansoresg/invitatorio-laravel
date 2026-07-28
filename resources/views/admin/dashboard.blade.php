@@ -14,6 +14,73 @@
 
     <section class="mb-10">
         <div class="mb-4 flex items-center justify-between gap-4">
+            <h2 class="font-display text-xl font-bold text-text-dark">Templates del sistema</h2>
+            <span class="rounded-full bg-purple-soft px-3 py-1 text-sm font-semibold text-purple-brand">
+                {{ $templates->where('activo', true)->count() }} activos · {{ $templates->where('activo', false)->count() }} desactivados
+            </span>
+        </div>
+        <p class="mb-3 text-xs text-text-gray">
+            Activa o desactiva un template para que aparezca (o deje de aparecer) en el panel del cliente. <strong>No se pueden borrar</strong>.
+        </p>
+        <div class="overflow-hidden rounded-lg border border-border-soft bg-white shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-border-soft text-sm">
+                    <thead class="bg-purple-soft/70 text-left text-xs font-bold uppercase tracking-wide text-purple-dark">
+                        <tr>
+                            <th class="px-5 py-3">Nombre</th>
+                            <th class="px-5 py-3">Formato</th>
+                            <th class="px-5 py-3 text-center">Estado</th>
+                            <th class="px-5 py-3 text-right">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border-soft">
+                        @forelse ($templates as $template)
+                            <tr>
+                                <td class="px-5 py-3">
+                                    <p class="font-semibold text-text-dark">{{ $template->nombre }}</p>
+                                    <p class="text-xs text-text-gray">{{ $template->slug }}</p>
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="rounded-full bg-orange-soft px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-intense">
+                                        {{ $template->formato }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3 text-center">
+                                    @if ($template->activo)
+                                        <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-bold text-green-700">
+                                            <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                                            Activo
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
+                                            <span class="h-2 w-2 rounded-full bg-slate-400"></span>
+                                            Desactivado
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-3 text-right">
+                                    <form method="POST" action="{{ route('admin.templates.toggle', $template) }}" class="inline">
+                                        @csrf
+                                        <button type="submit"
+                                                class="cursor-pointer rounded-lg border px-3 py-1.5 text-xs font-bold transition {{ $template->activo ? 'border-amber-300 bg-amber-50 text-amber-700 hover:border-amber-400 hover:bg-amber-100' : 'border-green-300 bg-green-50 text-green-700 hover:border-green-400 hover:bg-green-100' }}">
+                                            {{ $template->activo ? 'Desactivar' : 'Activar' }}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-4 py-6 text-center text-text-gray">No hay templates. Crea el primero.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-10">
+        <div class="mb-4 flex items-center justify-between gap-4">
             <h2 class="font-display text-xl font-bold text-text-dark">Invitaciones disponibles</h2>
             <span class="rounded-full bg-orange-soft px-3 py-1 text-sm font-semibold text-orange-intense">{{ $invitaciones->count() }} disponibles</span>
         </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invitacion;
+use App\Models\Template;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,10 +32,17 @@ class AdminController extends Controller
             ->orderBy('name')
             ->get();
 
+        $templates = Template::query()
+            ->orderBy('formato')
+            ->orderBy('orden')
+            ->orderBy('nombre')
+            ->get();
+
         return view('admin.dashboard', [
             'clientes' => $clientes,
             'invitaciones' => $invitaciones,
             'roles' => User::roles(),
+            'templates' => $templates,
             'users' => $users,
         ]);
     }
