@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invitacion;
+use App\Models\Paquete;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,11 +32,16 @@ class AdminController extends Controller
             ->orderBy('name')
             ->get();
 
+        $paquetes = Paquete::query()
+            ->orderBy('orden')
+            ->get();
+
         return view('admin.dashboard', [
             'clientes' => $clientes,
             'invitaciones' => $invitaciones,
             'roles' => User::roles(),
             'users' => $users,
+            'paquetes' => $paquetes,
         ]);
     }
 
@@ -224,6 +230,26 @@ class AdminController extends Controller
         );
 
         return $targetPath;
+    }
+
+    /**
+     * Toggle de "permite_gestionar_invitados" en un paquete.
+     *
+     * Endpoint auxiliar para activar/desactivar la feature de
+     * invitados sin esperar al merge del admin de paquetes completo.
+     * Cuando se mergee admin/paquetes, este endpoint se puede borrar
+     * (el form tendrá su propio checkbox).
+     */
+    public function togglePaqueteGestionarInvitados(Paquete $paquete): RedirectResponse
+    {
+        $paquete->permite_gestionar_invitados = ! $paquete->permite_gestionar_invitados;
+        $paquete->save();
+
+        $msg = $paquete->permite_gestionar_invitados
+            ? "Paquete «{$paquete->nombre}» ahora permite gestionar invitados."
+            : "Paquete «{$paquete->nombre}» ya no permite gestionar invitados.";
+
+        return back()->with('status', $msg);
     }
 
 }

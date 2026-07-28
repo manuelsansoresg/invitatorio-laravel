@@ -46,6 +46,28 @@ class User extends Authenticatable
     }
 
     /**
+     * Órdenes pagadas del usuario. Usado para saber qué paquete
+     * compró y qué features tiene habilitadas.
+     */
+    public function ordenesPagadas(): HasMany
+    {
+        return $this->hasMany(Orden::class, 'comprador_email', 'email')
+            ->where('estado', 'approved')
+            ->latest('paid_at');
+    }
+
+    /**
+     * Devuelve el paquete "activo" del cliente = el de la orden
+     * aprobada más reciente. Si no tiene órdenes pagadas, null.
+     *
+     * Esto es lo que define si puede gestionar invitados, etc.
+     */
+    public function paqueteActivo(): ?Paquete
+    {
+        return $this->ordenesPagadas()->first()?->paquete;
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

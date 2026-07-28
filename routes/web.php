@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ConfirmacionController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\ConfirmadosController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\InvitacionController;
 use App\Http\Controllers\MercadoPagoCallbackController;
+use App\Http\Controllers\Panel\InvitadoController;
 use App\Http\Controllers\WebhookController;
 use App\Livewire\InvitationEditor;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -37,6 +39,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/invitaciones/{invitacion}/clonar', [AdminController::class, 'cloneInvitation'])->name('invitaciones.clone');
     Route::patch('/invitaciones/{invitacion}/cliente', [AdminController::class, 'updateInvitationClient'])->name('invitaciones.cliente.update');
     Route::delete('/invitaciones/{invitacion}', [AdminController::class, 'destroyInvitation'])->name('invitaciones.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Toggle de features por paquete (temporal)
+    |--------------------------------------------------------------------------
+    | Endpoint auxiliar para activar/desactivar flags de paquetes
+    | sin esperar al admin de paquetes completo. Se puede borrar
+    | cuando admin/paquetes tenga su propio form.
+    */
+    Route::post('/paquetes/{paquete}/toggle-gestionar-invitados', [AdminController::class, 'togglePaqueteGestionarInvitados'])
+        ->name('paquetes.toggle-gestionar-invitados');
 });
 
 Route::middleware('auth')->prefix('panel')->name('panel.')->group(function () {
@@ -44,6 +57,31 @@ Route::middleware('auth')->prefix('panel')->name('panel.')->group(function () {
     Route::get('/confirmados/pdf', [ConfirmadosController::class, 'exportPdf'])->name('confirmados.pdf');
     Route::delete('/confirmados/seleccionados', [ConfirmadosController::class, 'destroySelected'])->name('confirmados.destroy-selected');
     Route::delete('/confirmados/{confirmacion}', [ConfirmadosController::class, 'destroy'])->name('confirmados.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lista de invitados con link único por invitado
+    |--------------------------------------------------------------------------
+    | CRUD clásico + bulk add + regenerar token. Anidado bajo la invitación
+    | para que la autorización sea por ownership de la invitación, no del
+    | invitado suelto.
+    */
+    Route::get('/invitaciones/{invitacion}/invitados', [InvitadoController::class, 'index'])
+        ->name('invitados.index');
+    Route::get('/invitaciones/{invitacion}/invitados/crear', [InvitadoController::class, 'create'])
+        ->name('invitados.create');
+    Route::post('/invitaciones/{invitacion}/invitados', [InvitadoController::class, 'store'])
+        ->name('invitados.store');
+    Route::post('/invitaciones/{invitacion}/invitados/lista', [InvitadoController::class, 'storeBulk'])
+        ->name('invitados.store-bulk');
+    Route::get('/invitaciones/{invitacion}/invitados/{invitado}/editar', [InvitadoController::class, 'edit'])
+        ->name('invitados.edit');
+    Route::put('/invitaciones/{invitacion}/invitados/{invitado}', [InvitadoController::class, 'update'])
+        ->name('invitados.update');
+    Route::delete('/invitaciones/{invitacion}/invitados/{invitado}', [InvitadoController::class, 'destroy'])
+        ->name('invitados.destroy');
+    Route::post('/invitaciones/{invitacion}/invitados/{invitado}/regenerar-token', [InvitadoController::class, 'regenerarToken'])
+        ->name('invitados.regenerar-token');
 });
 
 Route::get('/sitemap.xml', function () {
@@ -91,6 +129,20 @@ Route::get('/invitacion/{invitacion}', [InvitacionController::class, 'show'])
 // Confirmación de asistencia — formulario del popup en la invitación.
 Route::post('/confirmar-asistencia', [ConfirmacionController::class, 'store'])
     ->name('confirmacion.store');
+
+/*
+|--------------------------------------------------------------------------
+| Link público de invitado (token único)
+|--------------------------------------------------------------------------
+| /c/{token} → el invitado ve su nombre y confirma cuántos van.
+| No requiere auth. Sin él nadie puede adivinar la URL.
+*/
+Route::get('/c/{token}', [AsistenciaController::class, 'show'])
+    ->name('confirmar.show');
+Route::post('/c/{token}', [AsistenciaController::class, 'confirmar'])
+    ->name('confirmar.confirmar');
+Route::get('/c/{token}/gracias', [AsistenciaController::class, 'gracias'])
+    ->name('confirmar.gracias');
 
 /*
 |--------------------------------------------------------------------------

@@ -35,6 +35,7 @@ class PaqueteSeeder extends Seeder
                     'Galería de fotos hasta 3 imágenes',
                     'Botón de WhatsApp',
                 ],
+                'permite_gestionar_invitados' => false,
                 'orden' => 1,
             ],
             [
@@ -53,6 +54,7 @@ class PaqueteSeeder extends Seeder
                     'Botón para agregar al calendario',
                     'Diseño con más detalles visuales',
                 ],
+                'permite_gestionar_invitados' => true,
                 'orden' => 2,
             ],
             [
@@ -67,11 +69,12 @@ class PaqueteSeeder extends Seeder
                     'Todo lo de Web Plus',
                     'Galería de fotos hasta 10 imágenes',
                     'Confirmación de asistencia RSVP',
-                    'Lista básica de invitados confirmados',
+                    'Lista de invitados con link único por invitado',
                     'Sección de padres, padrinos o familia',
                     'Recomendaciones para invitados',
                     'Diseño más elegante y trabajado',
                 ],
+                'permite_gestionar_invitados' => true,
                 'orden' => 3,
             ],
 
