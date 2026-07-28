@@ -7,8 +7,10 @@
             <h1 class="mt-2 font-display text-3xl font-extrabold text-purple-dark">Invitaciones y usuarios</h1>
         </div>
         <div class="flex flex-wrap gap-3">
+            <a href="{{ route('admin.templates.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Templates</a>
             <a href="{{ route('admin.paquetes.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Paquetes</a>
             <a href="{{ route('admin.cupones.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Cupones</a>
+            <a href="{{ route('admin.users.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Usuarios</a>
             <a href="{{ route('panel.confirmados.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Ver confirmados</a>
             <a href="{{ url('/') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Ver sitio público</a>
         </div>

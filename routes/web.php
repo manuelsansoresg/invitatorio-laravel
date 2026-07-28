@@ -3,6 +3,8 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\CuponController;
 use App\Http\Controllers\Admin\PaqueteController;
+use App\Http\Controllers\Admin\TemplateController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
@@ -11,6 +13,7 @@ use App\Http\Controllers\ConfirmadosController;
 use App\Http\Controllers\DiagnoseController;
 use App\Http\Controllers\InvitacionController;
 use App\Http\Controllers\MercadoPagoCallbackController;
+use App\Http\Controllers\Panel\InvitacionController as PanelInvitacionController;
 use App\Http\Controllers\Panel\InvitadoController;
 use App\Http\Controllers\WebhookController;
 use App\Livewire\InvitationEditor;
@@ -57,6 +60,23 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/cupones/{cupon}/editar', [CuponController::class, 'edit'])->name('cupones.edit');
     Route::put('/cupones/{cupon}', [CuponController::class, 'update'])->name('cupones.update');
     Route::delete('/cupones/{cupon}', [CuponController::class, 'destroy'])->name('cupones.destroy');
+
+    // Templates: CRUD sin delete (solo activar/desactivar)
+    Route::get('/templates', [TemplateController::class, 'index'])->name('templates.index');
+    Route::get('/templates/nuevo', [TemplateController::class, 'create'])->name('templates.create');
+    Route::post('/templates', [TemplateController::class, 'store'])->name('templates.store');
+    Route::get('/templates/{template}/editar', [TemplateController::class, 'edit'])->name('templates.edit');
+    Route::put('/templates/{template}', [TemplateController::class, 'update'])->name('templates.update');
+    Route::post('/templates/{template}/toggle', [TemplateController::class, 'toggle'])->name('templates.toggle');
+
+    // Usuarios: gestión completa (edit + password + templates + suscripciones)
+    Route::get('/usuarios-todos', [UserController::class, 'index'])->name('users.index');
+    Route::get('/usuarios/{user}/editar', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/usuarios/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::put('/usuarios/{user}/password', [UserController::class, 'updatePassword'])->name('users.password');
+    Route::put('/usuarios/{user}/templates', [UserController::class, 'updateTemplates'])->name('users.templates');
+    Route::post('/usuarios/{user}/suscripcion', [UserController::class, 'storeSuscripcion'])->name('users.suscripcion.store');
+    Route::patch('/usuarios/{user}/suscripcion/{suscripcion}/cancelar', [UserController::class, 'cancelSuscripcion'])->name('users.suscripcion.cancel');
 });
 
 Route::middleware('auth')->prefix('panel')->name('panel.')->group(function () {
@@ -64,6 +84,15 @@ Route::middleware('auth')->prefix('panel')->name('panel.')->group(function () {
     Route::get('/confirmados/pdf', [ConfirmadosController::class, 'exportPdf'])->name('confirmados.pdf');
     Route::delete('/confirmados/seleccionados', [ConfirmadosController::class, 'destroySelected'])->name('confirmados.destroy-selected');
     Route::delete('/confirmados/{confirmacion}', [ConfirmadosController::class, 'destroy'])->name('confirmados.destroy');
+
+    // Invitaciones del cliente
+    Route::get('/invitaciones', [PanelInvitacionController::class, 'index'])->name('invitaciones.index');
+    Route::get('/invitaciones/nueva', [PanelInvitacionController::class, 'create'])->name('invitaciones.create');
+    Route::post('/invitaciones', [PanelInvitacionController::class, 'store'])->name('invitaciones.store');
+    Route::get('/invitaciones/{invitacion}/datos', [PanelInvitacionController::class, 'datos'])->name('invitaciones.datos');
+    Route::post('/invitaciones/{invitacion}/datos', [PanelInvitacionController::class, 'datosStore'])->name('invitaciones.datos.store');
+    Route::post('/invitaciones/{invitacion}/publicar', [PanelInvitacionController::class, 'publish'])->name('invitaciones.publish');
+    Route::delete('/invitaciones/{invitacion}', [PanelInvitacionController::class, 'destroy'])->name('invitaciones.destroy');
 
     /*
     |--------------------------------------------------------------------------

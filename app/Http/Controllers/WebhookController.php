@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Orden;
 use App\Services\MercadoPagoService;
+use App\Services\SuscripcionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -27,6 +28,7 @@ class WebhookController extends Controller
 {
     public function __construct(
         private readonly MercadoPagoService $mp,
+        private readonly SuscripcionService $suscripciones,
     ) {
     }
 
@@ -77,6 +79,12 @@ class WebhookController extends Controller
 
         try {
             app(CheckoutController::class)->aplicarPagoAOrden($orden, $pago);
+
+            // Si el pago quedó aprobado y la orden aún no tiene
+            // suscripción, creamos una automáticamente. Idempotente.
+            if ($orden->estaPagada() && ! $orden->suscripcion()->exists()) {
+                $this->suscripciones->crearSuscripcionPorCompra($orden);
+            }
         } catch (Throwable $e) {
             Log::error('Webhook MP: error aplicando pago a orden', [
                 'orden_id' => $orden->id,

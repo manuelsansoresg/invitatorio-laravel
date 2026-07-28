@@ -14,10 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Invitación por defecto para la XVañera (Valentina)
+        // Orden importante: primero admin → paquetes → templates → cupones
+        // → invitaciones (las invitaciones referencian paquetes y pueden
+        // referenciar templates).
         $this->call([
             AdminUserSeeder::class,
             PaqueteSeeder::class,
+            TemplateSeeder::class,
             CuponSeeder::class,
             InvitacionSeeder::class,
             ValentinaInvitationSeeder::class,

@@ -20,6 +20,8 @@ class Paquete extends Model
         'nombre',
         'descripcion',
         'precio_centavos',
+        'max_invitaciones',
+        'dias_caducidad',
         'badge',
         'destacado',
         'items',
@@ -37,6 +39,8 @@ class Paquete extends Model
             'precio_centavos' => 'integer',
             'orden'      => 'integer',
             'permite_gestionar_invitados' => 'boolean',
+            'max_invitaciones'  => 'integer',
+            'dias_caducidad'    => 'integer',
         ];
     }
 
@@ -68,6 +72,36 @@ class Paquete extends Model
     public function ordenes(): HasMany
     {
         return $this->hasMany(Orden::class);
+    }
+
+    public function suscripciones(): HasMany
+    {
+        return $this->hasMany(Suscripcion::class);
+    }
+
+    /**
+     * Cupones que aplican a este paquete. La regla "sin paquetes
+     * asignados = aplica a todos" vive en Cupon::aplicaAPaquete().
+     */
+    public function cupones(): BelongsToMany
+    {
+        return $this->belongsToMany(Cupon::class, 'cupon_paquete')
+            ->withTimestamps();
+    }
+
+    /**
+     * Texto humano del cupo y la caducidad para mostrarlo en admin
+     * y checkout: "1 invitación · 365 días de vida".
+     */
+    public function getCupoLegibleAttribute(): string
+    {
+        $cupo = $this->max_invitaciones === 1
+            ? '1 invitación'
+            : "{$this->max_invitaciones} invitaciones";
+        $dias = $this->dias_caducidad === 1
+            ? '1 día de vida'
+            : "{$this->dias_caducidad} días de vida";
+        return "{$cupo} · {$dias}";
     }
 
     /**

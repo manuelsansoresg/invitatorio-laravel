@@ -13,18 +13,22 @@
     <div class="min-h-screen">
         <header class="border-b border-border-soft bg-white/90">
             <div class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                <a href="{{ auth()->user()?->isAdmin() ? route('admin.dashboard') : route('panel.confirmados.index') }}" class="flex items-center gap-3">
+                <a href="{{ auth()->user()?->isAdmin() ? route('admin.dashboard') : route('panel.invitaciones.index') }}" class="flex items-center gap-3">
                     <img src="{{ asset('images/invitatorio.png') }}" alt="Invitatorio" class="h-10 w-10 rounded-full">
                     <span class="font-display text-lg font-extrabold">Panel Invitatorio</span>
                 </a>
 
                 @auth
                     <div class="flex flex-wrap items-center gap-3 text-sm text-text-gray">
-                        <a href="{{ route('panel.confirmados.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Confirmados</a>
                         @if (auth()->user()->isAdmin())
                             <a href="{{ route('admin.dashboard') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Admin</a>
+                            <a href="{{ route('admin.templates.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Templates</a>
                             <a href="{{ route('admin.paquetes.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Paquetes</a>
                             <a href="{{ route('admin.cupones.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Cupones</a>
+                            <a href="{{ route('admin.users.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Usuarios</a>
+                        @else
+                            <a href="{{ route('panel.invitaciones.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Mis invitaciones</a>
+                            <a href="{{ route('panel.confirmados.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Confirmados</a>
                         @endif
                         <span>{{ auth()->user()->name }}</span>
                         <span class="rounded-full bg-purple-soft px-3 py-1 font-semibold text-purple-brand">{{ auth()->user()->role }}</span>

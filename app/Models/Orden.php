@@ -80,6 +80,11 @@ class Orden extends Model
         return $this->cupon_id !== null && (int) $this->descuento_centavos > 0;
     }
 
+    public function suscripcion(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Suscripcion::class);
+    }
+
     /**
      * Precio formateado para mostrar en la UI
      */
