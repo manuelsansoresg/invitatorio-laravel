@@ -31,9 +31,8 @@
                         <th class="px-5 py-4">Orden</th>
                         <th class="px-5 py-4">Formato</th>
                         <th class="px-5 py-4">Nombre / Slug</th>
-                        <th class="px-5 py-4 text-center">Asignado a</th>
                         <th class="px-5 py-4 text-center">Activo</th>
-                        <th class="px-5 py-4 text-right">Acciones</th>
+                        <th class="px-5 py-4 text-right">Acción</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-soft">
@@ -53,10 +52,6 @@
                                 @endif
                             </td>
                             <td class="px-5 py-4 text-center">
-                                <span class="font-semibold text-text-dark">{{ $template->usuarios_count }}</span>
-                                <span class="text-xs text-text-gray">usuarios</span>
-                            </td>
-                            <td class="px-5 py-4 text-center">
                                 @if ($template->activo)
                                     <span class="inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span>
                                 @else
@@ -65,10 +60,6 @@
                             </td>
                             <td class="px-5 py-4 text-right">
                                 <div class="inline-flex flex-wrap justify-end gap-2">
-                                    <a href="{{ route('admin.templates.edit', $template) }}"
-                                       class="inline-flex items-center rounded-lg border border-border-soft bg-white px-3 py-2 text-xs font-bold text-purple-brand transition hover:border-purple-brand hover:bg-purple-soft">
-                                        Editar
-                                    </a>
                                     <form method="POST" action="{{ route('admin.templates.toggle', $template) }}" class="inline">
                                         @csrf
                                         <button type="submit"
@@ -90,7 +81,6 @@
     </div>
 
     <p class="mt-4 text-xs text-text-gray">
-        Una vez creado el template, asígnalo a usuarios desde
-        <a href="{{ route('admin.users.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Usuarios →</a>
+        Los clientes reciben automáticamente todos los templates activos al comprar. Para bloquear uno, edita el usuario.
     </p>
 @endsection

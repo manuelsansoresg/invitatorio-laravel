@@ -6,6 +6,7 @@ use App\Models\Invitacion;
 use App\Models\Orden;
 use App\Models\Paquete;
 use App\Models\Suscripcion;
+use App\Models\Template;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -61,7 +62,7 @@ class SuscripcionService
         }
 
         return DB::transaction(function () use ($orden, $paquete, $user) {
-            return Suscripcion::create([
+            $suscripcion = Suscripcion::create([
                 'user_id'             => $user->id,
                 'paquete_id'          => $paquete->id,
                 'orden_id'            => $orden->id,
@@ -73,6 +74,12 @@ class SuscripcionService
                 'cancelada'           => false,
                 'notas_admin'         => "Auto-creada al aprobarse el pago de la orden #{$orden->id}.",
             ]);
+
+            // Le asignamos TODOS los templates activos al usuario. El
+            // admin puede luego deshabilitar uno por uno si lo quiere.
+            $this->asignarTemplatesActivos($user);
+
+            return $suscripcion;
         });
     }
 
@@ -83,7 +90,7 @@ class SuscripcionService
     public function crearSuscripcionManual(User $user, Paquete $paquete, array $opciones = []): Suscripcion
     {
         return DB::transaction(function () use ($user, $paquete, $opciones) {
-            return Suscripcion::create([
+            $suscripcion = Suscripcion::create([
                 'user_id'             => $user->id,
                 'paquete_id'          => $paquete->id,
                 'orden_id'            => null,
@@ -95,7 +102,43 @@ class SuscripcionService
                 'cancelada'           => false,
                 'notas_admin'         => $opciones['notas_admin'] ?? null,
             ]);
+
+            // También le asignamos todos los templates activos.
+            $this->asignarTemplatesActivos($user);
+
+            return $suscripcion;
         });
+    }
+
+    /**
+     * Asigna al usuario TODOS los templates ACTIVOS del catálogo.
+     * Si ya tenía algunos asignados, los conserva.
+     *
+     * El admin puede luego DESHABILITAR los que quiera desde
+     * /admin/usuarios/{id}/editar (poniendo activo=false en el pivot),
+     * pero por default el cliente recibe todo el catálogo.
+     *
+     * Idempotente: correlo N veces y el resultado es el mismo.
+     */
+    public function asignarTemplatesActivos(User $user): int
+    {
+        $templatesActivos = Template::query()->where('activo', true)->pluck('id');
+
+        if ($templatesActivos->isEmpty()) {
+            return 0;
+        }
+
+        $syncData = [];
+        foreach ($templatesActivos as $templateId) {
+            // syncWithoutDetaching solo agrega los que faltan, no toca los que ya están.
+            $syncData[$templateId] = [
+                'activo'      => true,
+                'asignado_en' => now(),
+            ];
+        }
+
+        $user->templates()->syncWithoutDetaching($syncData);
+        return $templatesActivos->count();
     }
 
     /**

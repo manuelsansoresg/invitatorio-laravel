@@ -1,22 +1,23 @@
-@extends('layouts.admin', ['title' => 'Gestionar usuario', 'wide' => true])
+@extends('layouts.admin', ['title' => 'Gestionar usuario'])
 
 @section('content')
-    <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-orange-brand">Usuarios</p>
-            <h1 class="mt-2 font-display text-3xl font-extrabold text-purple-dark">{{ $user->name }}</h1>
-            <p class="mt-2 text-sm text-text-gray">{{ $user->email }} · <span class="rounded-full bg-purple-soft px-2 py-0.5 text-xs font-bold text-purple-brand">{{ $user->role }}</span></p>
+    <div class="mx-auto max-w-5xl">
+        <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-orange-brand">Usuarios</p>
+                <h1 class="mt-2 font-display text-3xl font-extrabold text-purple-dark">{{ $user->name }}</h1>
+                <p class="mt-2 text-sm text-text-gray">{{ $user->email }} · <span class="rounded-full bg-purple-soft px-2 py-0.5 text-xs font-bold text-purple-brand">{{ $user->role }}</span></p>
+            </div>
+            <a href="{{ route('admin.users.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">← Volver al listado</a>
         </div>
-        <a href="{{ route('admin.users.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">← Volver al listado</a>
-    </div>
 
-    @if (session('status'))
-        <div class="mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800">
-            {{ session('status') }}
-        </div>
-    @endif
+        @if (session('status'))
+            <div class="mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800">
+                {{ session('status') }}
+            </div>
+        @endif
 
-    <div class="grid gap-8 lg:grid-cols-2">
+        <div class="grid gap-8 lg:grid-cols-2">
         {{-- ══════════════════════ DATOS BÁSICOS ══════════════════════ --}}
         <section class="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
             <h2 class="mb-4 font-display text-lg font-bold text-text-dark">Datos básicos</h2>
@@ -254,4 +255,5 @@
             </table>
         </section>
     @endif
+    </div>{{-- /mx-auto max-w-5xl --}}
 @endsection

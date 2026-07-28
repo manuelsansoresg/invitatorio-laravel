@@ -12,6 +12,7 @@
     $esPrecio   = $tipoActual === \App\Models\Cupon::TIPO_PRECIO;
 @endphp
 
+<div class="mx-auto max-w-4xl">
 <form method="POST" action="{{ $action }}" class="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
     @csrf
     @if (strtoupper($method) !== 'POST')
@@ -224,3 +225,5 @@
         </script>
     @endpush
 @endonce
+
+</div>

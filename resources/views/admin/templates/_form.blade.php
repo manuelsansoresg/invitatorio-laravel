@@ -6,6 +6,7 @@
       - $action    (URL POST/PUT)
       - $method    ('POST' o 'PUT')
 --}}
+<div class="mx-auto max-w-4xl">
 <form method="POST" action="{{ $action }}" class="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
     @csrf
     @if (strtoupper($method) !== 'POST')
@@ -63,13 +64,14 @@
         </div>
 
         <div class="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
-            <h2 class="mb-2 font-display text-lg font-bold text-text-dark">Configuración del template (JSON)</h2>
-            <p class="mb-3 text-xs text-text-gray">Defaults que se copian al crear una invitación a partir de este template (paleta, copy, secciones, etc.).</p>
-            <textarea id="config_json" name="config_json" rows="8"
-                      placeholder='{"color_primario": "#5A3087", "color_secundario": "#F4EFF8", "color_acento": "#C9A05A"}'
-                      class="mt-2 w-full rounded-md border border-border-soft px-3 py-2.5 font-mono text-sm outline-none focus:border-orange-brand focus:ring-2 focus:ring-orange-soft">{{ old('config_json', $template->config_json ? json_encode($template->config_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '') }}</textarea>
-            @error('config_json')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
-        </div>
+        <h2 class="mb-2 font-display text-lg font-bold text-text-dark">¿Para qué sirve editar un template?</h2>
+        <p class="text-sm text-text-gray">
+            Cada template es un <strong>diseño base</strong> (Valeria, Pergamino, XV moderno, etc.) que el admin ofrece a los clientes. Cuando un cliente elige uno, se le abre el editor para que personalice su propia invitación.
+        </p>
+        <p class="mt-3 text-sm text-text-gray">
+            <strong>Editar este template solo cambia la identidad y la categoría</strong> del diseño. No modifica invitaciones que ya estén publicadas.
+        </p>
+    </div>
     </div>
 
     <aside class="space-y-6">
@@ -106,3 +108,4 @@
         </div>
     </aside>
 </form>
+</div>

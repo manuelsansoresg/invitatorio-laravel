@@ -925,29 +925,7 @@
                 </div>
             </div>
 
-            @if (auth()->user()?->isAdmin())
-                <details class="editor-card p-5 md:p-7">
-                    <summary class="cursor-pointer font-display text-lg font-extrabold text-slate-900">Configuración avanzada de bloques</summary>
-                    <div class="mt-5 space-y-4">
-                        @foreach ($blocks as $index => $block)
-                            <div class="rounded-xl border border-border-soft p-4">
-                                <div class="mb-4 flex items-center justify-between gap-4">
-                                    <div>
-                                        <p class="text-xs font-bold uppercase tracking-wide text-orange-brand">{{ $block['tipo'] }}</p>
-                                        <p class="font-bold text-slate-900">{{ $block['titulo'] ?: 'Bloque sin título' }}</p>
-                                    </div>
-                                    <label class="flex items-center gap-2 text-sm font-bold text-slate-700">
-                                        <input type="checkbox" wire:model.live="blocks.{{ $index }}.activo" class="rounded border-border-soft text-purple-brand">
-                                        Activo
-                                    </label>
-                                </div>
-                                <textarea wire:model.blur="blocks.{{ $index }}.config_json" rows="8" spellcheck="false" class="w-full rounded-xl border border-border-soft bg-slate-950 px-3 py-2 font-mono text-xs text-slate-100 outline-none"></textarea>
-                                @error('blocks.'.$index.'.config_json') <span class="mt-1 block text-xs text-red-600">{{ $message }}</span> @enderror
-                            </div>
-                        @endforeach
-                    </div>
-                </details>
-            @endif
+
             </section>
         </div>
     </aside>

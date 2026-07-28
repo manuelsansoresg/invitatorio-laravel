@@ -72,8 +72,12 @@ class SuscripcionesRetroactivas extends Command
                     'max_invitaciones' => 99,
                     'notas_admin'     => "Retroactivo. Generada desde orden #{$orden->id} ya aprobada antes del feature de suscripciones.",
                 ]);
+
+                // También le asignamos los templates activos.
+                $this->suscripciones->asignarTemplatesActivos($user);
+
                 $creadas++;
-                $this->info("  ✓ Suscripción #{$suscripcion->id} creada para {$user->email} (orden #{$orden->id}).");
+                $this->info("  ✓ Suscripción #{$suscripcion->id} creada para {$user->email} (orden #{$orden->id}) + templates asignados.");
             }
         }
 

@@ -86,6 +86,8 @@ class TemplateController extends Controller
                 : "Template \"{$template->nombre}\" desactivado (ya no aparece a los clientes).");
     }
 
+
+
     // ─────────────── helpers ───────────────
 
     private function validar(Request $request, ?Template $template = null): array
@@ -98,29 +100,15 @@ class TemplateController extends Controller
             'nombre'               => ['required', 'string', 'max:80'],
             'descripcion'          => ['nullable', 'string', 'max:255'],
             'imagen_preview_path'  => ['nullable', 'string', 'max:255'],
-            'config_json'          => ['nullable', 'string', 'max:5000'],
             'orden'                => ['nullable', 'integer', 'min:0', 'max:9999'],
             'activo'               => ['nullable', 'boolean'],
         ], [
             'slug.regex'    => 'El slug solo puede tener minúsculas, números y guiones.',
             'slug.unique'   => 'Ya existe un template con ese slug.',
         ]) + [
-            'config_json' => $this->normalizarConfig($request->input('config_json')),
-            'activo'      => $request->boolean('activo'),
-            'orden'       => (int) ($request->input('orden') ?? 0),
+            'activo' => $request->boolean('activo'),
+            'orden'  => (int) ($request->input('orden') ?? 0),
         ];
-    }
-
-    private function normalizarConfig(mixed $raw): ?array
-    {
-        if (! filled($raw)) {
-            return null;
-        }
-        $decoded = json_decode((string) $raw, true);
-        if (! is_array($decoded)) {
-            return null;
-        }
-        return $decoded;
     }
 
     private function formatosPermitidos(): array

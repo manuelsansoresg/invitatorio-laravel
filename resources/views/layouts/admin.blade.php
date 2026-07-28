@@ -21,7 +21,6 @@
                 @auth
                     <div class="flex flex-wrap items-center gap-3 text-sm text-text-gray">
                         @if (auth()->user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Admin</a>
                             <a href="{{ route('admin.templates.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Templates</a>
                             <a href="{{ route('admin.paquetes.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Paquetes</a>
                             <a href="{{ route('admin.cupones.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Cupones</a>
@@ -30,7 +29,7 @@
                             <a href="{{ route('panel.invitaciones.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Mis invitaciones</a>
                             <a href="{{ route('panel.confirmados.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Confirmados</a>
                         @endif
-                        <span>{{ auth()->user()->name }}</span>
+                        <span class="text-text-gray">{{ auth()->user()->name }}</span>
                         <span class="rounded-full bg-purple-soft px-3 py-1 font-semibold text-purple-brand">{{ auth()->user()->role }}</span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
