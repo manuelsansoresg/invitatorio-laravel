@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invitacion;
+use App\Models\Orden;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,11 +32,38 @@ class AdminController extends Controller
             ->orderBy('name')
             ->get();
 
+        // Órdenes pagadas: usadas para la sección "Invitaciones compradas"
+        // y para calcular las ganancias. Cargamos la suscripción y todas las
+        // invitaciones que el cliente creó con esa suscripción + su template.
+        $ordenesPagadas = Orden::query()
+            ->where('estado', 'approved')
+            ->with(['suscripcion' => fn ($q) => $q->with(['invitaciones' => fn ($q2) => $q2->with('template')->latest('id'), 'usuario'])])
+            ->latest('paid_at')
+            ->get();
+
+        $ganancias = [
+            'total_historico' => (int) Orden::where('estado', 'approved')->sum('paquete_precio_centavos'),
+            'este_mes'        => (int) Orden::where('estado', 'approved')
+                ->where('paid_at', '>=', now()->startOfMonth())
+                ->sum('paquete_precio_centavos'),
+            'este_anio'       => (int) Orden::where('estado', 'approved')
+                ->where('paid_at', '>=', now()->startOfYear())
+                ->sum('paquete_precio_centavos'),
+            'ordenes_total'   => (int) Orden::where('estado', 'approved')->count(),
+            'por_paquete'     => Orden::where('estado', 'approved')
+                ->selectRaw('paquete_nombre, COUNT(*) as count, SUM(paquete_precio_centavos) as total')
+                ->groupBy('paquete_nombre')
+                ->orderByDesc('total')
+                ->get(),
+        ];
+
         return view('admin.dashboard', [
-            'clientes' => $clientes,
-            'invitaciones' => $invitaciones,
-            'roles' => User::roles(),
-            'users' => $users,
+            'clientes'       => $clientes,
+            'ganancias'      => $ganancias,
+            'invitaciones'   => $invitaciones,
+            'ordenesPagadas' => $ordenesPagadas,
+            'roles'          => User::roles(),
+            'users'          => $users,
         ]);
     }
 
