@@ -2793,10 +2793,16 @@
                             class="confirm-input"
                             min="1"
                             max="{{ $invitado->lugares_asignados }}"
-                            value="{{ old('numero_invitados', $invitado->lugares_asignados) }}"
+                            value="{{ old('numero_invitados', $invitado->lugares_confirmados ?? $invitado->lugares_asignados) }}"
                             required
                         >
-                        <p class="confirm-hint">Máximo {{ $invitado->lugares_asignados }} según lo que reservó el organizador.</p>
+                        <p class="confirm-hint">
+                            @if ($invitado->lugares_confirmados !== null)
+                                Confirmaste <strong>{{ $invitado->lugares_confirmados }}</strong> de {{ $invitado->lugares_asignados }}. Puedes cambiarlo.
+                            @else
+                                Máximo {{ $invitado->lugares_asignados }} según lo que reservó el organizador.
+                            @endif
+                        </p>
                     @endif
 
                     <p id="confirmError" class="confirm-error" hidden></p>

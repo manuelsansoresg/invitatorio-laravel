@@ -84,6 +84,21 @@ class ConfirmacionController extends Controller
             'user_agent'      => substr((string) $request->userAgent(), 0, 1000),
         ]);
 
+        // Si la confirmación viene de un invitado con link único, actualizo
+        // el contador del invitado (lugares_confirmados + estado). Así el
+        // panel del cliente ve reflejada la confirmación y el modal del
+        // invitado muestra su número al refrescar.
+        if ($invitado && filled($data['numero_invitados'] ?? null)) {
+            $invitado->lugares_confirmados = (int) $data['numero_invitados'];
+            $invitado->estado = (int) $data['numero_invitados'] >= (int) $invitado->lugares_asignados
+                ? 'confirmado'
+                : 'pendiente';
+            $invitado->confirmado_at = now();
+            $invitado->ip = $request->ip();
+            $invitado->user_agent = substr((string) $request->userAgent(), 0, 255);
+            $invitado->save();
+        }
+
         // Respuesta
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([

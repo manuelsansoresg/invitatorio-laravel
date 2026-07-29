@@ -891,7 +891,7 @@
                             </label>
                             <label>
                                 <span class="field-label">Personas</span>
-                                <input class="field-control" name="numero_invitados" type="number" min="1" @if (! empty($invitado)) max="{{ $invitado->lugares_asignados }}" @else max="20" @endif value="{{ old('numero_invitados', $invitado->lugares_asignados ?? 1) }}">
+                                <input class="field-control" name="numero_invitados" type="number" min="1" @if (! empty($invitado)) max="{{ $invitado->lugares_asignados }}" @else max="20" @endif value="{{ old('numero_invitados', $invitado->lugares_confirmados ?? $invitado->lugares_asignados ?? 1) }}">
                             </label>
                         </div>
                         <label>
