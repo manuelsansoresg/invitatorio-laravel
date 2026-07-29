@@ -87,7 +87,7 @@
             <div>
                 <h2 class="font-display text-xl font-bold text-text-dark">Invitados con link único</h2>
                 @if ($permiteInvitados)
-                    <p class="text-xs text-text-gray">Cada invitado tiene un link que puedes compartir por WhatsApp o Facebook. Él confirma cuántos van de los lugares asignados.</p>
+                    <p class="text-xs text-text-gray">Cada invitado tiene un link personal. Compártelo por WhatsApp o Facebook — al abrirlo verá la invitación y desde ahí confirma cuántos van con el modal de "Confirmar asistencia".</p>
                 @else
                     <p class="text-xs text-amber-700">Tu paquete no incluye esta función. Solo se muestra en paquetes que lo habilitan.</p>
                 @endif
@@ -252,7 +252,7 @@ Familia Arceo, 5</textarea>
             const url = cell.dataset.shareUrl;
             const nombre = cell.dataset.nombre;
             const lugares = cell.dataset.lugares;
-            const texto = `Hola ${nombre}! Tienes ${lugares} lugar(es) reservado(s) en nuestro evento. Confirma cuántos van aquí: ${url}`;
+            const texto = `Hola ${nombre}! Te comparto tu invitación personal. Tienes ${lugares} lugar(es) reservado(s) en nuestro evento. Cuando la abras, confirma cuántos van desde el botón de confirmar: ${url}`;
             if (red === 'whatsapp') {
                 window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
             } else if (red === 'facebook') {

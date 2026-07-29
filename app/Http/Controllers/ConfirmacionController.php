@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Confirmacion;
 use App\Models\Invitacion;
+use App\Models\Invitado;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -59,16 +60,28 @@ class ConfirmacionController extends Controller
             ])->withInput();
         }
 
+        // Si el form mandó el token del invitado (vino del link /c/{token}),
+        // lo buscamos y validamos que pertenezca a esta invitación. Si
+        // no se mandó token o es inválido, simplemente no asociamos.
+        $invitado = null;
+        if ($request->filled('invitado_token')) {
+            $token = (string) $request->input('invitado_token');
+            $invitado = Invitado::where('token', $token)
+                ->where('invitacion_id', $invitacion->id)
+                ->first();
+        }
+
         // Crear la confirmación
         $confirmacion = Confirmacion::create([
-            'invitacion_id' => $invitacion->id,
-            'nombre'        => trim($data['nombre']),
-            'telefono'      => filled($data['telefono'] ?? null) ? trim($data['telefono']) : null,
-            'mensaje'       => filled($data['mensaje'] ?? null) ? trim($data['mensaje']) : null,
+            'invitacion_id'   => $invitacion->id,
+            'invitado_id'     => $invitado?->id,
+            'nombre'          => trim($data['nombre']),
+            'telefono'        => filled($data['telefono'] ?? null) ? trim($data['telefono']) : null,
+            'mensaje'         => filled($data['mensaje'] ?? null) ? trim($data['mensaje']) : null,
             'numero_invitados' => $data['numero_invitados'] ?? null,
-            'asistira'      => $data['asistira'] ?? true,
-            'ip'            => $request->ip(),
-            'user_agent'    => substr((string) $request->userAgent(), 0, 1000),
+            'asistira'        => $data['asistira'] ?? true,
+            'ip'              => $request->ip(),
+            'user_agent'      => substr((string) $request->userAgent(), 0, 1000),
         ]);
 
         // Respuesta

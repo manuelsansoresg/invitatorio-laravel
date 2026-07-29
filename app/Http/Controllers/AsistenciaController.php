@@ -8,79 +8,28 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * Controller público (sin auth) para que el invitado confirme su
- * asistencia desde su link único: /c/{token}
+ * Controller para el link único de cada invitado (/c/{token}).
  *
- * La vista muestra el nombre del invitado, cuántos lugares tiene
- * asignados, y le permite elegir cuántos van (entre 0 = no asistirá,
- * y N = los lugares máximos).
+ * El link YA NO abre una vista de confirmación propia. Redirige a la
+ * invitación pública (que ya tiene su modal de confirmar) pasando
+ * el token del invitado como query param. Cuando el invitado confirma
+ * desde el modal, el ConfirmacionController::store asocia la
+ * confirmación con el invitado de la lista.
  *
- * Re-confirmación permitida — el invitado puede cambiar su respuesta
- * las veces que necesite con el mismo link.
+ * El método `show` se conserva para que un link viejo o externo
+ * (compartido antes de este cambio) siga funcionando — pero ahora
+ * redirige en lugar de renderizar una vista separada.
  */
 class AsistenciaController extends Controller
 {
-    public function show(string $token): View
-    {
-        $invitado = $this->buscarInvitado($token);
-
-        return view('confirmar.show', [
-            'invitado'   => $invitado,
-            'invitacion' => $invitado->invitacion,
-        ]);
-    }
-
-    public function confirmar(Request $request, string $token): RedirectResponse
-    {
-        $invitado = $this->buscarInvitado($token);
-
-        $data = $request->validate([
-            'lugares'  => ['required', 'integer', 'min:0', 'max:' . $invitado->lugares_asignados],
-            'comentario' => ['nullable', 'string', 'max:500'],
-        ], [
-            'lugares.required' => 'Selecciona cuántos van.',
-            'lugares.max'      => "Solo tienes {$invitado->lugares_asignados} lugar(es) asignados.",
-            'lugares.min'      => 'Si no vas a asistir, indícalo explícitamente abajo.',
-        ]);
-
-        $lugares = (int) $data['lugares'];
-
-        if ($lugares === 0) {
-            $invitado->update([
-                'estado'              => 'no_asistira',
-                'lugares_confirmados' => 0,
-                'confirmado_at'       => now(),
-                'ip'                  => $request->ip(),
-                'user_agent'          => substr((string) $request->userAgent(), 0, 255),
-            ]);
-            return redirect()
-                ->route('confirmar.gracias', $invitado->token)
-                ->with('status', 'Gracias por avisar. Te esperamos en otra ocasión.');
-        }
-
-        $invitado->update([
-            'estado'              => 'confirmado',
-            'lugares_confirmados' => $lugares,
-            'confirmado_at'       => now(),
-            'ip'                  => $request->ip(),
-            'user_agent'          => substr((string) $request->userAgent(), 0, 255),
-        ]);
-
-        return redirect()
-            ->route('confirmar.gracias', $invitado->token)
-            ->with('status', "¡Listo! {$lugares} lugar(es) confirmado(s).");
-    }
-
-    public function gracias(string $token): View
-    {
-        $invitado = $this->buscarInvitado($token);
-        return view('confirmar.gracias', [
-            'invitado'   => $invitado,
-            'invitacion' => $invitado->invitacion,
-        ]);
-    }
-
-    private function buscarInvitado(string $token): Invitado
+    /**
+     * GET /c/{token}
+     *
+     * Redirige a la invitación pública. Pasa ?invitado_token= para
+     * que el ConfirmacionController pueda asociar la confirmación
+     * con el invitado de la lista del cliente.
+     */
+    public function show(string $token): RedirectResponse
     {
         $invitado = Invitado::where('token', $token)->first();
 
@@ -88,6 +37,17 @@ class AsistenciaController extends Controller
             abort(404, 'Link inválido o expirado.');
         }
 
-        return $invitado->loadMissing('invitacion');
+        return redirect()->to(
+            url('/invitacion/' . $invitado->invitacion->ruta) . '?invitado_token=' . $token
+        );
+    }
+
+    /**
+     * Mantengo la firma del método "gracias" por si algún template
+     * viejo lo referencia, pero ya no se usa en el flow principal.
+     */
+    public function gracias(string $token): View
+    {
+        abort(404);
     }
 }

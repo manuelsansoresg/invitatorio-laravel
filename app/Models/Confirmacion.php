@@ -17,6 +17,7 @@ class Confirmacion extends Model
 
     protected $fillable = [
         'invitacion_id',
+        'invitado_id',
         'nombre',
         'telefono',
         'mensaje',
@@ -40,5 +41,14 @@ class Confirmacion extends Model
     public function invitacion(): BelongsTo
     {
         return $this->belongsTo(Invitacion::class);
+    }
+
+    /**
+     * Si la confirmación vino de un invitado con link único, queda
+     * asociada para que el panel lleve el control por invitado.
+     */
+    public function invitado(): BelongsTo
+    {
+        return $this->belongsTo(Invitado::class);
     }
 }
