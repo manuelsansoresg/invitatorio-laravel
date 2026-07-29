@@ -159,85 +159,19 @@
                                 <td class="px-5 py-5 text-text-gray">{{ $invitacion->ruta }}</td>
                                 <td class="px-5 py-5 text-center font-semibold text-text-gray">{{ $invitacion->confirmaciones_count }}</td>
                                 <td class="px-5 py-5 align-top">
-                                    <div class="flex min-w-[270px] items-center justify-between gap-4">
-                                        @if ($invitacion->cliente)
-                                            <div class="min-w-0">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-green-500"></span>
-                                                    <p class="truncate font-bold text-text-dark">{{ $invitacion->cliente->name }}</p>
-                                                </div>
-                                                <p class="mt-1 truncate text-xs text-text-gray">{{ $invitacion->cliente->email }}</p>
+                                    @if ($invitacion->cliente)
+                                        <div class="min-w-0">
+                                            <div class="flex items-center gap-2">
+                                                <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-green-500"></span>
+                                                <p class="truncate font-bold text-text-dark">{{ $invitacion->cliente->name }}</p>
                                             </div>
-                                        @else
-                                            <div>
-                                                <p class="font-bold text-text-dark">Sin cliente asignado</p>
-                                                <p class="mt-1 text-xs text-text-gray">Disponible para asignar.</p>
-                                            </div>
-                                        @endif
-
-                                        <button
-                                            type="button"
-                                            class="shrink-0 cursor-pointer text-sm font-extrabold text-purple-brand underline decoration-purple-brand/30 underline-offset-4 transition hover:text-orange-brand"
-                                            onclick="document.getElementById('assign-client-{{ $invitacion->id }}').showModal()"
-                                        >
-                                            {{ $invitacion->cliente ? 'Editar' : 'Asignar' }}
-                                        </button>
-                                    </div>
-
-                                    <dialog
-                                        id="assign-client-{{ $invitacion->id }}"
-                                        aria-labelledby="assign-client-title-{{ $invitacion->id }}"
-                                        class="fixed inset-0 m-auto max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-md overflow-y-auto rounded-2xl border border-border-soft bg-white p-0 text-left shadow-2xl backdrop:bg-slate-950/50"
-                                        style="position: fixed; inset: 0; width: min(28rem, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); margin: auto;"
-                                    >
-                                        <form method="POST" action="{{ route('admin.invitaciones.cliente.update', $invitacion) }}" class="p-6">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="assignment_source" value="{{ $invitacion->ruta }}">
-
-                                            <div class="flex items-start justify-between gap-4">
-                                                <div>
-                                                    <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-orange-brand">Cliente de la invitación</p>
-                                                    <h3 id="assign-client-title-{{ $invitacion->id }}" class="mt-2 font-display text-xl font-extrabold text-purple-dark">
-                                                        {{ $invitacion->cliente ? 'Editar asignación' : 'Asignar cliente' }}
-                                                    </h3>
-                                                </div>
-                                                <button type="button" onclick="this.closest('dialog').close()" aria-label="Cerrar" class="grid h-9 w-9 cursor-pointer place-items-center rounded-full border border-border-soft text-slate-500 transition hover:border-purple-brand hover:text-purple-brand">
-                                                    <span aria-hidden="true">×</span>
-                                                </button>
-                                            </div>
-
-                                            <p class="mt-3 text-sm leading-relaxed text-text-gray">
-                                                Selecciona quién administrará <strong>{{ $invitacion->nombre_completo }}</strong>. También puedes dejarla sin cliente.
-                                            </p>
-
-                                            <label for="assignment-client-{{ $invitacion->id }}" class="mt-5 block text-sm font-bold text-text-dark">
-                                                Cliente
-                                                <select id="assignment-client-{{ $invitacion->id }}" name="user_id" class="mt-2 w-full cursor-pointer rounded-xl border border-border-soft bg-white px-4 py-3 text-sm outline-none transition focus:border-purple-brand focus:ring-4 focus:ring-purple-soft">
-                                                    <option value="">Sin cliente</option>
-                                                    @foreach ($clientes as $cliente)
-                                                        <option value="{{ $cliente->id }}" @selected((string) (old('assignment_source') === $invitacion->ruta ? old('user_id') : $invitacion->user_id) === (string) $cliente->id)>
-                                                            {{ $cliente->name }} · {{ $cliente->email }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </label>
-                                            @if (old('assignment_source') === $invitacion->ruta)
-                                                @error('user_id', 'clientAssignment')
-                                                    <p class="mt-2 text-sm font-semibold text-red-600">{{ $message }}</p>
-                                                @enderror
-                                            @endif
-
-                                            <div class="mt-6 grid grid-cols-2 gap-3">
-                                                <button type="button" onclick="this.closest('dialog').close()" class="cursor-pointer rounded-xl border border-border-soft bg-white px-4 py-3 text-sm font-bold text-purple-brand transition hover:border-purple-brand">
-                                                    Cancelar
-                                                </button>
-                                                <button type="submit" class="cursor-pointer rounded-xl bg-purple-brand px-4 py-3 text-sm font-extrabold text-white transition hover:bg-purple-dark">
-                                                    Guardar asignación
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </dialog>
+                                            <p class="mt-1 truncate text-xs text-text-gray">{{ $invitacion->cliente->email }}</p>
+                                        </div>
+                                    @else
+                                        <div>
+                                            <p class="text-sm text-text-gray">Sin asignar</p>
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="whitespace-nowrap px-5 py-5 text-text-gray">{{ $invitacion->created_at?->format('d/m/Y') }}</td>
                                 <td class="px-5 py-5 align-middle">
@@ -406,17 +340,6 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', () => {
                         document.getElementById('clone-invitation-{{ $failedClone->id }}')?.showModal();
-                    });
-                </script>
-            @endif
-        @endif
-
-        @if ($errors->clientAssignment->any() && old('assignment_source'))
-            @php($failedAssignment = $invitaciones->firstWhere('ruta', old('assignment_source')))
-            @if ($failedAssignment)
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        document.getElementById('assign-client-{{ $failedAssignment->id }}')?.showModal();
                     });
                 </script>
             @endif
