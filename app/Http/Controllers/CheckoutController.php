@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Cupon;
 use App\Models\Orden;
 use App\Models\Paquete;
+use App\Models\User;
 use App\Services\MercadoPagoService;
 use App\Services\SuscripcionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
@@ -47,6 +49,7 @@ class CheckoutController extends Controller
             'coupon_ok'      => $resolucion['ok'],
             'coupon_mensaje' => $resolucion['mensaje'],
             'request_url'    => $request->fullUrl(),
+            'logged_in'      => Auth::check(),
         ]);
 
         return view('checkout.buy', [
@@ -58,29 +61,47 @@ class CheckoutController extends Controller
             'couponCodigo'   => $resolucion['ok'] ? $resolucion['cupon']->codigo : null,
             'descuentoCentavos' => (int) $resolucion['descuento_centavos'],
             'totalFinalCentavos' => max(0, (int) $paquete->precio_centavos - (int) $resolucion['descuento_centavos']),
+            'authUser'       => Auth::user(),
         ]);
     }
 
     /**
      * POST /comprar/{paquete}
-     * Crea la orden (con cupón si hay), crea la preference en MP y redirige.
+     *
+     * Crea (o reutiliza) la cuenta del cliente, crea la orden ligada a
+     * esa cuenta, crea la preference en MP y redirige a pagar.
+     *
+     * Estados posibles al llegar:
+     *  1. Logueado → usa el user de la sesión. Email/password se ignoran.
+     *  2. No logueado, email nuevo → crea User (role=cliente, activo=true),
+     *     lo loguea automáticamente y sigue.
+     *  3. No logueado, email ya existe → error con link a /login?next=...
+     *     para que pueda volver al checkout después de autenticarse.
      */
     public function buy(Request $request, Paquete $paquete): RedirectResponse
     {
         abort_unless($paquete->activo, 404);
 
+        $loggedIn = Auth::check();
+
         $data = $request->validate([
-            'comprador_nombre'   => ['required', 'string', 'min:2', 'max:120'],
-            'comprador_email'    => ['required', 'email:rfc', 'max:160'],
+            'comprador_nombre'   => [$loggedIn ? 'sometimes' : 'required', 'string', 'min:2', 'max:120'],
+            'comprador_email'    => [$loggedIn ? 'sometimes' : 'required', 'email:rfc', 'max:160'],
             'comprador_telefono' => ['nullable', 'string', 'min:8', 'max:40'],
             'tipo_evento'        => ['nullable', Rule::in(array_keys($this->formatosParaSelect()))],
             'terminos'           => ['accepted'],
             'coupon'             => ['nullable', 'string', 'max:40'],
+            // Solo se pide si NO está logueado. 'confirmed' exige el
+            // campo password_confirmation.
+            'password'           => [$loggedIn ? 'sometimes' : 'required', 'string', 'min:8', 'confirmed'],
         ], [
-            'comprador_nombre.required' => 'Necesitamos tu nombre para poderte contactar.',
-            'comprador_email.required'  => 'El email es donde te enviaremos la confirmación.',
-            'comprador_email.email'     => 'Ese email no se ve bien, revísalo por favor.',
-            'terminos.accepted'         => 'Debes aceptar los términos para continuar.',
+            'comprador_nombre.required'   => 'Necesitamos tu nombre para poderte contactar.',
+            'comprador_email.required'    => 'El email es donde te enviaremos la confirmación.',
+            'comprador_email.email'       => 'Ese email no se ve bien, revísalo por favor.',
+            'terminos.accepted'           => 'Debes aceptar los términos para continuar.',
+            'password.required'           => 'Define una contraseña para tu cuenta (mínimo 8 caracteres).',
+            'password.min'                => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed'          => 'Las contraseñas no coinciden.',
         ]);
 
         $codigo = $this->leerCodigoCoupon($request);
@@ -93,8 +114,45 @@ class CheckoutController extends Controller
         $descuentoCentavos = $cupon ? (int) $resolucion['descuento_centavos'] : 0;
         $totalFinalCentavos = max(0, (int) $paquete->precio_centavos - $descuentoCentavos);
 
-        $orden = DB::transaction(function () use ($paquete, $data, $cupon, $descuentoCentavos, $totalFinalCentavos, $request) {
+        // ───── Resolver el user ─────
+        if ($loggedIn) {
+            $user = Auth::user();
+        } else {
+            $email = mb_strtolower(trim($data['comprador_email']));
+
+            if (User::where('email', $email)->exists()) {
+                // Email ya registrado. Le pedimos que se loguee y vuelva
+                // al checkout. Pasamos ?next= para que el login lo
+                // traiga de regreso a ESTE paquete exacto.
+                $loginUrl = route('login', [
+                    'next' => route('checkout.buy', $paquete, false),
+                ]);
+
+                return back()
+                    ->withInput($request->except('password', 'password_confirmation'))
+                    ->withErrors([
+                        'comprador_email' => 'Este email ya está registrado. Inicia sesión para continuar con la compra.',
+                    ])
+                    ->with('login_url', $loginUrl);
+            }
+
+            // Creamos la cuenta y lo logueamos. El cast 'hashed' en el
+            // modelo User se encarga de hashear la contraseña.
+            $user = User::create([
+                'name'     => trim($data['comprador_nombre']),
+                'email'    => $email,
+                'password' => $data['password'],
+                'role'     => User::ROLE_CLIENT,
+                'activo'   => true,
+            ]);
+
+            Auth::login($user);
+            $request->session()->regenerate();
+        }
+
+        $orden = DB::transaction(function () use ($paquete, $data, $cupon, $descuentoCentavos, $totalFinalCentavos, $user, $loggedIn, $request) {
             return Orden::create([
+                'user_id'                => $user->id,
                 'paquete_id'              => $paquete->id,
                 'paquete_nombre'          => $paquete->nombre,
                 'paquete_precio_centavos' => $paquete->precio_centavos,
@@ -102,8 +160,8 @@ class CheckoutController extends Controller
                 'total_final_centavos'    => $totalFinalCentavos,
                 'cupon_id'                => $cupon?->id,
                 'cupon_codigo'            => $cupon?->codigo,
-                'comprador_nombre'        => trim($data['comprador_nombre']),
-                'comprador_email'         => mb_strtolower(trim($data['comprador_email'])),
+                'comprador_nombre'        => $loggedIn ? $user->name : trim($data['comprador_nombre']),
+                'comprador_email'         => $loggedIn ? $user->email : mb_strtolower(trim($data['comprador_email'])),
                 'comprador_telefono'      => $data['comprador_telefono'] ?? null,
                 'tipo_evento'             => $data['tipo_evento'] ?? null,
                 'estado'                  => 'pending',
@@ -170,7 +228,8 @@ class CheckoutController extends Controller
         }
 
         return view('checkout.success', [
-            'orden' => $orden,
+            'orden'    => $orden,
+            'authUser' => Auth::user(),
         ]);
     }
 
