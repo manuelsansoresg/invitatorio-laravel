@@ -2767,21 +2767,22 @@
 
                     @if (! empty($invitado))
                         <p class="confirm-hola">Hola, <strong>{{ $invitado->nombre }}</strong> — tienes <strong>{{ $invitado->lugares_asignados }} {{ $invitado->lugares_asignados == 1 ? 'lugar reservado' : 'lugares reservados' }}</strong>.</p>
+                        <input type="hidden" name="nombre" value="{{ $invitado->nombre }}">
+                    @else
+                        <label for="confirmNombre" class="confirm-label">Tu nombre</label>
+                        <input
+                            type="text"
+                            id="confirmNombre"
+                            name="nombre"
+                            class="confirm-input"
+                            placeholder="Escribe tu nombre completo"
+                            value="{{ old('nombre') }}"
+                            required
+                            minlength="3"
+                            maxlength="120"
+                            autocomplete="name"
+                        >
                     @endif
-
-                    <label for="confirmNombre" class="confirm-label">Tu nombre</label>
-                    <input
-                        type="text"
-                        id="confirmNombre"
-                        name="nombre"
-                        class="confirm-input"
-                        placeholder="Escribe tu nombre completo"
-                        value="{{ old('nombre', $invitado->nombre ?? '') }}"
-                        {{ empty($invitado) ? 'required' : '' }}
-                        minlength="3"
-                        maxlength="120"
-                        autocomplete="name"
-                    >
 
                     @if (! empty($invitado))
                         <label for="confirmNumero" class="confirm-label">¿Cuántos van a venir?</label>

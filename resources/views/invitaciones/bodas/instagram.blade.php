@@ -874,12 +874,13 @@
 
                         @if (! empty($invitado))
                             <p class="field-hola">Hola, <strong>{{ $invitado->nombre }}</strong> — tienes <strong>{{ $invitado->lugares_asignados }} {{ $invitado->lugares_asignados == 1 ? 'lugar reservado' : 'lugares reservados' }}</strong>.</p>
+                            <input type="hidden" name="nombre" value="{{ $invitado->nombre }}">
+                        @else
+                            <label>
+                                <span class="field-label">Nombre completo</span>
+                                <input class="field-control" id="confirmName" name="nombre" type="text" minlength="3" maxlength="120" required autocomplete="name" value="{{ old('nombre') }}">
+                            </label>
                         @endif
-
-                        <label>
-                            <span class="field-label">Nombre completo</span>
-                            <input class="field-control" id="confirmName" name="nombre" type="text" minlength="3" maxlength="120" {{ empty($invitado) ? 'required' : '' }} autocomplete="name" value="{{ old('nombre', $invitado->nombre ?? '') }}">
-                        </label>
                         <div class="form-two">
                             <label>
                                 <span class="field-label">¿Asistirás?</span>
