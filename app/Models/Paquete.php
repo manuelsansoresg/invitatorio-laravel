@@ -105,18 +105,6 @@ class Paquete extends Model
     }
 
     /**
-     * Cupones que aplican a este paquete (algunos cupones aplican a
-     * todos los paquetes — esos aparecen acá con la lista vacía en
-     * la otra punta; el chequeo de "aplica a este paquete" vive en
-     * Cupon::aplicaAPaquete()).
-     */
-    public function cupones(): BelongsToMany
-    {
-        return $this->belongsToMany(Cupon::class, 'cupon_paquete')
-            ->withTimestamps();
-    }
-
-    /**
      * Scopes convenientes para la landing
      */
     public function scopeActivos(Builder $q): Builder
