@@ -2761,6 +2761,13 @@
                 >
                     @csrf
                     <input type="hidden" name="ruta_invitacion" value="{{ $invitacion?->ruta ?: 'xv-valentina' }}">
+                    @if (! empty($invitadoToken))
+                        <input type="hidden" name="invitado_token" value="{{ $invitadoToken }}">
+                    @endif
+
+                    @if (! empty($invitado))
+                        <p class="confirm-hola">Hola, <strong>{{ $invitado->nombre }}</strong> — tienes <strong>{{ $invitado->lugares_asignados }} {{ $invitado->lugares_asignados == 1 ? 'lugar reservado' : 'lugares reservados' }}</strong>.</p>
+                    @endif
 
                     <label for="confirmNombre" class="confirm-label">Tu nombre</label>
                     <input
@@ -2769,11 +2776,27 @@
                         name="nombre"
                         class="confirm-input"
                         placeholder="Escribe tu nombre completo"
-                        required
+                        value="{{ old('nombre', $invitado->nombre ?? '') }}"
+                        {{ empty($invitado) ? 'required' : '' }}
                         minlength="3"
                         maxlength="120"
                         autocomplete="name"
                     >
+
+                    @if (! empty($invitado))
+                        <label for="confirmNumero" class="confirm-label">¿Cuántos van a venir?</label>
+                        <input
+                            type="number"
+                            id="confirmNumero"
+                            name="numero_invitados"
+                            class="confirm-input"
+                            min="1"
+                            max="{{ $invitado->lugares_asignados }}"
+                            value="{{ old('numero_invitados', $invitado->lugares_asignados) }}"
+                            required
+                        >
+                        <p class="confirm-hint">Máximo {{ $invitado->lugares_asignados }} según lo que reservó el organizador.</p>
+                    @endif
 
                     <p id="confirmError" class="confirm-error" hidden></p>
 

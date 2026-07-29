@@ -868,9 +868,17 @@
                     <form class="form-grid" id="confirmForm" action="{{ route('confirmacion.store') }}" method="POST" novalidate>
                         @csrf
                         <input type="hidden" name="ruta_invitacion" value="{{ $invitacion?->ruta ?: 'boda-instagram' }}">
+                        @if (! empty($invitadoToken))
+                            <input type="hidden" name="invitado_token" value="{{ $invitadoToken }}">
+                        @endif
+
+                        @if (! empty($invitado))
+                            <p class="field-hola">Hola, <strong>{{ $invitado->nombre }}</strong> — tienes <strong>{{ $invitado->lugares_asignados }} {{ $invitado->lugares_asignados == 1 ? 'lugar reservado' : 'lugares reservados' }}</strong>.</p>
+                        @endif
+
                         <label>
                             <span class="field-label">Nombre completo</span>
-                            <input class="field-control" id="confirmName" name="nombre" type="text" minlength="3" maxlength="120" required autocomplete="name">
+                            <input class="field-control" id="confirmName" name="nombre" type="text" minlength="3" maxlength="120" {{ empty($invitado) ? 'required' : '' }} autocomplete="name" value="{{ old('nombre', $invitado->nombre ?? '') }}">
                         </label>
                         <div class="form-two">
                             <label>
@@ -882,7 +890,7 @@
                             </label>
                             <label>
                                 <span class="field-label">Personas</span>
-                                <input class="field-control" name="numero_invitados" type="number" min="1" max="20" value="1">
+                                <input class="field-control" name="numero_invitados" type="number" min="1" @if (! empty($invitado)) max="{{ $invitado->lugares_asignados }}" @else max="20" @endif value="{{ old('numero_invitados', $invitado->lugares_asignados ?? 1) }}">
                             </label>
                         </div>
                         <label>
