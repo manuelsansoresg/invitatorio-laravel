@@ -20,42 +20,6 @@
 
     <section class="mb-10">
         <div class="mb-4 flex items-center justify-between gap-4">
-            <h2 class="font-display text-xl font-bold text-text-dark">Paquetes y features</h2>
-            <span class="rounded-full bg-orange-soft px-3 py-1 text-sm font-semibold text-orange-intense">{{ $paquetes->count() }} paquetes</span>
-        </div>
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            @foreach ($paquetes as $p)
-                <div class="rounded-lg border border-border-soft bg-white p-4 shadow-sm">
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="flex-1">
-                            <p class="font-bold text-text-dark">{{ $p->nombre }}</p>
-                            <p class="text-xs text-text-gray">{{ $p->formato }} · {{ $p->precio_formateado }}</p>
-                        </div>
-                        <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $p->activo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
-                            {{ $p->activo ? 'Activo' : 'Inactivo' }}
-                        </span>
-                    </div>
-                    <div class="mt-3 flex items-center justify-between border-t border-border-soft pt-3">
-                        <div class="flex-1">
-                            <p class="text-xs font-semibold text-text-dark">Gestionar invitados</p>
-                            <p class="text-xs text-text-gray">Lista con link único por invitado</p>
-                        </div>
-                        <form method="POST" action="{{ route('admin.paquetes.toggle-gestionar-invitados', ['paquete' => $p->slug]) }}">
-                            @csrf
-                            <button type="submit"
-                                    class="relative inline-flex h-6 w-11 items-center rounded-full transition {{ $p->permite_gestionar_invitados ? 'bg-orange-brand' : 'bg-gray-300' }}"
-                                    title="Click para {{ $p->permite_gestionar_invitados ? 'desactivar' : 'activar' }}">
-                                <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition {{ $p->permite_gestionar_invitados ? 'translate-x-6' : 'translate-x-1' }}"></span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </section>
-
-    <section class="mb-10">
-        <div class="mb-4 flex items-center justify-between gap-4">
             <h2 class="font-display text-xl font-bold text-text-dark">Invitaciones disponibles</h2>
             <span class="rounded-full bg-orange-soft px-3 py-1 text-sm font-semibold text-orange-intense">{{ $invitaciones->count() }} disponibles</span>
         </div>

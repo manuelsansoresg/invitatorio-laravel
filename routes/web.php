@@ -39,17 +39,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/invitaciones/{invitacion}/clonar', [AdminController::class, 'cloneInvitation'])->name('invitaciones.clone');
     Route::patch('/invitaciones/{invitacion}/cliente', [AdminController::class, 'updateInvitationClient'])->name('invitaciones.cliente.update');
     Route::delete('/invitaciones/{invitacion}', [AdminController::class, 'destroyInvitation'])->name('invitaciones.destroy');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Toggle de features por paquete (temporal)
-    |--------------------------------------------------------------------------
-    | Endpoint auxiliar para activar/desactivar flags de paquetes
-    | sin esperar al admin de paquetes completo. Se puede borrar
-    | cuando admin/paquetes tenga su propio form.
-    */
-    Route::post('/paquetes/{paquete}/toggle-gestionar-invitados', [AdminController::class, 'togglePaqueteGestionarInvitados'])
-        ->name('paquetes.toggle-gestionar-invitados');
 });
 
 Route::middleware('auth')->prefix('panel')->name('panel.')->group(function () {
