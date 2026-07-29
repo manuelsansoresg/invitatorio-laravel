@@ -126,6 +126,24 @@
             </label>
         </div>
 
+        <div class="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
+            <h2 class="mb-4 font-display text-lg font-bold text-text-dark">Features del paquete</h2>
+
+            <label class="flex cursor-pointer items-start gap-3 rounded-md p-2 transition hover:bg-cream-bg">
+                <input type="hidden" name="permite_gestionar_invitados" value="0">
+                <input type="checkbox" name="permite_gestionar_invitados" value="1"
+                       @checked(old('permite_gestionar_invitados', $paquete->permite_gestionar_invitados))
+                       class="mt-0.5 h-4 w-4 rounded border-border-soft text-orange-brand focus:ring-orange-soft">
+                <span>
+                    <span class="block text-sm font-semibold text-text-dark">Permite gestionar invitados</span>
+                    <span class="block text-xs text-text-gray">
+                        Si está activo, los clientes con este paquete pueden dar de alta invitados con link único de confirmación
+                        y ver cuántos confirmaron de los lugares asignados.
+                    </span>
+                </span>
+            </label>
+        </div>
+
         <div class="flex flex-col gap-2">
             <button type="submit"
                     class="w-full rounded-md bg-orange-brand px-4 py-3 text-sm font-bold text-white transition hover:bg-orange-intense">

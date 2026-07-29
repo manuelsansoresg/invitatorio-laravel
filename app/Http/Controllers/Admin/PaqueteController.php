@@ -104,6 +104,7 @@ class PaqueteController extends Controller
             'items'          => ['nullable', 'string', 'max:2000'],
             'orden'          => ['nullable', 'integer', 'min:0', 'max:9999'],
             'activo'         => ['nullable', 'boolean'],
+            'permite_gestionar_invitados' => ['nullable', 'boolean'],
         ], [
             'slug.regex'             => 'El slug solo puede tener minúsculas, números y guiones.',
             'slug.unique'            => 'Ya existe un paquete con ese slug.',
@@ -114,6 +115,7 @@ class PaqueteController extends Controller
             'items'     => $this->normalizarItems($request->input('items')),
             'destacado' => $request->boolean('destacado'),
             'activo'    => $request->boolean('activo'),
+            'permite_gestionar_invitados' => $request->boolean('permite_gestionar_invitados'),
             'orden'     => (int) ($request->input('orden') ?? 0),
         ];
     }
