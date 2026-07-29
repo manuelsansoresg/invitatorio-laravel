@@ -87,6 +87,62 @@ class ConfirmadosController extends Controller
         ]);
     }
 
+    /**
+     * Confirmados de UNA invitación + gestión de invitados.
+     *
+     * El botón "Confirmados" del admin dashboard apunta aquí, no a la
+     * lista global, porque los confirmados van ligados a una invitación.
+     * Además esta pantalla integra la gestión de invitados
+     * (lista con link único de WhatsApp/FB) si el paquete del cliente
+     * tiene permite_gestionar_invitados=true. El admin siempre pasa.
+     */
+    public function indexForInvitacion(Request $request, Invitacion $invitacion): View
+    {
+        $this->autorizarAcceso($request->user(), $invitacion);
+
+        $user = $request->user();
+        $paquete = $user->paqueteActivo();
+        $permiteInvitados = $user->isAdmin() || ($paquete?->permite_gestionar_invitados === true);
+
+        $confirmaciones = $invitacion->confirmaciones()->latest()->get();
+
+        $invitados = $permiteInvitados
+            ? $invitacion->invitados()
+                ->orderByRaw("FIELD(estado, 'pendiente', 'confirmado', 'no_asistira')")
+                ->orderBy('nombre')
+                ->get()
+            : collect();
+
+        $totalesInvitados = [
+            'total'           => $invitados->count(),
+            'pendientes'      => $invitados->where('estado', 'pendiente')->count(),
+            'confirmados'     => $invitados->where('estado', 'confirmado')->count(),
+            'rechazados'      => $invitados->where('estado', 'no_asistira')->count(),
+            'lugares_asignados'   => $invitados->sum('lugares_asignados'),
+            'lugares_confirmados' => $invitados->where('estado', 'confirmado')->sum('lugares_confirmados'),
+        ];
+
+        return view('panel.confirmados.por-invitacion', [
+            'invitacion'        => $invitacion,
+            'confirmaciones'    => $confirmaciones,
+            'invitados'         => $invitados,
+            'permiteInvitados'  => $permiteInvitados,
+            'paquete'           => $paquete,
+            'totalesInvitados'  => $totalesInvitados,
+            'isAdmin'           => $user->isAdmin(),
+        ]);
+    }
+
+    private function autorizarAcceso(User $user, Invitacion $invitacion): void
+    {
+        if ($user->isAdmin()) {
+            return;
+        }
+        if ((int) $invitacion->user_id !== (int) $user->id) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
+    }
+
     private function confirmacionesVisibles(User $user): Builder
     {
         return Confirmacion::query()

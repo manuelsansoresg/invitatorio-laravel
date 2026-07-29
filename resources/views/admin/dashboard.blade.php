@@ -176,7 +176,7 @@
                                 <td class="whitespace-nowrap px-5 py-5 text-text-gray">{{ $invitacion->created_at?->format('d/m/Y') }}</td>
                                 <td class="px-5 py-5 align-middle">
                                     <div class="flex min-w-[265px] flex-wrap gap-2">
-                                        <a href="{{ route('panel.confirmados.index') }}" class="inline-flex items-center rounded-lg border border-border-soft bg-white px-3 py-2 text-xs font-bold text-purple-brand transition hover:border-purple-brand hover:bg-purple-soft">
+                                        <a href="{{ route('panel.invitaciones.confirmados', $invitacion) }}" class="inline-flex items-center rounded-lg border border-border-soft bg-white px-3 py-2 text-xs font-bold text-purple-brand transition hover:border-purple-brand hover:bg-purple-soft">
                                             Confirmados
                                         </a>
                                         <a href="{{ route('admin.invitaciones.edit', $invitacion) }}" class="inline-flex items-center rounded-lg border border-border-soft bg-white px-3 py-2 text-xs font-bold text-purple-brand transition hover:border-purple-brand hover:bg-purple-soft">

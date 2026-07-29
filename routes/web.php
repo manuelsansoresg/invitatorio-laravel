@@ -76,6 +76,18 @@ Route::middleware('auth')->prefix('panel')->name('panel.')->group(function () {
     Route::delete('/confirmados/seleccionados', [ConfirmadosController::class, 'destroySelected'])->name('confirmados.destroy-selected');
     Route::delete('/confirmados/{confirmacion}', [ConfirmadosController::class, 'destroy'])->name('confirmados.destroy');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Confirmados + invitados POR invitación
+    |--------------------------------------------------------------------------
+    | Cada fila de invitaciones en el admin dashboard apunta a esta ruta
+    | (no a la lista global) porque los confirmados van ligados a una
+    | invitación. Aquí también se gestiona la lista de invitados con
+    | link único si el paquete del cliente lo permite.
+    */
+    Route::get('/invitaciones/{invitacion}/confirmados', [ConfirmadosController::class, 'indexForInvitacion'])
+        ->name('invitaciones.confirmados');
+
     // Invitaciones del cliente
     Route::get('/invitaciones', [PanelInvitacionController::class, 'index'])->name('invitaciones.index');
     Route::get('/invitaciones/nueva', [PanelInvitacionController::class, 'create'])->name('invitaciones.create');
