@@ -40,6 +40,12 @@ class SuscripcionService
      * (en caso de que el webhook llegue tarde).
      *
      * Idempotente: si la orden ya tiene suscripción, no crea otra.
+     *
+     * Lookup del user:
+     *  1. Directo por $orden->user_id (todas las órdenes nuevas tienen).
+     *  2. Fallback por email para órdenes viejas pre-migración que
+     *     aún no tenían user_id pero el email matcheaba con un user.
+     *  3. Si no hay user, retorna null (admin la asigna manual).
      */
     public function crearSuscripcionPorCompra(Orden $orden): ?Suscripcion
     {
@@ -52,11 +58,19 @@ class SuscripcionService
             return null;
         }
 
-        // El comprador de la orden NO necesariamente es un usuario
-        // registrado. Si la orden trae email y ese email está en users,
-        // vinculamos. Si no, NO creamos suscripción (el admin la puede
-        // asignar manual cuando el usuario se registre).
-        $user = User::query()->where('email', $orden->comprador_email)->first();
+        // 1) Camino feliz: la orden ya trae el user_id desde el checkout.
+        $user = $orden->user_id ? User::find($orden->user_id) : null;
+
+        // 2) Fallback legacy: órdenes creadas antes de la migración
+        //    add_user_id_to_ordenes. El backfill de la migración ya
+        //    intentó vincularlas, pero por si acaso volvemos a buscar
+        //    por email.
+        if (! $user && $orden->comprador_email) {
+            $user = User::query()
+                ->whereRaw('LOWER(email) = ?', [mb_strtolower($orden->comprador_email)])
+                ->first();
+        }
+
         if (! $user) {
             return null;
         }

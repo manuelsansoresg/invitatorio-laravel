@@ -13,6 +13,7 @@ class Orden extends Model
     protected $table = 'ordenes';
 
     protected $fillable = [
+        'user_id',
         'paquete_id',
         'paquete_nombre',
         'paquete_precio_centavos',
@@ -53,6 +54,17 @@ class Orden extends Model
     public function cupon(): BelongsTo
     {
         return $this->belongsTo(Cupon::class);
+    }
+
+    /**
+     * Usuario que creó/compró la orden. Puede ser null en órdenes muy
+     * viejas creadas antes de que existiera el campo, o si el user fue
+     * borrado (setNullOnDelete). En la práctica todas las órdenes
+     * nuevas SIEMPRE tendrán user_id.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**
