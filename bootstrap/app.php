@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureUserIsAdmin;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,8 +20,14 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo(
-            fn (Request $request) => $request->user()?->isAdmin() ? '/admin' : '/panel/confirmados',
+            fn (Request $request) => $request->user()?->isAdmin() ? '/admin' : '/panel/invitaciones',
         );
+    })
+    ->withSchedule(function (Schedule $schedule): void {
+        // Diario: marca invitaciones publicadas cuya fecha_caducidad ya pasó.
+        $schedule->command('invitaciones:marcar-vencidas')
+            ->dailyAt('03:00')
+            ->withoutOverlapping();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

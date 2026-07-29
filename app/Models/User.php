@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -43,6 +44,47 @@ class User extends Authenticatable
     public function invitaciones(): HasMany
     {
         return $this->hasMany(Invitacion::class);
+    }
+
+    public function ordenes(): HasMany
+    {
+        return $this->hasMany(Orden::class, 'comprador_email', 'email');
+    }
+
+    public function suscripciones(): HasMany
+    {
+        return $this->hasMany(Suscripcion::class)->latest('id');
+    }
+
+    /**
+     * Suscripción activa del usuario (la primera que esté activa).
+     * Si tiene varias, se toma la más reciente.
+     */
+    public function suscripcionActiva(): ?Suscripcion
+    {
+        return $this->suscripciones()
+            ->get()
+            ->first(fn (Suscripcion $s) => $s->esActiva());
+    }
+
+    /**
+     * Templates que el admin habilitó para este usuario. Solo los
+     * activos (pivot.activo = true Y template.activo = true).
+     */
+    public function templates(): BelongsToMany
+    {
+        return $this->belongsToMany(Template::class, 'user_templates')
+            ->withPivot('activo', 'asignado_en')
+            ->withTimestamps();
+    }
+
+    public function templatesVisibles()
+    {
+        return $this->templates()
+            ->wherePivot('activo', true)
+            ->where('templates.activo', true)
+            ->orderBy('templates.orden')
+            ->orderBy('templates.nombre');
     }
 
     /**

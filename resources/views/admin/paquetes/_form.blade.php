@@ -6,6 +6,7 @@
       - $action     (URL del POST/PUT)
       - $method     ('POST' o 'PUT')
 --}}
+<div class="mx-auto max-w-4xl">
 <form method="POST" action="{{ $action }}" class="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
     @csrf
     @if (strtoupper($method) !== 'POST')
@@ -137,3 +138,4 @@
         </div>
     </aside>
 </form>
+</div>

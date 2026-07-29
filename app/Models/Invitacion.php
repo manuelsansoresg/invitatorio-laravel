@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class Invitacion extends Model
 {
@@ -24,6 +25,8 @@ class Invitacion extends Model
         'apellido_materno',
         'ruta',
         'user_id',
+        'suscripcion_id',
+        'template_id',
         'cliente_email',
         'tipo_evento',
         'titulo',
@@ -50,6 +53,7 @@ class Invitacion extends Model
         'estado',
         'mostrar_contador_confirmados',
         'publicada_at',
+        'fecha_caducidad',
     ];
 
     protected function casts(): array
@@ -59,6 +63,7 @@ class Invitacion extends Model
             'hora_evento' => 'datetime:H:i',
             'publicada_at' => 'datetime',
             'mostrar_contador_confirmados' => 'boolean',
+            'fecha_caducidad' => 'datetime',
         ];
     }
 
@@ -105,6 +110,53 @@ class Invitacion extends Model
     public function cliente(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(Template::class);
+    }
+
+    public function suscripcion(): BelongsTo
+    {
+        return $this->belongsTo(Suscripcion::class);
+    }
+
+    /**
+     * Helpers de estado y caducidad.
+     *
+     * Estados:
+     *  - borrador   → todavía no se publicó.
+     *  - publicada  → publicada_at está seteado. La invitación está "viva".
+     *  - vencida    → pasó fecha_caducidad (calculada al publicar).
+     *  - archivada  → el cliente o el admin la archivó.
+     */
+    public function estaPublicada(): bool
+    {
+        return $this->estado === 'publicada' && $this->publicada_at !== null;
+    }
+
+    public function esBorrador(): bool
+    {
+        return $this->estado === 'borrador';
+    }
+
+    public function estaVencida(): bool
+    {
+        if ($this->estado === 'vencida') {
+            return true;
+        }
+        return $this->fecha_caducidad !== null
+            && Carbon::now()->gt($this->fecha_caducidad);
+    }
+
+    public function diasParaVencer(): ?int
+    {
+        if (! $this->fecha_caducidad) {
+            return null;
+        }
+        $diff = Carbon::now()->diffInDays($this->fecha_caducidad, false);
+        return (int) $diff;
     }
 
     /**

@@ -27,11 +27,21 @@ class AuthController extends Controller
                 ->onlyInput('email');
         }
 
+        // Si el admin desactivó la cuenta, no dejamos entrar.
+        if (! $request->user()->activo) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return back()
+                ->withErrors(['email' => 'Tu cuenta está suspendida. Contacta al administrador.'])
+                ->onlyInput('email');
+        }
+
         $request->session()->regenerate();
 
         $dashboard = $request->user()->isAdmin()
             ? route('admin.dashboard')
-            : route('panel.confirmados.index');
+            : route('panel.invitaciones.index');
 
         return redirect()->intended($dashboard);
     }

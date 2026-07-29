@@ -6,6 +6,7 @@ use App\Models\Cupon;
 use App\Models\Orden;
 use App\Models\Paquete;
 use App\Services\MercadoPagoService;
+use App\Services\SuscripcionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,7 @@ class CheckoutController extends Controller
 {
     public function __construct(
         private readonly MercadoPagoService $mp,
+        private readonly SuscripcionService $suscripciones,
     ) {
     }
 
@@ -159,6 +161,12 @@ class CheckoutController extends Controller
             } catch (Throwable $e) {
                 // Silencioso: el webhook resolverá.
             }
+        }
+
+        // Si ya quedó aprobada (por webhook o por revalidación), creamos
+        // la suscripción si todavía no existe. Idempotente.
+        if ($orden && $orden->estaPagada() && ! $orden->suscripcion()->exists()) {
+            $this->suscripciones->crearSuscripcionPorCompra($orden);
         }
 
         return view('checkout.success', [

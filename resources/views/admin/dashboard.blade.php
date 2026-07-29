@@ -1,17 +1,9 @@
 @extends('layouts.admin', ['title' => 'Panel admin', 'wide' => true])
 
 @section('content')
-    <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-orange-brand">Administración</p>
-            <h1 class="mt-2 font-display text-3xl font-extrabold text-purple-dark">Invitaciones y usuarios</h1>
-        </div>
-        <div class="flex flex-wrap gap-3">
-            <a href="{{ route('admin.paquetes.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Paquetes</a>
-            <a href="{{ route('admin.cupones.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Cupones</a>
-            <a href="{{ route('panel.confirmados.index') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Ver confirmados</a>
-            <a href="{{ url('/') }}" class="text-sm font-semibold text-purple-brand hover:text-orange-brand">Ver sitio público</a>
-        </div>
+    <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-orange-brand">Administración</p>
+        <h1 class="mt-2 font-display text-3xl font-extrabold text-purple-dark">Invitaciones y usuarios</h1>
     </div>
 
     @if (session('status'))
@@ -19,6 +11,127 @@
             {{ session('status') }}
         </div>
     @endif
+
+    {{-- ══════════════════════ GANANCIAS ══════════════════════ --}}
+    <section class="mb-8">
+        <div class="mb-4 flex items-center justify-between gap-4">
+            <h2 class="font-display text-xl font-bold text-text-dark">Ganancias</h2>
+            <span class="text-xs text-text-gray">Solo órdenes con pago aprobado en Mercado Pago</span>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wider text-text-gray">Total histórico</p>
+                <p class="mt-2 font-display text-3xl font-extrabold text-purple-dark">${{ number_format($ganancias['total_historico'] / 100, 0, '.', ',') }}</p>
+                <p class="mt-1 text-xs text-text-gray">
+                    {{ $ganancias['ordenes_total'] }}
+                    {{ $ganancias['ordenes_total'] === 1 ? 'orden aprobada' : 'órdenes aprobadas' }}
+                </p>
+            </div>
+            <div class="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wider text-text-gray">Este mes</p>
+                <p class="mt-2 font-display text-3xl font-extrabold text-orange-brand">${{ number_format($ganancias['este_mes'] / 100, 0, '.', ',') }}</p>
+                <p class="mt-1 text-xs text-text-gray">Desde el {{ now()->startOfMonth()->format('d/m/Y') }}</p>
+            </div>
+            <div class="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wider text-text-gray">Este año</p>
+                <p class="mt-2 font-display text-3xl font-extrabold text-purple-brand">${{ number_format($ganancias['este_anio'] / 100, 0, '.', ',') }}</p>
+                <p class="mt-1 text-xs text-text-gray">Desde el {{ now()->startOfYear()->format('d/m/Y') }}</p>
+            </div>
+            <div class="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wider text-text-gray">Por paquete</p>
+                @if ($ganancias['por_paquete']->isEmpty())
+                    <p class="mt-2 text-sm text-text-gray">Sin ventas todavía.</p>
+                @else
+                    <ul class="mt-2 space-y-1.5 text-sm">
+                        @foreach ($ganancias['por_paquete'] as $r)
+                            <li class="flex items-center justify-between gap-2">
+                                <span class="truncate text-text-dark">{{ $r->paquete_nombre }}</span>
+                                <span class="shrink-0 font-bold text-purple-dark">{{ $r->count }} × ${{ number_format($r->total / 100, 0, '.', ',') }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+        </div>
+    </section>
+
+    {{-- ══════════════════════ INVITACIONES COMPRADAS ══════════════════════ --}}
+    <section class="mb-10">
+        <div class="mb-4 flex items-center justify-between gap-4">
+            <h2 class="font-display text-xl font-bold text-text-dark">Invitaciones compradas</h2>
+            <span class="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800">
+                {{ $ordenesPagadas->count() }}
+                {{ $ordenesPagadas->count() === 1 ? 'orden pagada' : 'órdenes pagadas' }}
+            </span>
+        </div>
+
+        <div class="overflow-hidden rounded-lg border border-border-soft bg-white shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="min-w-[1100px] divide-y divide-border-soft text-sm xl:min-w-full">
+                    <thead class="bg-purple-soft/70 text-left text-xs font-bold uppercase tracking-wide text-purple-dark">
+                        <tr>
+                            <th class="min-w-48 px-5 py-4">Comprador</th>
+                            <th class="min-w-36 px-5 py-4">Paquete</th>
+                            <th class="min-w-28 px-5 py-4 text-right">Total</th>
+                            <th class="min-w-32 px-5 py-4">Pagada</th>
+                            <th class="min-w-[300px] px-5 py-4">Invitación(es) creada(s)</th>
+                            <th class="min-w-32 px-5 py-4 text-right">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border-soft">
+                        @forelse ($ordenesPagadas as $orden)
+                            @php
+                                $suscripcion = $orden->suscripcion;
+                                $invitacionesCreadas = $suscripcion?->invitaciones ?? collect();
+                            @endphp
+                            <tr>
+                                <td class="px-5 py-4">
+                                    <p class="font-semibold text-text-dark">{{ $orden->comprador_nombre ?: '— sin nombre —' }}</p>
+                                    <p class="text-xs text-text-gray">{{ $orden->comprador_email }}</p>
+                                </td>
+                                <td class="px-5 py-4 text-text-gray">{{ $orden->paquete_nombre }}</td>
+                                <td class="px-5 py-4 text-right font-bold text-text-dark">${{ number_format($orden->paquete_precio_centavos / 100, 0, '.', ',') }}</td>
+                                <td class="px-5 py-4 text-text-gray">{{ $orden->paid_at?->format('d/m/Y H:i') ?? '—' }}</td>
+                                <td class="px-5 py-4">
+                                    @if ($invitacionesCreadas->isEmpty())
+                                        <p class="text-xs italic text-text-gray">Aún no creó invitación</p>
+                                    @else
+                                        <ul class="space-y-1.5">
+                                            @foreach ($invitacionesCreadas as $inv)
+                                                <li class="flex items-center gap-2 text-sm">
+                                                    <span class="inline-flex h-2 w-2 shrink-0 rounded-full {{ $inv->estaPublicada() ? 'bg-green-500' : ($inv->estaVencida() ? 'bg-red-500' : 'bg-amber-500') }}"></span>
+                                                    <span class="truncate">
+                                                        <span class="font-semibold text-text-dark">{{ $inv->nombre_completo ?: '— sin nombre —' }}</span>
+                                                        <span class="text-xs text-text-gray"> · {{ $inv->template?->nombre ?? 'sin template' }}</span>
+                                                    </span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    @if ($invitacionesCreadas->isNotEmpty())
+                                        <a href="{{ route('admin.invitaciones.edit', $invitacionesCreadas->first()) }}"
+                                           class="inline-flex items-center rounded-lg border border-border-soft bg-white px-3 py-2 text-xs font-bold text-purple-brand transition hover:border-purple-brand hover:bg-purple-soft">
+                                            Editar
+                                        </a>
+                                    @else
+                                        <span class="text-xs text-text-gray">—</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-4 py-8 text-center text-text-gray">
+                                    Todavía no hay órdenes pagadas. Cuando un cliente pague, aparecerá acá.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
 
     <section class="mb-10">
         <div class="mb-4 flex items-center justify-between gap-4">
