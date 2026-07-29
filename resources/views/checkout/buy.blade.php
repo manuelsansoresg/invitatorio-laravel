@@ -25,6 +25,11 @@
         // incluye el slug del paquete. Si no, usamos la default.
         $loginUrl    = session('login_url')
             ?: route('login', ['next' => route('checkout.show', $paquete, false)]);
+
+        // Regla de producto: web = cliente se autogestiona en el panel.
+        // imagen/video = nosotros diseñamos y entregamos. Esto afecta
+        // los bullets de "Beneficios del pago" en la columna derecha.
+        $esWebCheckout = $paquete->formato === 'web';
     @endphp
 
     <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
@@ -408,7 +413,7 @@
                     </ul>
                 </div>
 
-                {{-- Beneficios del pago --}}
+                {{-- Beneficios del pago (cambian según formato) --}}
                 <div class="space-y-2.5 border-t border-[#F1E6D9] bg-[#FFFDF8] px-6 py-5 text-[13px] text-[#5F5A66]">
                     <div class="flex items-center gap-2.5">
                         <svg class="h-4 w-4 text-[#5A3087]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -416,15 +421,36 @@
                         </svg>
                         <span>Pago 100% seguro con encriptación SSL</span>
                     </div>
+                    @if ($esWebCheckout)
+                        <div class="flex items-center gap-2.5">
+                            <svg class="h-4 w-4 text-[#5A3087]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/>
+                            </svg>
+                            <span>Diseñas tu invitación tú mismo desde el panel</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <svg class="h-4 w-4 text-[#5A3087]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
+                            </svg>
+                            <span>Publica y comparte el link por WhatsApp al instante</span>
+                        </div>
+                    @else
+                        <div class="flex items-center gap-2.5">
+                            <svg class="h-4 w-4 text-[#5A3087]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+                            </svg>
+                            <span>Te contactamos por WhatsApp en menos de 24h</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <svg class="h-4 w-4 text-[#5A3087]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M9 12l2 2 4-4"/><path d="M21 12c0 5-4 9-9 9a9 9 0 1 1 0-18c2.5 0 4.7 1 6.4 2.6"/>
+                            </svg>
+                            <span>Diseñamos y entregamos el archivo listo para compartir</span>
+                        </div>
+                    @endif
                     <div class="flex items-center gap-2.5">
                         <svg class="h-4 w-4 text-[#5A3087]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
-                        </svg>
-                        <span>Te respondemos por WhatsApp en menos de 24h</span>
-                    </div>
-                    <div class="flex items-center gap-2.5">
-                        <svg class="h-4 w-4 text-[#5A3087]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M9 12l2 2 4-4"/><path d="M21 12c0 5-4 9-9 9a9 9 0 1 1 0-18c2.5 0 4.7 1 6.4 2.6"/>
+                            <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
                         </svg>
                         <span>Tarjeta, transferencia, OXXO y Mercado Pago</span>
                     </div>
