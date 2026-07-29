@@ -93,31 +93,40 @@ class PaqueteController extends Controller
         $slugUnique = Rule::unique('paquetes', 'slug')
             ->ignore($paquete?->id);
 
-        return $request->validate([
-            'slug'           => ['required', 'string', 'max:80', 'regex:/^[a-z0-9-]+$/', $slugUnique],
-            'formato'        => ['required', Rule::in(array_keys($this->formatosPermitidos()))],
-            'nombre'         => ['required', 'string', 'max:80'],
-            'descripcion'    => ['required', 'string', 'max:255'],
-            'precio_centavos' => ['required', 'integer', 'min:0', 'max:99999999'],
-            'badge'          => ['nullable', 'string', 'max:40'],
-            'destacado'      => ['nullable', 'boolean'],
-            'items'          => ['nullable', 'string', 'max:2000'],
-            'orden'          => ['nullable', 'integer', 'min:0', 'max:9999'],
-            'activo'         => ['nullable', 'boolean'],
-            'permite_gestionar_invitados' => ['nullable', 'boolean'],
-        ], [
-            'slug.regex'             => 'El slug solo puede tener minúsculas, números y guiones.',
-            'slug.unique'            => 'Ya existe un paquete con ese slug.',
-            'precio_centavos.integer' => 'El precio debe ser un número entero (en centavos).',
-        ]) + [
-            // Normalización fuera del validate para que los mensajes
-            // de error anteriores se muestren bien.
-            'items'     => $this->normalizarItems($request->input('items')),
-            'destacado' => $request->boolean('destacado'),
-            'activo'    => $request->boolean('activo'),
-            'permite_gestionar_invitados' => $request->boolean('permite_gestionar_invitados'),
-            'orden'     => (int) ($request->input('orden') ?? 0),
-        ];
+        // Usamos array_merge (no +) para que los campos normalizados
+        // abajo SIEMPRE sobrescriban lo que diga la validación. Si el
+        // form no envía 'items' (textarea vacío), la validación con
+        // 'nullable' devolvería null, pero nosotros siempre queremos
+        // guardar un array. Mismo para los booleanos.
+        return array_merge(
+            $request->validate([
+                'slug'           => ['required', 'string', 'max:80', 'regex:/^[a-z0-9-]+$/', $slugUnique],
+                'formato'        => ['required', Rule::in(array_keys($this->formatosPermitidos()))],
+                'nombre'         => ['required', 'string', 'max:80'],
+                'descripcion'    => ['required', 'string', 'max:255'],
+                'precio_centavos' => ['required', 'integer', 'min:0', 'max:99999999'],
+                'badge'          => ['nullable', 'string', 'max:40'],
+                'destacado'      => ['nullable', 'boolean'],
+                'items'          => ['nullable', 'string', 'max:2000'],
+                'orden'          => ['nullable', 'integer', 'min:0', 'max:9999'],
+                'activo'         => ['nullable', 'boolean'],
+                'permite_gestionar_invitados' => ['nullable', 'boolean'],
+            ], [
+                'slug.regex'             => 'El slug solo puede tener minúsculas, números y guiones.',
+                'slug.unique'            => 'Ya existe un paquete con ese slug.',
+                'precio_centavos.integer' => 'El precio debe ser un número entero (en centavos).',
+            ]),
+            [
+                // Normalización: SIEMPRE array, SIEMPRE boolean, SIEMPRE int.
+                // Esto garantiza que el modelo no reciba null donde la
+                // columna es NOT NULL (caso típico: textarea de items vacío).
+                'items'     => $this->normalizarItems($request->input('items')),
+                'destacado' => $request->boolean('destacado'),
+                'activo'    => $request->boolean('activo'),
+                'permite_gestionar_invitados' => $request->boolean('permite_gestionar_invitados'),
+                'orden'     => (int) ($request->input('orden') ?? 0),
+            ]
+        );
     }
 
     private function normalizarItems(mixed $raw): array
