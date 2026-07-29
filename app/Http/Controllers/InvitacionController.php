@@ -23,6 +23,13 @@ class InvitacionController extends Controller
             abort(404);
         }
 
+        // Si el admin la marcó como no disponible, 404 (a menos que
+        // sea el admin/owner quien la está viendo — pero para invitados
+        // que llegan por link, siempre bloquea).
+        if (! $invitacion->disponible) {
+            abort(404, 'Esta invitación no está disponible públicamente.');
+        }
+
         // Si está vencida, mostramos una página especial en vez del
         // render normal del template. La página dice que la invitación
         // caducó y cómo renovarla.

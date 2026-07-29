@@ -51,6 +51,8 @@ class Invitacion extends Model
         'color_acento',
         'template_key',
         'estado',
+        'disponible',
+        'es_template',
         'mostrar_contador_confirmados',
         'publicada_at',
         'fecha_caducidad',
@@ -61,6 +63,8 @@ class Invitacion extends Model
         return [
             'fecha_evento' => 'date',
             'hora_evento' => 'datetime:H:i',
+            'disponible' => 'boolean',
+            'es_template' => 'boolean',
             'publicada_at' => 'datetime',
             'mostrar_contador_confirmados' => 'boolean',
             'fecha_caducidad' => 'datetime',

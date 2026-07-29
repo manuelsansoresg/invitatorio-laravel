@@ -182,6 +182,39 @@ class AdminController extends Controller
             ->with('status', "La invitación de {$name} fue eliminada correctamente.");
     }
 
+    /**
+     * Toggle del flag `disponible` en una invitación.
+     * Cuando está OFF, /invitacion/{ruta} devuelve 404.
+     */
+    public function toggleInvitacionDisponible(Invitacion $invitacion): RedirectResponse
+    {
+        $invitacion->disponible = ! $invitacion->disponible;
+        $invitacion->save();
+
+        $msg = $invitacion->disponible
+            ? "«{$invitacion->nombre_completo}» ahora está disponible públicamente."
+            : "«{$invitacion->nombre_completo}» ya no está disponible públicamente.";
+
+        return back()->with('status', $msg);
+    }
+
+    /**
+     * Toggle del flag `es_template` en una invitación.
+     * Cuando es ON + disponible ON, aparece en el catálogo de
+     * templates para asignar a usuarios nuevos.
+     */
+    public function toggleInvitacionEsTemplate(Invitacion $invitacion): RedirectResponse
+    {
+        $invitacion->es_template = ! $invitacion->es_template;
+        $invitacion->save();
+
+        $msg = $invitacion->es_template
+            ? "«{$invitacion->nombre_completo}» ahora es un template del catálogo."
+            : "«{$invitacion->nombre_completo}» ya no es un template del catálogo.";
+
+        return back()->with('status', $msg);
+    }
+
     private function uniqueCloneRoute(Invitacion $source, string $fullName): string
     {
         $nameSlug = Str::slug($fullName) ?: 'invitacion';

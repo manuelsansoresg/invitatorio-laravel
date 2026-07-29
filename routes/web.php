@@ -44,6 +44,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/invitaciones/{invitacion}/cliente', [AdminController::class, 'updateInvitationClient'])->name('invitaciones.cliente.update');
     Route::delete('/invitaciones/{invitacion}', [AdminController::class, 'destroyInvitation'])->name('invitaciones.destroy');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Toggles rápidos de configuración por invitación
+    |--------------------------------------------------------------------------
+    | disponible: switch de visibilidad pública (afecta /invitacion/{ruta})
+    | es_template: marca para aparecer en el catálogo de templates
+    */
+    Route::post('/invitaciones/{invitacion}/toggle-disponible', [AdminController::class, 'toggleInvitacionDisponible'])
+        ->name('invitaciones.toggle-disponible');
+    Route::post('/invitaciones/{invitacion}/toggle-es-template', [AdminController::class, 'toggleInvitacionEsTemplate'])
+        ->name('invitaciones.toggle-es-template');
+
     // Paquetes: CRUD completo
     Route::get('/paquetes', [PaqueteController::class, 'index'])->name('paquetes.index');
     Route::get('/paquetes/nuevo', [PaqueteController::class, 'create'])->name('paquetes.create');

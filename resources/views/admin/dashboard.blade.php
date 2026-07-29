@@ -148,6 +148,7 @@
                             <th class="min-w-32 px-5 py-4">Ruta</th>
                             <th class="min-w-36 px-5 py-4 text-center">Confirmaciones</th>
                             <th class="min-w-[300px] px-5 py-4">Cliente</th>
+                            <th class="min-w-[220px] px-5 py-4">Configuración</th>
                             <th class="min-w-32 px-5 py-4">Creada</th>
                             <th class="min-w-[280px] px-5 py-4">Acciones</th>
                         </tr>
@@ -172,6 +173,43 @@
                                             <p class="text-sm text-text-gray">Sin asignar</p>
                                         </div>
                                     @endif
+                                </td>
+                                <td class="px-5 py-5 align-top">
+                                    <div class="flex min-w-[210px] flex-col gap-2">
+                                        {{-- Toggle: disponible (afecta /invitacion/{ruta}) --}}
+                                        <form method="POST" action="{{ route('admin.invitaciones.toggle-disponible', $invitacion) }}">
+                                            @csrf
+                                            <button type="submit" class="group flex w-full items-center justify-between gap-2 rounded-md border px-3 py-2 text-left text-xs font-semibold transition {{ $invitacion->disponible ? 'border-green-200 bg-green-50 text-green-800 hover:border-green-400' : 'border-red-200 bg-red-50 text-red-800 hover:border-red-400' }}"
+                                                    title="Click para {{ $invitacion->disponible ? 'ocultar' : 'mostrar' }}">
+                                                <span class="flex items-center gap-2">
+                                                    <span class="inline-block h-2 w-2 rounded-full {{ $invitacion->disponible ? 'bg-green-500' : 'bg-red-500' }}"></span>
+                                                    {{ $invitacion->disponible ? 'Disponible' : 'Oculta' }}
+                                                </span>
+                                                <span class="text-[10px] uppercase tracking-wide opacity-70">Click</span>
+                                            </button>
+                                        </form>
+
+                                        {{-- Toggle: es_template (aparece en catálogo si está disponible) --}}
+                                        <form method="POST" action="{{ route('admin.invitaciones.toggle-es-template', $invitacion) }}">
+                                            @csrf
+                                            <button type="submit" class="group flex w-full items-center justify-between gap-2 rounded-md border px-3 py-2 text-left text-xs font-semibold transition {{ $invitacion->es_template ? 'border-purple-200 bg-purple-soft/50 text-purple-dark hover:border-purple-brand' : 'border-border-soft bg-white text-text-gray hover:border-purple-brand hover:text-purple-brand' }}"
+                                                    title="Click para {{ $invitacion->es_template ? 'quitar del catálogo' : 'marcar como template' }}">
+                                                <span class="flex items-center gap-2">
+                                                    @if ($invitacion->es_template)
+                                                        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.291c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.29a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                    @endif
+                                                    {{ $invitacion->es_template ? 'Template del catálogo' : 'No es template' }}
+                                                </span>
+                                                <span class="text-[10px] uppercase tracking-wide opacity-70">Click</span>
+                                            </button>
+                                        </form>
+
+                                        @if ($invitacion->es_template && $invitacion->disponible)
+                                            <p class="text-[11px] text-purple-dark">Aparece en el catálogo para nuevos clientes.</p>
+                                        @elseif ($invitacion->es_template && ! $invitacion->disponible)
+                                            <p class="text-[11px] text-amber-700">Marcada como template pero oculta del público.</p>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="whitespace-nowrap px-5 py-5 text-text-gray">{{ $invitacion->created_at?->format('d/m/Y') }}</td>
                                 <td class="px-5 py-5 align-middle">
