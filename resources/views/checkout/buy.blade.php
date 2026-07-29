@@ -17,6 +17,14 @@
         $descuentoFmt      = '$' . number_format($descuentoCentavos / 100, 0, '.', ',');
         $totalFinalFmt     = '$' . number_format($totalFinalCentavos / 100, 0, '.', ',');
         $cuponAplicado     = $couponOk && $coupon;
+
+        $authUser    = $authUser ?? null;
+        $isLoggedIn  = (bool) $authUser;
+        // Para el caso "ya registrado": al fallar el POST, el server
+        // hace back()->with('login_url', ...) con la URL correcta que
+        // incluye el slug del paquete. Si no, usamos la default.
+        $loginUrl    = session('login_url')
+            ?: route('login', ['next' => route('checkout.show', $paquete, false)]);
     @endphp
 
     <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
@@ -86,7 +94,41 @@
                 </div>
             @endif
 
+            {{-- Si NO está logueado, le recordamos que ya tiene cuenta? --}}
+            @unless ($isLoggedIn)
+                <div class="mt-6 flex items-center justify-between gap-3 rounded-lg border border-[#F1E6D9] bg-[#FFFDF8] px-4 py-3 text-sm">
+                    <div class="flex items-center gap-2 text-[#5F5A66]">
+                        <svg class="h-4 w-4 text-[#5A3087]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span>¿Ya tienes cuenta con nosotros?</span>
+                    </div>
+                    <a href="{{ $loginUrl }}" class="font-semibold text-[#EB7512] hover:text-[#F45A00]">Inicia sesión →</a>
+                </div>
+            @endunless
+
             {{-- Form --}}
+
+            {{-- Si ya está logueado, mostramos quién está comprando (FUERA del form de checkout) --}}
+            @if ($isLoggedIn)
+                <div class="mt-6 flex items-center justify-between gap-3 rounded-lg border border-[#A8E1B5] bg-[#E7F8EE] px-4 py-3 text-sm">
+                    <div class="flex items-center gap-2.5 text-[#0F5F33]">
+                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#1F8B4C] text-xs font-extrabold text-white">
+                            {{ mb_strtoupper(mb_substr($authUser->name, 0, 1)) }}
+                        </span>
+                        <div>
+                            <p class="font-semibold">Comprando como {{ $authUser->name }}</p>
+                            <p class="text-[12px] text-[#0F5F33]/80">{{ $authUser->email }}</p>
+                        </div>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
+                        @csrf
+                        <button type="submit" class="text-[12px] font-semibold text-[#1F8B4C] underline-offset-2 hover:underline">¿No eres tú? Cerrar sesión</button>
+                    </form>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('checkout.buy', $paquete) }}" class="mt-6 space-y-5">
                 @csrf
 
@@ -130,8 +172,8 @@
                         type="text"
                         name="comprador_nombre"
                         id="comprador_nombre"
-                        value="{{ old('comprador_nombre') }}"
-                        required
+                        value="{{ old('comprador_nombre', $isLoggedIn ? $authUser->name : '') }}"
+                        @unless($isLoggedIn) required @endunless
                         autocomplete="name"
                         placeholder="¿Cómo te llamamos?"
                         class="w-full rounded-lg border border-[#F1E6D9] bg-white px-4 py-3 text-[15px] text-[#18111F] placeholder-[#9CA3AF] outline-none transition focus:border-[#EB7512] focus:ring-2 focus:ring-[#FFF1E1]"
@@ -146,14 +188,82 @@
                         type="email"
                         name="comprador_email"
                         id="comprador_email"
-                        value="{{ old('comprador_email') }}"
-                        required
+                        value="{{ old('comprador_email', $isLoggedIn ? $authUser->email : '') }}"
+                        @unless($isLoggedIn) required @endunless
                         autocomplete="email"
                         placeholder="tunombre@correo.com"
                         class="w-full rounded-lg border border-[#F1E6D9] bg-white px-4 py-3 text-[15px] text-[#18111F] placeholder-[#9CA3AF] outline-none transition focus:border-[#EB7512] focus:ring-2 focus:ring-[#FFF1E1]"
                     >
-                    <p class="mt-1.5 text-xs text-[#5F5A66]">Te enviaremos la confirmación y los siguientes pasos a este correo.</p>
+                    <p class="mt-1.5 text-xs text-[#5F5A66]">
+                        @if ($isLoggedIn)
+                            Tu cuenta está activa en este email. Te enviaremos la confirmación aquí.
+                        @else
+                            Te enviaremos la confirmación y los siguientes pasos a este correo. Será tu usuario para entrar al panel.
+                        @endif
+                    </p>
                 </div>
+
+                {{-- Password solo si NO está logueado (ya tiene cuenta) --}}
+                @unless ($isLoggedIn)
+                    <div>
+                        <label for="password" class="mb-1.5 block text-sm font-semibold text-[#2B143F]">
+                            Crea una contraseña <span class="text-[#EB7512]">*</span>
+                        </label>
+                        <div class="relative">
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                required
+                                minlength="8"
+                                autocomplete="new-password"
+                                placeholder="Mínimo 8 caracteres"
+                                class="w-full rounded-lg border border-[#F1E6D9] bg-white px-4 py-3 pr-12 text-[15px] text-[#18111F] placeholder-[#9CA3AF] outline-none transition focus:border-[#EB7512] focus:ring-2 focus:ring-[#FFF1E1]"
+                            >
+                            <button
+                                type="button"
+                                data-toggle-password="password"
+                                class="absolute inset-y-0 right-0 flex items-center px-3 text-[#5F5A66] hover:text-[#2B143F]"
+                                aria-label="Mostrar u ocultar contraseña"
+                            >
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="mt-1.5 text-xs text-[#5F5A66]">La usarás para entrar a tu panel y editar tu invitación cuando quieras.</p>
+                    </div>
+
+                    <div>
+                        <label for="password_confirmation" class="mb-1.5 block text-sm font-semibold text-[#2B143F]">
+                            Repite la contraseña <span class="text-[#EB7512]">*</span>
+                        </label>
+                        <div class="relative">
+                            <input
+                                type="password"
+                                name="password_confirmation"
+                                id="password_confirmation"
+                                required
+                                minlength="8"
+                                autocomplete="new-password"
+                                placeholder="Escríbela de nuevo"
+                                class="w-full rounded-lg border border-[#F1E6D9] bg-white px-4 py-3 pr-12 text-[15px] text-[#18111F] placeholder-[#9CA3AF] outline-none transition focus:border-[#EB7512] focus:ring-2 focus:ring-[#FFF1E1]"
+                            >
+                            <button
+                                type="button"
+                                data-toggle-password="password_confirmation"
+                                class="absolute inset-y-0 right-0 flex items-center px-3 text-[#5F5A66] hover:text-[#2B143F]"
+                                aria-label="Mostrar u ocultar contraseña"
+                            >
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endunless
 
                 <div>
                     <label for="comprador_telefono" class="mb-1.5 block text-sm font-semibold text-[#2B143F]">
@@ -328,4 +438,20 @@
             </p>
         </aside>
     </div>
+
+    @once
+        @push('scripts')
+            <script>
+                // Toggle mostrar/ocultar contraseña en los campos del form.
+                document.querySelectorAll('[data-toggle-password]').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        var targetId = btn.getAttribute('data-toggle-password');
+                        var input = document.getElementById(targetId);
+                        if (! input) return;
+                        input.type = input.type === 'password' ? 'text' : 'password';
+                    });
+                });
+            </script>
+        @endpush
+    @endonce
 @endsection
