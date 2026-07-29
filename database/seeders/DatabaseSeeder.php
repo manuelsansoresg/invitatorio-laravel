@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminUserSeeder::class,
             PaqueteSeeder::class,
+            CuponSeeder::class,
             InvitacionSeeder::class,
             ValentinaInvitationSeeder::class,
             InstagramWeddingInvitationSeeder::class,

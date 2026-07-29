@@ -16,6 +16,10 @@ class Orden extends Model
         'paquete_id',
         'paquete_nombre',
         'paquete_precio_centavos',
+        'descuento_centavos',
+        'total_final_centavos',
+        'cupon_id',
+        'cupon_codigo',
         'comprador_nombre',
         'comprador_email',
         'comprador_telefono',
@@ -35,13 +39,45 @@ class Orden extends Model
     {
         return [
             'paquete_precio_centavos' => 'integer',
-            'paid_at' => 'datetime',
+            'descuento_centavos'      => 'integer',
+            'total_final_centavos'    => 'integer',
+            'paid_at'                 => 'datetime',
         ];
     }
 
     public function paquete(): BelongsTo
     {
         return $this->belongsTo(Paquete::class);
+    }
+
+    public function cupon(): BelongsTo
+    {
+        return $this->belongsTo(Cupon::class);
+    }
+
+    /**
+     * Subtotal (precio del paquete antes de descuento).
+     */
+    public function getSubtotalCentavosAttribute(): int
+    {
+        return (int) $this->paquete_precio_centavos;
+    }
+
+    /**
+     * Total final que efectivamente se cobró. Si por algún motivo el
+     * campo quedó null (órdenes viejas), caemos al subtotal.
+     */
+    public function getTotalFinalCentavosAttribute(): int
+    {
+        if ($this->attributes['total_final_centavos'] === null) {
+            return (int) $this->paquete_precio_centavos;
+        }
+        return (int) $this->attributes['total_final_centavos'];
+    }
+
+    public function tieneCupon(): bool
+    {
+        return $this->cupon_id !== null && (int) $this->descuento_centavos > 0;
     }
 
     /**

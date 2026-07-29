@@ -61,12 +61,40 @@
                             <dt class="text-[#5F5A66]">Paquete</dt>
                             <dd class="text-right font-semibold text-[#2B143F]">{{ $orden->paquete_nombre }}</dd>
                         </div>
-                        <div class="grid grid-cols-2 gap-3 py-3">
-                            <dt class="text-[#5F5A66]">Total</dt>
-                            <dd class="text-right font-display text-lg font-extrabold text-[#2B143F]">
-                                {{ $orden->precio_formateado }} <span class="text-sm font-semibold text-[#5F5A66]">MXN</span>
-                            </dd>
-                        </div>
+
+                        @if ($orden->tieneCupon())
+                            <div class="grid grid-cols-2 gap-3 py-3">
+                                <dt class="text-[#5F5A66]">Subtotal</dt>
+                                <dd class="text-right font-medium text-[#18111F]">
+                                    {{ $orden->precio_formateado }} <span class="text-xs text-[#5F5A66]">MXN</span>
+                                </dd>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 py-3">
+                                <dt class="text-[#0F5F33]">
+                                    Cupón
+                                    <span class="ml-1 inline-flex items-center rounded-md bg-[#E7F8EE] px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-[#1F8B4C]">
+                                        {{ $orden->cupon_codigo }}
+                                    </span>
+                                </dt>
+                                <dd class="text-right font-medium text-[#0F5F33]">
+                                    -${{ number_format($orden->descuento_centavos / 100, 0, '.', ',') }} <span class="text-xs">MXN</span>
+                                </dd>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 py-3">
+                                <dt class="text-[#5F5A66]">Total pagado</dt>
+                                <dd class="text-right font-display text-lg font-extrabold text-[#2B143F]">
+                                    ${{ number_format($orden->total_final_centavos / 100, 0, '.', ',') }} <span class="text-sm font-semibold text-[#5F5A66]">MXN</span>
+                                </dd>
+                            </div>
+                        @else
+                            <div class="grid grid-cols-2 gap-3 py-3">
+                                <dt class="text-[#5F5A66]">Total</dt>
+                                <dd class="text-right font-display text-lg font-extrabold text-[#2B143F]">
+                                    {{ $orden->precio_formateado }} <span class="text-sm font-semibold text-[#5F5A66]">MXN</span>
+                                </dd>
+                            </div>
+                        @endif
+
                         <div class="grid grid-cols-2 gap-3 py-3">
                             <dt class="text-[#5F5A66]">Nombre</dt>
                             <dd class="text-right font-medium text-[#18111F]">{{ $orden->comprador_nombre }}</dd>

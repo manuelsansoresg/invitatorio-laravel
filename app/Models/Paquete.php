@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Paquete extends Model
@@ -67,6 +68,18 @@ class Paquete extends Model
     public function ordenes(): HasMany
     {
         return $this->hasMany(Orden::class);
+    }
+
+    /**
+     * Cupones que aplican a este paquete (algunos cupones aplican a
+     * todos los paquetes — esos aparecen acá con la lista vacía en
+     * la otra punta; el chequeo de "aplica a este paquete" vive en
+     * Cupon::aplicaAPaquete()).
+     */
+    public function cupones(): BelongsToMany
+    {
+        return $this->belongsToMany(Cupon::class, 'cupon_paquete')
+            ->withTimestamps();
     }
 
     /**

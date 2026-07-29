@@ -23,6 +23,8 @@
                         <a href="{{ route('panel.confirmados.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Confirmados</a>
                         @if (auth()->user()->isAdmin())
                             <a href="{{ route('admin.dashboard') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Admin</a>
+                            <a href="{{ route('admin.paquetes.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Paquetes</a>
+                            <a href="{{ route('admin.cupones.index') }}" class="font-semibold text-purple-brand hover:text-orange-brand">Cupones</a>
                         @endif
                         <span>{{ auth()->user()->name }}</span>
                         <span class="rounded-full bg-purple-soft px-3 py-1 font-semibold text-purple-brand">{{ auth()->user()->role }}</span>
