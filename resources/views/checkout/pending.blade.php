@@ -1,5 +1,5 @@
 @php
-    $whatsappNumber  = '529990000000';
+    $whatsappNumber  = '529992685617';
     $whatsappMessage = $orden
         ? "Hola Invitatorio, hice un pago para {$orden->paquete_nombre} (orden #{$orden->id}) y quedó pendiente. ¿Me ayudan a revisar?"
         : 'Hola Invitatorio, hice un pago y quedó pendiente. ¿Me ayudan?';

@@ -1,5 +1,5 @@
 @php
-    $whatsappNumber  = '529990000000';
+    $whatsappNumber  = '529992685617';
     $whatsappMessage = $orden
         ? "Hola Invitatorio, acabo de pagar el paquete {$orden->paquete_nombre} (orden #{$orden->id}). Mi nombre es {$orden->comprador_nombre}."
         : 'Hola Invitatorio, acabo de realizar un pago en el sitio.';

@@ -10,7 +10,7 @@
     $seoImageHeight = 941;
     $xpertSystemsUrl = 'https://www.facebook.com/profile.php?id=100068794671008';
     // ⚠️ Reemplazar este número cuando tengas el WhatsApp real del negocio
-    $whatsappNumber  = '529990000000';
+    $whatsappNumber  = '529992685617';
     $whatsappMessage = 'Hola Invitatorio, quiero cotizar una invitación digital para mi evento.';
     $whatsappUrl     = 'https://wa.me/' . $whatsappNumber . '?text=' . urlencode($whatsappMessage);
     $faqs = [

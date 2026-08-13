@@ -2,7 +2,7 @@
 
 @section('content')
     @php
-        $whatsappNumber  = '529990000000';
+        $whatsappNumber  = '529992685617';
         $whatsappMessage = 'Hola Invitatorio, tengo una duda sobre el paquete ' . $paquete->nombre . '.';
         $whatsappUrl     = 'https://wa.me/' . $whatsappNumber . '?text=' . urlencode($whatsappMessage);
 

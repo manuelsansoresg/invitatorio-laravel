@@ -18,7 +18,7 @@
                 Si quieres reactivarla, escríbenos por WhatsApp y te decimos cómo renovar.
             </p>
 
-            <a href="https://wa.me/529990000000?text={{ urlencode('Hola, quiero renovar mi invitación '.$invitacion->ruta) }}"
+            <a href="https://wa.me/529992685617?text={{ urlencode('Hola, quiero renovar mi invitación '.$invitacion->ruta) }}"
                target="_blank" rel="noopener"
                class="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-[#EB7512] px-6 py-3 text-base font-semibold text-white shadow-md shadow-orange-500/25 transition hover:-translate-y-0.5 hover:bg-[#F45A00]">
                 Renovar por WhatsApp →
