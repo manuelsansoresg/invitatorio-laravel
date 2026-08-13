@@ -7,7 +7,7 @@ Disallow: /invitacion/
 Disallow: /*?*
 
 # Host canónico
-Host: https://invitatorio.com
+Host: https://invitatorio.com.mx
 
 # Sitemap
-Sitemap: https://invitatorio.com/sitemap.xml
+Sitemap: https://invitatorio.com.mx/sitemap.xml

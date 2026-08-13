@@ -1314,11 +1314,11 @@
                             </a>
                         </li>
                         <li>
-                            <a href="mailto:hola@invitatorio.com" class="inline-flex items-center gap-2 hover:text-[#EB7512] transition-colors">
+                            <a href="mailto:hola@invitatorio.com.mx" class="inline-flex items-center gap-2 hover:text-[#EB7512] transition-colors">
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>
                                 </svg>
-                                hola@invitatorio.com
+                                hola@invitatorio.com.mx
                             </a>
                         </li>
                         <li>

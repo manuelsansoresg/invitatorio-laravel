@@ -46,7 +46,7 @@
 
             <section>
                 <h2 class="font-display font-bold text-xl text-[#2B143F]">5. Contacto</h2>
-                <p>Para cualquier duda, escríbenos por WhatsApp al botón de la página principal o al correo <a href="mailto:hola@invitatorio.com" class="text-[#EB7512] font-semibold hover:underline">hola@invitatorio.com</a>.</p>
+                <p>Para cualquier duda, escríbenos por WhatsApp al botón de la página principal o al correo <a href="mailto:hola@invitatorio.com.mx" class="text-[#EB7512] font-semibold hover:underline">hola@invitatorio.com.mx</a>.</p>
             </section>
         </div>
 
