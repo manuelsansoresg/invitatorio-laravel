@@ -1037,21 +1037,6 @@
                                 'description' => 'Ideal para fiestas rápidas, estados de WhatsApp o invitaciones sencillas.',
                         'packages' => [
                             [
-                                'slug' => 'imagen-basica',
-                                'name' => 'Imagen Básica',
-                                'description' => 'Para fiestas, cumpleaños o reuniones que necesitan una invitación visual rápida.',
-                                'price' => '$150',
-                                'badge' => 'Rápida',
-                                'featured' => false,
-                                'items' => [
-                                    'Diseño estático personalizado',
-                                    'Formato vertical para WhatsApp',
-                                    'Nombres, fecha, hora y lugar',
-                                    'Dress code o nota especial',
-                                    'Entrega en PNG/JPG',
-                                ],
-                            ],
-                            [
                                 'slug' => 'imagen-premium',
                                 'name' => 'Imagen Premium',
                                 'description' => 'Para fiestas con temática, baby shower, bautizos o celebraciones que necesitan verse más cuidadas.',
@@ -1059,7 +1044,6 @@
                                 'badge' => 'Más elegida',
                                 'featured' => true,
                                 'items' => [
-                                    'Todo lo de Imagen Básica',
                                     'Diseño con más detalle visual',
                                     'Versión para historia o estado',
                                     'Versión cuadrada para publicación',
@@ -1134,7 +1118,7 @@
                     >
                         <p class="mb-7 text-center text-sm sm:text-base text-[#5F5A66]">{{ $format['description'] }}</p>
 
-                        <div class="grid grid-cols-1 {{ count($format['packages']) === 3 ? 'lg:grid-cols-3' : 'md:grid-cols-2 max-w-4xl mx-auto' }} gap-5 lg:gap-6 items-stretch">
+                        <div class="grid grid-cols-1 {{ count($format['packages']) === 3 ? 'lg:grid-cols-3' : (count($format['packages']) === 1 ? 'max-w-lg mx-auto' : 'md:grid-cols-2 max-w-4xl mx-auto') }} gap-5 lg:gap-6 items-stretch">
                             @foreach ($format['packages'] as $package)
                                 <article class="{{ $package['featured'] ? 'pricing-card-featured' : 'pricing-card' }} reveal {{ $package['featured'] ? 'anim-pulse' : '' }}" data-reveal-delay="{{ $loop->index * 120 }}">
                                     @if ($package['featured'])

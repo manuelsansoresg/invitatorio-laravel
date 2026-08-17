@@ -702,7 +702,8 @@ class InvitationEditor extends Component
 
                 $current = json_decode($block['config_json'] ?: '{}', true);
                 $current = is_array($current) ? $current : [];
-                $merged = array_merge($current, is_array($settings) ? $settings : []);
+                $filteredSettings = array_filter(is_array($settings) ? $settings : [], fn ($v) => $v !== null);
+                $merged = array_merge($current, $filteredSettings);
 
                 if ($type === 'padrinos') {
                     $merged['grupos'] = collect($settings['grupos'] ?? [])

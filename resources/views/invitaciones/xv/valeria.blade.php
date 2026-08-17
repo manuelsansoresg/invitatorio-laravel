@@ -85,16 +85,16 @@
     ]);
 
     $heroConfig      = $block('hero')?->config_json ?? [];
-    $introImage      = array_key_exists('imagen_intro', $heroConfig)
+    $introImage      = filled($heroConfig['imagen_intro'] ?? null)
         ? $heroConfig['imagen_intro']
         : $invitacion?->imagen_portada_path;
-    $heroImage       = array_key_exists('imagen_hero', $heroConfig)
+    $heroImage       = filled($heroConfig['imagen_hero'] ?? null)
         ? $heroConfig['imagen_hero']
         : null;
     $introImage = $introImage === '__deleted' ? null : $introImage;
     $heroImage = $heroImage === '__deleted' ? null : $heroImage;
     $parallaxImage   = $config('hero', 'imagen_parallax');
-    $parallaxImage   = $parallaxImage === '__deleted' ? null : $parallaxImage;
+    $parallaxImage = filled($parallaxImage) && $parallaxImage !== '__deleted' ? $parallaxImage : null;
     $salonKicker     = $config('informacion_evento', 'kicker', 'Recepción');
     $salonButton     = $config('informacion_evento', 'boton', 'Ver ubicación');
     $dressKicker     = $config('dress_code', 'kicker', 'Vestimenta');
