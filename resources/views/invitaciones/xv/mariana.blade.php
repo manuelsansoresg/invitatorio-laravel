@@ -18,18 +18,29 @@
         : collect();
     $block = fn (string $tipo) => $blocks->get($tipo);
     $config = fn (string $tipo, string $key, mixed $default = null) => data_get($block($tipo)?->config_json ?? [], $key, $default);
-    $mapsEmbedFromUrl = fn (?string $url) => filled($url) ? 'https://maps.google.com/maps?hl=es&q='.urlencode($url).'&output=embed' : null;
+    $mapsEmbedFromUrl = function (?string $url): ?string {
+        if (! filled($url)) {
+            return null;
+        }
+        if (str_contains($url, '/embed?') || str_contains($url, 'output=embed')) {
+            return $url;
+        }
+        if (preg_match('/@([-\d.]+),([-\d.]+)/', $url, $m)) {
+            return 'https://maps.google.com/maps?q=' . $m[1] . ',' . $m[2] . '&hl=es&z=16&output=embed';
+        }
+        return 'https://maps.google.com/maps?hl=es&q=' . urlencode($url) . '&output=embed';
+    };
     $heroConfig = $block('hero')?->config_json ?? [];
-    $introImage = array_key_exists('imagen_intro', $heroConfig)
+    $introImage = filled($heroConfig['imagen_intro'] ?? null)
         ? $heroConfig['imagen_intro']
         : $invitacion?->imagen_portada_path;
-    $heroImage = array_key_exists('imagen_hero', $heroConfig)
+    $heroImage = filled($heroConfig['imagen_hero'] ?? null)
         ? $heroConfig['imagen_hero']
         : null;
     $introImage = $introImage === '__deleted' ? null : $introImage;
     $heroImage = $heroImage === '__deleted' ? null : $heroImage;
     $parallaxImage = $config('hero', 'imagen_parallax');
-    $parallaxImage = $parallaxImage === '__deleted' ? null : $parallaxImage;
+    $parallaxImage = filled($parallaxImage) && $parallaxImage !== '__deleted' ? $parallaxImage : null;
 
     // —— Datos editables ————————————————————————————————————————
     $nombre          = $invitacion?->nombre ?: 'Mariana';
@@ -47,13 +58,15 @@
     $lugar           = $invitacion?->lugar_nombre ?: 'Hacienda San Antonio';
     $direccion       = $invitacion?->lugar_direccion ?: 'Av. 7 #345, Col. Centro, Puebla, Puebla';
     $mapsUrl         = $invitacion?->maps_url ?: 'https://www.google.com/maps?q=Hacienda+San+Antonio+Puebla+Centro';
-    $mapsEmbed       = $config('informacion_evento', 'maps_embed', $mapsEmbedFromUrl($mapsUrl));
+    $mapsEmbedRaw    = $config('informacion_evento', 'maps_embed', $mapsUrl);
+    $mapsEmbed       = $mapsEmbedFromUrl($mapsEmbedRaw);
 
     // Datos de la iglesia (ceremonia religiosa) — ajusta con los reales
     $iglesiaNombre      = $config('ubicacion', 'nombre', 'Parroquia de San José');
     $iglesiaDireccion   = $config('ubicacion', 'direccion', 'Calle 3 Norte #456, Col. Centro, Puebla, Puebla');
     $iglesiaMapsUrl     = $config('ubicacion', 'maps_url', 'https://www.google.com/maps?q=Parroquia+San+Jose+Centro+Puebla');
-    $iglesiaMapsEmbed   = $config('ubicacion', 'maps_embed', $mapsEmbedFromUrl($iglesiaMapsUrl));
+    $iglesiaMapsEmbedRaw = $config('ubicacion', 'maps_embed', $iglesiaMapsUrl);
+    $iglesiaMapsEmbed    = $mapsEmbedFromUrl($iglesiaMapsEmbedRaw);
     $whatsappNumber  = $invitacion?->whatsapp_numero ?: '522221234567';
     $whatsappText    = urlencode($invitacion?->whatsapp_mensaje ?: 'Hola, confirmo mi asistencia a los XV de '.$nombre);
     $waLink          = 'https://wa.me/' . $whatsappNumber . '?text=' . $whatsappText;

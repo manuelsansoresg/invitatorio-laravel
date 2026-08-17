@@ -17,7 +17,18 @@
     $block = fn (string $tipo) => $blocks->get($tipo);
     $config = fn (string $tipo, string $key, mixed $default = null) => data_get($block($tipo)?->config_json ?? [], $key, $default);
     $isActive = fn (string $tipo) => ! $invitacion || $blocks->has($tipo);
-    $mapsEmbedFromUrl = fn (?string $url) => filled($url) ? 'https://maps.google.com/maps?hl=es&q=' . urlencode($url) . '&output=embed' : null;
+    $mapsEmbedFromUrl = function (?string $url): ?string {
+        if (! filled($url)) {
+            return null;
+        }
+        if (str_contains($url, '/embed?') || str_contains($url, 'output=embed')) {
+            return $url;
+        }
+        if (preg_match('/@([-\d.]+),([-\d.]+)/', $url, $m)) {
+            return 'https://maps.google.com/maps?q=' . $m[1] . ',' . $m[2] . '&hl=es&z=16&output=embed';
+        }
+        return 'https://maps.google.com/maps?hl=es&q=' . urlencode($url) . '&output=embed';
+    };
 
     $nombre          = $invitacion?->nombre ?: 'Valentina';
     $nombreCompleto  = $invitacion?->nombre_completo ?: 'Valentina Franco García';
@@ -34,7 +45,8 @@
     $lugar           = $invitacion?->lugar_nombre ?: 'El Pedregal';
     $direccion       = $invitacion?->lugar_direccion ?: 'Calle 5#211 x 26A y 28 Hunucmá, Yucatán';
     $mapsUrl         = $invitacion?->maps_url ?: 'https://www.google.com/maps?q=21.035107,-89.869308';
-    $mapsEmbed       = $config('informacion_evento', 'maps_embed', $mapsEmbedFromUrl($mapsUrl));
+    $mapsEmbedRaw    = $config('informacion_evento', 'maps_embed', $mapsUrl);
+    $mapsEmbed       = $mapsEmbedFromUrl($mapsEmbedRaw);
 
     $introKicker        = $config('hero', 'intro_kicker', 'Te invitamos');
     $introButton        = $config('hero', 'intro_boton', 'Abrir invitación');
@@ -48,7 +60,8 @@
     $iglesiaCelebrante  = $config('ubicacion', 'celebrante', 'Pbro. Raymundo Abelardo Pérez Bojórquez');
     $iglesiaCelebranteLabel = $config('ubicacion', 'celebrante_etiqueta', 'Oficia');
     $iglesiaMapsUrl     = $config('ubicacion', 'maps_url', 'https://www.google.com/maps/place/Capilla+de+Nuestra+Se%C3%B1ora+de+Guadalupe/@21.0050406,-89.8819956,19z/data=!4m6!3m5!1s0x8f5607f86cf6c17b:0xc640e10929ff792e!8m2!3d21.0052171!4d-89.8807725!16s%2Fg%2F11n6t3b2yj?entry=tts&g_ep=EgoyMDI2MDcxMi4wIPu8ASoASAFQAw%3D%3D&skid=c0c1509c-b6ac-4c25-9dd5-1d1b48d0ef80');
-    $iglesiaMapsEmbed   = $config('ubicacion', 'maps_embed', $mapsEmbedFromUrl($iglesiaMapsUrl));
+    $iglesiaMapsEmbedRaw = $config('ubicacion', 'maps_embed', $iglesiaMapsUrl);
+    $iglesiaMapsEmbed    = $mapsEmbedFromUrl($iglesiaMapsEmbedRaw);
     $iglesiaButton      = $config('ubicacion', 'boton', 'Ver ubicación');
 
     $whatsappNumber  = $invitacion?->whatsapp_numero ?: '529991234567';
