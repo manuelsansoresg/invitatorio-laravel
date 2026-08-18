@@ -2135,7 +2135,7 @@
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
             font-size: 22px;
-            color: var(--rose);
+            color: var(--text);
         }
         .footer-event {
             font-family: 'Montserrat', sans-serif;
