@@ -615,6 +615,8 @@ class InvitationEditor extends Component
             ->layout('layouts.editor', ['title' => 'Editor de invitación']);
     }
 
+    private const IMAGE_KEYS = ['imagen_intro', 'imagen_hero', 'imagen_parallax', 'imagen_portada', 'imagen_destacada'];
+
     private function loadSectionSettings(): void
     {
         $settings = fn (string $type): array => $this->blockConfigByType($type);
@@ -625,13 +627,13 @@ class InvitationEditor extends Component
                 'intro_boton' => 'Abrir invitación',
                 'intro_indicacion' => 'Desliza o toca para continuar',
                 'etiqueta_hora' => 'Recepción',
-            ], $settings('hero')),
+            ], $this->filterImageKeys($settings('hero'))),
             'mensaje' => array_merge([
                 'kicker' => 'Un sueño especial',
-            ], $settings('mensaje')),
+            ], $this->filterImageKeys($settings('mensaje'))),
             'galeria' => array_merge([
                 'kicker' => 'Galería',
-            ], $settings('galeria')),
+            ], $this->filterImageKeys($settings('galeria'))),
             'ubicacion' => array_merge([
                 'kicker' => 'Dónde',
                 'nombre' => '',
@@ -643,28 +645,28 @@ class InvitationEditor extends Component
                 'maps_url' => '',
                 'maps_embed' => '',
                 'boton' => 'Ver ubicación',
-            ], $settings('ubicacion')),
+            ], $this->filterImageKeys($settings('ubicacion'))),
             'padrinos' => array_merge([
                 'kicker' => 'Con mucho cariño',
                 'grupos' => [],
-            ], $settings('padrinos')),
+            ], $this->filterImageKeys($settings('padrinos'))),
             'informacion_evento' => array_merge([
                 'kicker' => 'Recepción',
                 'maps_embed' => '',
                 'boton' => 'Ver ubicación',
-            ], $settings('informacion_evento')),
+            ], $this->filterImageKeys($settings('informacion_evento'))),
             'dress_code' => array_merge([
                 'kicker' => 'Vestimenta',
                 'color_reservado' => '#F7C9D6',
-            ], $settings('dress_code')),
+            ], $this->filterImageKeys($settings('dress_code'))),
             'mesa_regalos' => array_merge([
                 'kicker' => 'Detalle',
                 'cierre' => 'Con cariño, gracias por acompañarme.',
-            ], $settings('mesa_regalos')),
+            ], $this->filterImageKeys($settings('mesa_regalos'))),
             'whatsapp' => array_merge([
                 'kicker' => 'RSVP',
                 'boton' => 'Confirmar',
-            ], $settings('whatsapp')),
+            ], $this->filterImageKeys($settings('whatsapp'))),
         ];
 
         $this->sectionSettings['padrinos']['grupos'] = collect($this->sectionSettings['padrinos']['grupos'] ?? [])
@@ -675,6 +677,11 @@ class InvitationEditor extends Component
             ])
             ->values()
             ->all();
+    }
+
+    private function filterImageKeys(array $config): array
+    {
+        return array_filter($config, fn ($key) => ! in_array($key, self::IMAGE_KEYS, true), ARRAY_FILTER_USE_KEY);
     }
 
     private function blockConfigByType(string $type): array
@@ -702,8 +709,8 @@ class InvitationEditor extends Component
 
                 $current = json_decode($block['config_json'] ?: '{}', true);
                 $current = is_array($current) ? $current : [];
-                $filteredSettings = array_filter(is_array($settings) ? $settings : [], fn ($v) => $v !== null);
-                $merged = array_merge($current, $filteredSettings);
+                $safeSettings = $this->filterImageKeys(is_array($settings) ? $settings : []);
+                $merged = array_merge($current, $safeSettings);
 
                 if ($type === 'padrinos') {
                     $merged['grupos'] = collect($settings['grupos'] ?? [])
