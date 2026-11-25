@@ -68,15 +68,20 @@ test('event date time and countdown always use the current invitation values', f
     ]);
 
     Livewire::test(InvitationEditor::class, ['invitacion' => $invitation])
+        ->assertSeeInOrder(['Texto superior', 'Título de portada', 'Texto del botón'])
+        ->set('form.titulo', 'Bodas de oro')
         ->set('form.fecha_evento', '2026-09-23')
         ->set('form.hora_evento', '20:15')
         ->assertHasNoErrors()
         ->assertDispatched('saved');
 
+    expect($invitation->fresh()->titulo)->toBe('Bodas de oro');
+
     $this
         ->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]))
         ->get(route('invitaciones.show', $invitation))
         ->assertOk()
+        ->assertSee('<h1 class="intro-title">Bodas de oro</h1>', false)
         ->assertSee('23 · septiembre · 2026')
         ->assertSee('Miércoles 23 de septiembre de 2026')
         ->assertSee('8:15 PM')

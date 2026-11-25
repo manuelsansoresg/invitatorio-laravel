@@ -234,6 +234,11 @@
                         <input wire:model.live.debounce.400ms="sectionSettings.hero.intro_kicker" class="editor-input mt-2">
                     </label>
                     <label class="block text-sm font-extrabold text-slate-800">
+                        Título de portada
+                        <input wire:model.live.debounce.400ms="form.titulo" maxlength="255" class="editor-input mt-2" placeholder="Ej. Bodas de oro">
+                        @error('form.titulo') <span class="mt-1 block text-xs text-red-600">{{ $message }}</span> @enderror
+                    </label>
+                    <label class="block text-sm font-extrabold text-slate-800">
                         Texto del botón
                         <input wire:model.live.debounce.400ms="sectionSettings.hero.intro_boton" class="editor-input mt-2">
                     </label>
@@ -513,11 +518,6 @@
                         Nombre de la homenajeada
                         <input wire:model.live.debounce.400ms="form.nombre" class="editor-input mt-2">
                         @error('form.nombre') <span class="mt-1 block text-xs text-red-600">{{ $message }}</span> @enderror
-                    </label>
-
-                    <label class="block text-sm font-extrabold text-slate-800">
-                        Evento
-                        <input wire:model.live.debounce.400ms="form.titulo" class="editor-input mt-2">
                     </label>
 
                     <label class="block text-sm font-extrabold text-slate-800">
