@@ -239,6 +239,11 @@
                         @error('form.titulo') <span class="mt-1 block text-xs text-red-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block text-sm font-extrabold text-slate-800">
+                        Nombre en portada
+                        <input wire:model.live.debounce.400ms="form.nombre" maxlength="80" class="editor-input mt-2">
+                        @error('form.nombre') <span class="mt-1 block text-xs text-red-600">{{ $message }}</span> @enderror
+                    </label>
+                    <label class="block text-sm font-extrabold text-slate-800">
                         Texto del botón
                         <input wire:model.live.debounce.400ms="sectionSettings.hero.intro_boton" class="editor-input mt-2">
                     </label>
@@ -514,12 +519,6 @@
                 <p class="mt-1 text-sm font-medium text-slate-500">Cuéntales a tus invitados los detalles de tu celebración.</p>
 
                 <div class="mt-6 grid gap-4">
-                    <label class="block text-sm font-extrabold text-slate-800">
-                        Nombre de la homenajeada
-                        <input wire:model.live.debounce.400ms="form.nombre" class="editor-input mt-2">
-                        @error('form.nombre') <span class="mt-1 block text-xs text-red-600">{{ $message }}</span> @enderror
-                    </label>
-
                     <label class="block text-sm font-extrabold text-slate-800">
                         Fecha
                         <input type="date" wire:model.live="form.fecha_evento" class="editor-input mt-2">
