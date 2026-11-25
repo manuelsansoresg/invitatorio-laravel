@@ -3,6 +3,7 @@
 use App\Livewire\InvitationEditor;
 use App\Models\Invitacion;
 use App\Models\InvitationBlock;
+use App\Models\User;
 use Database\Seeders\ValentinaInvitationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -26,6 +27,7 @@ test('editing a field automatically persists it and refreshes the preview', func
     expect($invitation->fresh()->nombre)->toBe('Marianaa');
 
     $this
+        ->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]))
         ->get(route('invitaciones.show', $invitation))
         ->assertOk()
         ->assertSee('Marianaa');
@@ -72,6 +74,7 @@ test('event date time and countdown always use the current invitation values', f
         ->assertDispatched('saved');
 
     $this
+        ->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]))
         ->get(route('invitaciones.show', $invitation))
         ->assertOk()
         ->assertSee('23 · septiembre · 2026')

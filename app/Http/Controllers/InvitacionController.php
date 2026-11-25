@@ -4,13 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Invitacion;
 use App\Models\Invitado;
-use App\Models\User;
 use Illuminate\View\View;
 
 class InvitacionController extends Controller
 {
     public function show(Invitacion $invitacion): View
     {
+        $esBorrador = $invitacion->esBorrador();
+        $vistaPreviaAdmin = $esBorrador && request()->user()?->isAdmin();
+
+        abort_if($esBorrador && ! $vistaPreviaAdmin, 404);
+        abort_if(! $invitacion->disponible && ! $vistaPreviaAdmin, 404, 'Esta invitación no está disponible públicamente.');
+
         $blocksRelation = request()->has('editor_preview') ? 'blocks' : 'activeBlocks';
 
         $invitacion->load([
@@ -18,22 +23,10 @@ class InvitacionController extends Controller
             'gallery' => fn ($query) => $query->where('activo', true)->orderBy('orden'),
         ]);
 
-        // Si la invitación está en borrador, no debe verse públicamente.
-        if ($invitacion->estado === 'borrador') {
-            abort(404);
-        }
-
-        // Si el admin la marcó como no disponible, 404 (a menos que
-        // sea el admin/owner quien la está viendo — pero para invitados
-        // que llegan por link, siempre bloquea).
-        if (! $invitacion->disponible) {
-            abort(404, 'Esta invitación no está disponible públicamente.');
-        }
-
         // Si está vencida, mostramos una página especial en vez del
         // render normal del template. La página dice que la invitación
         // caducó y cómo renovarla.
-        if ($invitacion->estaVencida()) {
+        if (! $vistaPreviaAdmin && $invitacion->estaVencida()) {
             return view('invitaciones.vencida', [
                 'invitacion' => $invitacion,
             ]);

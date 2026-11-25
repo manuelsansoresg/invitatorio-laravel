@@ -69,6 +69,15 @@ test('an administrator can clone an invitation as an independent editable draft'
     Storage::disk('public_uploads')->assertExists('uploads/invitaciones/xv-lucia-hernandez-lopez/portada/intro.jpg');
     Storage::disk('public_uploads')->assertExists('uploads/invitaciones/xv-lucia-hernandez-lopez/hero/main.jpg');
     Storage::disk('public_uploads')->assertExists('uploads/invitaciones/xv-lucia-hernandez-lopez/gallery/photo.jpg');
+
+    $url = route('invitaciones.show', $clone);
+
+    $this->get(route('admin.dashboard'))->assertSee('href="'.$url.'"', false);
+    $this->get($url)->assertOk()->assertViewHas('invitacion', fn (Invitacion $opened) => $opened->is($clone));
+    $this->actingAs($client)->get($url)->assertNotFound();
+
+    $this->actingAsGuest()->get($url)->assertNotFound();
+    $this->get($url.'?editor_preview=1')->assertNotFound();
 });
 
 test('a client cannot clone invitations', function () {
