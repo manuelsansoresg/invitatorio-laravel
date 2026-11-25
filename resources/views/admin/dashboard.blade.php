@@ -160,19 +160,6 @@
                                 <td class="px-5 py-5 text-text-gray">{{ $invitacion->ruta }}</td>
                                 <td class="px-5 py-5 text-center font-semibold text-text-gray">{{ $invitacion->confirmaciones_count }}</td>
                                 <td class="px-5 py-5 align-top">
-                                    @if ($invitacion->cliente)
-                                        <div class="min-w-0">
-                                            <div class="flex items-center gap-2">
-                                                <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-green-500"></span>
-                                                <p class="truncate font-bold text-text-dark">{{ $invitacion->cliente->name }}</p>
-                                            </div>
-                                            <p class="mt-1 truncate text-xs text-text-gray">{{ $invitacion->cliente->email }}</p>
-                                        </div>
-                                    @else
-                                        <div>
-                                            <p class="text-sm text-text-gray">Sin asignar</p>
-                                        </div>
-                                    @endif
                                     @include('admin.invitation-client-assignment')
                                 </td>
                                 <td class="px-5 py-5 align-top">

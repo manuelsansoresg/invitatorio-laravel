@@ -27,11 +27,6 @@ class AdminController extends Controller
             ->latest()
             ->get();
 
-        $clientes = User::query()
-            ->where('role', User::ROLE_CLIENT)
-            ->orderBy('name')
-            ->get();
-
         // Órdenes pagadas: usadas para la sección "Invitaciones compradas"
         // y para calcular las ganancias. Cargamos la suscripción y todas las
         // invitaciones que el cliente creó con esa suscripción + su template.
@@ -58,7 +53,7 @@ class AdminController extends Controller
         ];
 
         return view('admin.dashboard', [
-            'clientes'       => $clientes,
+            'clientes'       => $users->sortBy('email', SORT_NATURAL | SORT_FLAG_CASE),
             'ganancias'      => $ganancias,
             'invitaciones'   => $invitaciones,
             'ordenesPagadas' => $ordenesPagadas,
@@ -87,11 +82,13 @@ class AdminController extends Controller
     {
         $validated = validator($request->all(), [
             'user_id' => [
+                'present',
                 'nullable',
-                Rule::exists('users', 'id')->where('role', User::ROLE_CLIENT),
+                'integer',
+                Rule::exists('users', 'id'),
             ],
         ], [
-            'user_id.exists' => 'El cliente seleccionado no está disponible.',
+            'user_id.exists' => 'La cuenta seleccionada no está disponible.',
         ])->validateWithBag('clientAssignment');
 
         $invitacion->update([
@@ -100,7 +97,7 @@ class AdminController extends Controller
 
         return redirect()
             ->route('admin.dashboard')
-            ->with('status', 'Cliente asignado correctamente.');
+            ->with('status', isset($validated['user_id']) ? 'Cliente asignado correctamente.' : 'Asignación eliminada.');
     }
 
     public function cloneInvitation(Request $request, Invitacion $invitacion): RedirectResponse

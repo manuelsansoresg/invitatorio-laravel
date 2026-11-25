@@ -18,9 +18,11 @@ test('an administrator can assign edit and remove an invitation client', functio
     $this->actingAs($admin)
         ->get(route('admin.dashboard'))
         ->assertOk()
-        ->assertSeeText('Asignar cliente')
+        ->assertSeeText('Asignar correo')
         ->assertSee('action="'.route('admin.invitaciones.cliente.update', $invitation).'"', false)
-        ->assertSeeText($client->email);
+        ->assertSee('onchange="this.form.requestSubmit()"', false)
+        ->assertSee('<option value="'.$client->id.'" >'.$client->email.'</option>', false)
+        ->assertSee('<option value="'.$admin->id.'" >'.$admin->email.'</option>', false);
 
     $this
         ->actingAs($admin)
@@ -34,11 +36,18 @@ test('an administrator can assign edit and remove an invitation client', functio
 
     $this->get(route('admin.dashboard'))
         ->assertOk()
-        ->assertSeeText('Cambiar cliente')
         ->assertSee('value="'.$client->id.'" selected', false);
 
     $this
-        ->actingAs($admin)
+        ->patch(route('admin.invitaciones.cliente.update', $invitation), [
+            'user_id' => $admin->id,
+            'assignment_source' => $invitation->ruta,
+        ])
+        ->assertRedirect(route('admin.dashboard'));
+
+    expect($invitation->fresh()->user_id)->toBe($admin->id);
+
+    $this
         ->patch(route('admin.invitaciones.cliente.update', $invitation), [
             'user_id' => '',
             'assignment_source' => $invitation->ruta,
@@ -48,9 +57,8 @@ test('an administrator can assign edit and remove an invitation client', functio
     expect($invitation->fresh()->user_id)->toBeNull();
 })->with(['xv-mariana', 'bautizo/plantilla-aurora']);
 
-test('an administrator cannot assign another administrator as a client', function () {
+test('an administrator cannot assign an account that does not exist', function () {
     $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-    $otherAdmin = User::factory()->create(['role' => User::ROLE_ADMIN]);
     $invitation = Invitacion::query()->create([
         'nombre' => 'Mariana',
         'apellido_paterno' => 'Demo',
@@ -61,7 +69,7 @@ test('an administrator cannot assign another administrator as a client', functio
         ->actingAs($admin)
         ->from(route('admin.dashboard'))
         ->patch(route('admin.invitaciones.cliente.update', $invitation), [
-            'user_id' => $otherAdmin->id,
+            'user_id' => $admin->id + 1,
             'assignment_source' => $invitation->ruta,
         ])
         ->assertRedirect(route('admin.dashboard'))
