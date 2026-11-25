@@ -41,7 +41,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/usuarios', [AdminController::class, 'storeUser'])->name('users.store');
     Route::get('/invitaciones/{invitacion}/editar', InvitationEditor::class)->name('invitaciones.edit');
     Route::post('/invitaciones/{invitacion}/clonar', [AdminController::class, 'cloneInvitation'])->name('invitaciones.clone');
-    Route::patch('/invitaciones/{invitacion}/cliente', [AdminController::class, 'updateInvitationClient'])->name('invitaciones.cliente.update');
+    Route::patch('/invitaciones/{invitacion}/cliente', [AdminController::class, 'updateInvitationClient'])
+        ->where('invitacion', '[^/]+(?:/[^/]+)?')
+        ->name('invitaciones.cliente.update');
     Route::delete('/invitaciones/{invitacion}', [AdminController::class, 'destroyInvitation'])->name('invitaciones.destroy');
 
     /*

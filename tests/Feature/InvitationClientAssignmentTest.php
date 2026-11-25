@@ -6,13 +6,13 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('an administrator can assign edit and remove an invitation client', function () {
+test('an administrator can assign edit and remove an invitation client', function (string $route) {
     $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
     $client = User::factory()->create(['role' => User::ROLE_CLIENT]);
     $invitation = Invitacion::query()->create([
         'nombre' => 'Mariana',
         'apellido_paterno' => 'Demo',
-        'ruta' => 'xv-mariana',
+        'ruta' => $route,
     ]);
 
     $this->actingAs($admin)
@@ -46,7 +46,7 @@ test('an administrator can assign edit and remove an invitation client', functio
         ->assertRedirect(route('admin.dashboard'));
 
     expect($invitation->fresh()->user_id)->toBeNull();
-});
+})->with(['xv-mariana', 'bautizo/plantilla-aurora']);
 
 test('an administrator cannot assign another administrator as a client', function () {
     $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
