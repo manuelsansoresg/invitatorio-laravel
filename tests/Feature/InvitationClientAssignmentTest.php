@@ -15,6 +15,13 @@ test('an administrator can assign edit and remove an invitation client', functio
         'ruta' => 'xv-mariana',
     ]);
 
+    $this->actingAs($admin)
+        ->get(route('admin.dashboard'))
+        ->assertOk()
+        ->assertSeeText('Asignar cliente')
+        ->assertSee('action="'.route('admin.invitaciones.cliente.update', $invitation).'"', false)
+        ->assertSeeText($client->email);
+
     $this
         ->actingAs($admin)
         ->patch(route('admin.invitaciones.cliente.update', $invitation), [
@@ -24,6 +31,11 @@ test('an administrator can assign edit and remove an invitation client', functio
         ->assertRedirect(route('admin.dashboard'));
 
     expect($invitation->fresh()->user_id)->toBe($client->id);
+
+    $this->get(route('admin.dashboard'))
+        ->assertOk()
+        ->assertSeeText('Cambiar cliente')
+        ->assertSee('value="'.$client->id.'" selected', false);
 
     $this
         ->actingAs($admin)

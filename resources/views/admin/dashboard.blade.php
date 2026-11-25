@@ -173,6 +173,7 @@
                                             <p class="text-sm text-text-gray">Sin asignar</p>
                                         </div>
                                     @endif
+                                    @include('admin.invitation-client-assignment')
                                 </td>
                                 <td class="px-5 py-5 align-top">
                                     <div class="flex min-w-[210px] flex-col gap-2">
